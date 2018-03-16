@@ -10,9 +10,27 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+/**
+ *  01. 홈 화면 라우팅
+ */
+Route::get('/', [
+    'as'    =>'home.index',
+    'uses'  =>'HomeController@index'
+]);
 
-Route::get('/', function () {
-    return view('login');
-});
+Route::get('/join', [
+   'as'     => 'home.join',
+   'uses'   => 'HomeController@join'
+]);
 
-Route::post('/login', "AccountManager@login");
+Route::get('/join/{joinType}', 'HomeController@setJoinForm');
+
+
+/**
+ * 02. 학생 관련 기능 라우팅
+ */
+
+Route::post('/store/student', [
+    'as'    => 'student.store',
+    'uses'  => 'StudentController@store'
+]);
