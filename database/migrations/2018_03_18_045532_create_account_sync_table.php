@@ -35,8 +35,8 @@ class CreateAccountSyncTable extends Migration
              *  02. 제약조건 정의
              *  unique index(prime_account, connected)
              */
-            $table->foreign('prime_account')->references('id')->on('professor');
-            $table->foreign('connected')->references('id')->on('professor');
+            $table->foreign('prime_account')->references('id')->on('professor')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('connected')->references('id')->on('professor')->onUpdate('cascade')->onDelete('cascade');
             $table->unique(['prime_account', 'connected']);
         });
     }

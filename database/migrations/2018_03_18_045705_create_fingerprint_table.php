@@ -37,7 +37,7 @@ class CreateFingerprintTable extends Migration
 
             // 02. 제약조건 설정
             $table->primary('id');
-            $table->foreign('std_id')->references('id')->on('student');
+            $table->foreign('std_id')->references('id')->on('student')->onUpdate('cascade')->onDelete('cascade');
             $table->unique('fingerprint');
         });
     }

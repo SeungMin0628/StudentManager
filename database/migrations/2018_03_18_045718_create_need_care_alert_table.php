@@ -53,7 +53,7 @@ class CreateNeedCareAlertTable extends Migration
 
             // 02. 제약조건 설정
             $table->primary('id');
-            $table->foreign('manager')->references('id')->on('professor');
+            $table->foreign('manager')->references('id')->on('professor')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

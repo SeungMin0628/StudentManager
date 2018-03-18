@@ -44,8 +44,9 @@ class CreateAttendanceTable extends Migration
              *  unique index(reg_date, std_id)
              */
             $table->unique(['reg_date', 'std_id']);
-            $table->foreign('come_school')->references('id')->on('come_school');
-            $table->foreign('leave_school')->references('id')->on('leave_school');
+            $table->foreign('std_id')->referenced('id')->on('student')->onUpdate('cascade')->onDelete('no action');
+            $table->foreign('come_school')->references('id')->on('come_school')->onUpdate('cascade')->onDelete('no action');
+            $table->foreign('leave_school')->references('id')->on('leave_school')->onUpdate('cascade')->onDelete('no action');
         });
     }
 

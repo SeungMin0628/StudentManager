@@ -53,7 +53,7 @@ class CreateStudentTable extends Migration
 
             // 02. 제약조건 정의
             $table->primary('id');
-            $table->foreign('class')->references('id')->on('class');
+            $table->foreign('class')->references('id')->on('class')->onUpdate('cascade')->onDelete('no action');
         });
     }
 
