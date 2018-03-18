@@ -9,7 +9,8 @@
 ?>
 @extends('layouts.master')
 @section('body.section')
-    <form method="post" action="login">
+    <form method="post" action="{{ route('home.login') }}">
+        {!! csrf_field() !!}
         <div>
             <div>
                 <label for="student">학생</label>
@@ -21,10 +22,12 @@
             </div>
         </div>
         <div>
-            id: <input type="text" name="id" value="{{ old('id') }}">
+            <label for="id">아이디</label>
+            <input type="text" name="id" id="id" value="{{ old('id') }}">
         </div>
         <div>
-            pw: <input type="password" name="password">
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password">
         </div>
         <div>
             <button type="submit">Login</button>

@@ -114,4 +114,23 @@ class HomeController extends Controller
             redirect('home.index');
         }
     }
+    /**
+     * 함수명:                         login
+     * 함수 설명:                      사용자가 작성한 로그인 양식을 받아, 회원 유형에 맞는 로그인 알고리즘을 실행
+     * 만든날:                         2018년 3월 18일
+     *
+     * 매개변수 목록
+     * @param $request:
+     *
+     * 지역변수 목록
+     * $data(array):                   View 단에 전달하는 매개인자를 저장하는 배열
+     *      $title(string):            HTML Title
+     *      $type(string):             현재 회원가입 유형을 알림
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function login(Request $request) {
+        return '<h1>로그인</h1>';
+    }
 }

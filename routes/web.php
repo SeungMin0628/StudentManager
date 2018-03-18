@@ -25,6 +25,11 @@ Route::get('/join', [
 
 Route::get('/join/{joinType}', 'HomeController@setJoinForm');
 
+Route::post('/login', [
+    'as'    => 'home.login',
+    'uses'  => 'HomeController@login'
+]);
+
 
 /**
  * 02. 학생 관련 기능 라우팅
