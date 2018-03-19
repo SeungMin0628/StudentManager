@@ -38,13 +38,13 @@ class CreateCommentTable extends Migration
              *                      : 코멘트 내용
              */
             $table->increments('id');
-            $table->integer('p_id')->unsigned()->nullable();
-            $table->integer('std_id', 7)->unsigned();
+            $table->integer('p_id', FALSE, TRUE)->nullable();
+            $table->integer('std_id', FALSE, TRUE);
             $table->string('prof_id', 30)->nullable();
             $table->text('content');
 
             // 02. 제약조건 설정
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('p_id')->references('id')->on('comment')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('std_id')->references('id')->on('student')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('prof_id')->references('id')->on('professor')->onUpdate('cascade')->onDelete('set null');

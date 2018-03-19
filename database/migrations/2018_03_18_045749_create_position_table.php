@@ -39,7 +39,7 @@ class CreatePositionTable extends Migration
              *                  : GPS 경도
              */
             $table->datetime('reg_time');
-            $table->integer('std_id', 7)->unsigned();
+            $table->integer('std_id', FALSE, TRUE);
             $table->boolean('attendance_flag');
             $table->decimal('gps_lat', 9, 7);
             $table->decimal('gps_long', 9, 7);

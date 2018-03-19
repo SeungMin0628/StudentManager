@@ -32,7 +32,7 @@ class CreateClassificationTable extends Migration
             $table->string('content', 20);
 
             // 02. 제약조건 정의
-            $table->primary('id');
+            /*$table->primary('id');*/
         });
     }
 

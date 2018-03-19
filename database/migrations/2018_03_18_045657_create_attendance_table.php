@@ -35,16 +35,16 @@ class CreateAttendanceTable extends Migration
              *                  : 하교 데이터 번호
              */
             $table->date('reg_date');
-            $table->integer('std_id', 7)->unsigned();
-            $table->integer('come_school')->unsigned();
-            $table->integer('leave_school')->unsigned()->nullable()->default(NULL);
+            $table->integer('std_id', FALSE, TRUE);
+            $table->integer('come_school', FALSE, TRUE);
+            $table->integer('leave_school', FALSE, TRUE)->nullable()->default(NULL);
 
             /**
              *  02. 제약조건 설정
              *  unique index(reg_date, std_id)
              */
             $table->unique(['reg_date', 'std_id']);
-            $table->foreign('std_id')->referenced('id')->on('student')->onUpdate('cascade')->onDelete('no action');
+            $table->foreign('std_id')->references('id')->on('student')->onUpdate('cascade')->onDelete('no action');
             $table->foreign('come_school')->references('id')->on('come_school')->onUpdate('cascade')->onDelete('no action');
             $table->foreign('leave_school')->references('id')->on('leave_school')->onUpdate('cascade')->onDelete('no action');
         });

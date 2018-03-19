@@ -44,7 +44,7 @@ class CreateClassTable extends Migration
             $table->time('home_time')->default('00:21:00');
 
             // 02. 제약조건 설정
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('tutor')->references('id')->on('professor')->onUpdate('cascade')->onDelete('no action');
         });
     }

@@ -39,14 +39,14 @@ class CreateTimetableTable extends Migration
              *                  : 강의 장소
              */
             $table->increments('id');
-            $table->integer('lecture_id')->unsigned();
-            $table->integer('day_of_week', 1)->unsigned();
-            $table->integer('period', 2)->unsigned();
-            $table->integer('class_room')->unsigned();
+            $table->integer('lecture_id', FALSE, TRUE);
+            $table->tinyInteger('day_of_week', FALSE, TRUE);
+            $table->tinyInteger('period', FALSE, TRUE);
+            $table->integer('classroom_id', FALSE, TRUE);
 
             // 02. 제약조건 설정
-            $table->primary('id');
-            $table->foreign('subject_id')->references('id')->on('subject')->onUpdate('cascade')->onDelete('cascade');
+            /*$table->primary('id');*/
+            $table->foreign('lecture_id')->references('id')->on('subject')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('classroom_id')->references('id')->on('classroom')->onUpdate('cascade')->onDelete('no action');
         });
     }

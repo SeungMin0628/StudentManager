@@ -32,11 +32,11 @@ class CreateFingerprintTable extends Migration
              *
              */
             $table->increments('id');
-            $table->integer('std_id', 7)->unsigned();
+            $table->integer('std_id', FALSE, TRUE);
             $table->string('fingerprint', 40);
 
             // 02. 제약조건 설정
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('std_id')->references('id')->on('student')->onUpdate('cascade')->onDelete('cascade');
             $table->unique('fingerprint');
         });

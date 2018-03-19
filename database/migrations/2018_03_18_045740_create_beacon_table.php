@@ -40,11 +40,11 @@ class CreateBeaconTable extends Migration
             $table->increments('id');
             $table->integer('site')->unsigned();
             $table->string('uuid', 32);
-            $table->integer('major', 5)->unsigned();
-            $table->integer('minor', 5)->unsigned();
+            $table->smallInteger('major', FALSE, TRUE);
+            $table->smallInteger('minor', FALSE, TRUE);
 
             // 02. 제약조건 정의
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('site')->references('id')->on('classroom')->onUpdate('cascade')->onDelete('cascade');
         });
     }

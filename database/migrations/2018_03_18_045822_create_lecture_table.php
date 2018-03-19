@@ -51,7 +51,7 @@ class CreateLectureTable extends Migration
              *                          : 쪽지시험 반영 비율
              */
             $table->increments('id');
-            $table->integer('subject_id', 8)->unsigned();
+            $table->integer('subject_id', FALSE, TRUE);
             $table->string('divided_class_id', 2)->default(NULL);
             $table->string('professor', 30);
             $table->decimal('attendance_reflection', 3, 2)->default(0.2);
@@ -61,7 +61,7 @@ class CreateLectureTable extends Migration
             $table->decimal('quiz_reflection', 3, 2)->default(0);
 
             // 02. 제약조건 정의
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('subject_id')->references('id')->on('subject')->onUpdate('cascade')->onDelete('no action');
             $table->foreign('professor')->references('id')->on('professor')->onUpdate('cascade')->onDelete('no action');
         });

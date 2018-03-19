@@ -36,12 +36,12 @@ class CreateCheckInLectureTable extends Migration
              *              : 데이터 등록 일시
              */
             $table->increments('id');
-            $table->integer('lecture_id')->unsigned();
-            $table->integer('std_id', 7)->unsigned();
+            $table->integer('lecture_id', FALSE, TRUE);
+            $table->integer('std_id', FALSE, TRUE);
             $table->datetime('reg_time');
 
             // 02. 제약조건 설정
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('lecture_id')->references('id')->on('lecture')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('std_id')->references('id')->on('student')->onUpdate('cascade')->onDelete('cascade');
         });

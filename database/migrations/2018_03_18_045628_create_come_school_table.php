@@ -37,9 +37,10 @@ class CreateComeSchoolTable extends Migration
             $table->increments('id');
             $table->datetime('reg_time');
             $table->boolean('lateness_flag')->default(FALSE);
-            $table->integer('classification')->unsigned();
+            $table->integer('classification', FALSE, TRUE);
 
             // 02. 제약조건 설정
+            /*$table->primary('id');*/
             $table->foreign('classification')->references('id')->on('classification')->onUpdate('cascade')->onDelete('no action');
         });
     }

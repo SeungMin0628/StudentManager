@@ -40,6 +40,7 @@ class CreateLeaveSchoolTable extends Migration
             $table->integer('classification')->unsigned();
 
             // 02. 제약조건 설정
+            /*$table->primary('id')*/
             $table->foreign('classification')->references('id')->on('classification')->onUpdate('cascade')->onDelete('no action');
         });
     }

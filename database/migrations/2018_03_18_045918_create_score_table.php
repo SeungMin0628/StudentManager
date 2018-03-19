@@ -40,15 +40,15 @@ class CreateScoreTable extends Migration
              *  perfect_score           unsigned int(3)     not null
              *                          : 만점
              */
-            $table->integer('lecture_id')->unsigned();
+            $table->integer('lecture_id', FALSE, TRUE);
             $table->increments('id');
             $table->date('reg_date');
-            $table->integer('type', 1)->unsigned();
+            $table->tinyInteger('type', FALSE, TRUE);
             $table->text('content');
-            $table->integer('perfect_score', 3);
+            $table->smallInteger('perfect_score', FALSE, TRUE);
 
             // 02. 제약조건 정의
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('lecture_id')->references('id')->on('lecture')->onUpdate('cascade')->onDelete('cascade');
         });
     }

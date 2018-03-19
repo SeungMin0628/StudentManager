@@ -57,7 +57,7 @@ class CreateProfessorTable extends Migration
             $table->char('phone', 11);
             $table->string('email', 50);
             $table->string('office', 30);
-            $table->string('face_photo', 40)->nullble()->default(NULL);
+            $table->string('face_photo', 40)->nullable()->default(NULL);
 
             // 02. 제약조건 정의
             $table->primary('id');

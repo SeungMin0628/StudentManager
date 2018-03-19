@@ -43,8 +43,8 @@ class CreateStudentTable extends Migration
              *  face_photo  varchar(40)     default null
              *              : 얼굴사진 위치 경로
              */
-            $table->integer('id', 7)->unsigned();
-            $table->integer('class')->unsigned();
+            $table->integer('id', FALSE, TRUE);
+            $table->integer('class', FALSE, TRUE);
             $table->string('password', 100);
             $table->string('name', 30);
             $table->char('phone', 11);

@@ -42,14 +42,14 @@ class CreateCounselMessageTable extends Migration
              *                      : 메시지 내용
              */
             $table->increments('id');
-            $table->integer('counsel_id')->unsigned();
+            $table->integer('counsel_id', FALSE, TRUE);
             $table->boolean('receiver_flag');
             $table->boolean('read_mark')->default(FALSE);
             $table->datetime('wanted_time');
             $table->text('content');
 
             // 02. 제약조건 설정
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('counsel_id')->references('id')->on('counsel')->onUpdate('cascade')->onDelete('cascade');
         });
     }

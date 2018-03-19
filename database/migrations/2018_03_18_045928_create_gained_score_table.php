@@ -36,16 +36,16 @@ class CreateGainedScoreTable extends Migration
              *                  : 취득 점수
              */
             $table->increments('id');
-            $table->integer('score_type')->unsigned();
-            $table->integer('std_id', 7)->unsigned();
-            $table->integer('score', 3)->unsigned();
+            $table->integer('score_type', FALSE, TRUE);
+            $table->integer('std_id', FALSE, TRUE);
+            $table->smallInteger('score', FALSE, TRUE);
 
             /**
              *  02. 제약조건 설정
              *
              *  unique index('score_type', 'std_id')
              */
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('score_type')->references('id')->on('score')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('std_id')->references('id')->on('student')->onUpdate('cascade')->onDelete('cascade');
             $table->unique(['score_type', 'std_id']);

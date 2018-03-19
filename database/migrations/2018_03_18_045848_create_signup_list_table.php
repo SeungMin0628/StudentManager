@@ -36,8 +36,8 @@ class CreateSignupListTable extends Migration
              *                  : 학업 성취도
              */
             $table->increments('id');
-            $table->integer('lecture_id')->unsigned();
-            $table->integer('std_id', 7)->unsigned();
+            $table->integer('lecture_id', FALSE, TRUE);
+            $table->integer('std_id', FALSE, TRUE);
             $table->decimal('achievement', 3, 2)->default(0);
 
             /**

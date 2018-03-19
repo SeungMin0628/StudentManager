@@ -42,9 +42,9 @@ class CreateSubjectTable extends Migration
              *                  : 분반 존재 여부
              */
             $table->year('year');
-            $table->integer('term', 1);
-            $table->integer('class_id')->unsigned();
-            $table->integer('id', 8)->unsgined();
+            $table->tinyInteger('term', FALSE, FALSE);
+            $table->integer('class_id', FALSE, TRUE);
+            $table->integer('id', FALSE, TRUE);
             $table->string('name', 30);
             $table->boolean('division_flag')->default(FALSE);
 

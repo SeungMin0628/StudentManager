@@ -38,13 +38,13 @@ class CreateAlertTable extends Migration
              *                      : 알림 내용에 맞는 페이지의 링크
              */
             $table->increments('id');
-            $table->integer('std_id', 7)->nullable()->default(NULL);
+            $table->integer('std_id', FALSE, TRUE)->nullable()->default(NULL);
             $table->string('prof_id', 30)->nullable()->default(NULL);
             $table->text('content');
             $table->string('link', 100);
 
             // 02. 제약조건 설정
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('std_id')->references('id')->on('student')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('prof_id')->references('id')->on('professor')->onUpdate('cascade')->onDelete('cascade');
         });

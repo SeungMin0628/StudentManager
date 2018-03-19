@@ -45,14 +45,14 @@ class CreateNeedCareAlertTable extends Migration
              */
             $table->increments('id');
             $table->string('manager', 30);
-            $table->integer('days_unit', 3)->unsigned();
-            $table->integer('notification_flag', 1);
-            $table->integer('needed_count', 3);
+            $table->smallInteger('days_unit', FALSE, TRUE);
+            $table->tinyInteger('notification_flag', FALSE, TRUE);
+            $table->smallInteger('needed_count', FALSE, TRUE);
             $table->boolean('alert_std_flag')->default(TRUE);
             $table->boolean('alert_prof_flag')->default(TRUE);
 
             // 02. 제약조건 설정
-            $table->primary('id');
+            /*$table->primary('id');*/
             $table->foreign('manager')->references('id')->on('professor')->onUpdate('cascade')->onDelete('cascade');
         });
     }

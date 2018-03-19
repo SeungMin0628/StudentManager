@@ -33,7 +33,7 @@ class CreateClassroomTable extends Migration
             $table->string('name', 20);
 
             // 02. 제약조건 설정
-            $table->primary('id');
+            /*$table->primary('id');*/
         });
     }
 
