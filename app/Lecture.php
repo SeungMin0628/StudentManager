@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Lecture extends Model
-{
+class Lecture extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +31,7 @@ class Lecture extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function professor() {
-        return $this->belongsTo('App\Professor');
+        return $this->belongsTo('App\Professor', 'professor', 'id');
     }
 
     /**
@@ -48,7 +49,7 @@ class Lecture extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function subject() {
-        return $this->belongsTo('App\Subject');
+        return $this->belongsTo('App\Subject', 'subject_id', 'id');
     }
 
     /**
@@ -66,7 +67,7 @@ class Lecture extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function signUpLists() {
-        return $this->hasMany('App\SignUpList');
+        return $this->hasMany('App\SignUpList', 'lecture_id', 'id');
     }
 
     /**
@@ -84,7 +85,7 @@ class Lecture extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function checkInLectures() {
-        return $this->hasMany('App\CheckInLecture');
+        return $this->hasMany('App\CheckInLecture', 'lecture_id', 'id');
     }
 
     /**
@@ -102,7 +103,7 @@ class Lecture extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function scores() {
-        return $this->hasMany('App\Score');
+        return $this->hasMany('App\Score', 'lecture_id', 'id');
     }
 
     /**
@@ -120,6 +121,6 @@ class Lecture extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function timetables() {
-        return $this->hasMany('App\TimeTable');
+        return $this->hasMany('App\TimeTable', 'lecture_id', 'id');
     }
 }

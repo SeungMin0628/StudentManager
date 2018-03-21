@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Classroom extends Model
-{
+class Classroom extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +31,7 @@ class Classroom extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function beacons() {
-        return $this->hasMany('App\Beacon');
+        return $this->hasMany('App\Beacon', 'site', 'id');
     }
 
     /**
@@ -48,6 +49,6 @@ class Classroom extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function timetables() {
-        return $this->hasMany('App\Timetable');
+        return $this->hasMany('App\Timetable', 'classroom_id', 'id');
     }
 }

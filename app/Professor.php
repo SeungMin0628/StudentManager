@@ -10,9 +10,11 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Professor extends Model
-{
+class Professor extends Model {
     // 01. 멤버 변수 설정
+    public $incrementing    = false;
+    public $timestamps      = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +32,7 @@ class Professor extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function counsels() {
-        return $this->hasMany('App\Counsel');
+        return $this->hasMany('App\Counsel', 'prof_id', 'id');
     }
 
     /**
@@ -48,7 +50,7 @@ class Professor extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function comments() {
-        return $this->hasMany('App\Comment');
+        return $this->hasMany('App\Comment', 'prof_id', 'id');
     }
 
     /**
@@ -66,7 +68,7 @@ class Professor extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function alerts() {
-        return $this->hasMany('App\Alert');
+        return $this->hasMany('App\Alert', 'prof_id', 'id');
     }
 
     /**
@@ -84,7 +86,7 @@ class Professor extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function group() {
-        return $this->hasOne('App\Group');
+        return $this->hasOne('App\Group', 'tutor', 'id');
     }
 
     /**
@@ -102,7 +104,7 @@ class Professor extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function lecture() {
-        return $this->hasOne('App\Lecture');
+        return $this->hasOne('App\Lecture', 'professor', 'id');
     }
 
     /**
@@ -120,7 +122,7 @@ class Professor extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function needCareAlerts() {
-        return $this->hasMany('App\NeedCareAlert');
+        return $this->hasMany('App\NeedCareAlert', 'manager', 'id');
     }
 
     /**
@@ -138,7 +140,7 @@ class Professor extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function managedProfessors() {
-        return $this->hasMany('App\Professor');
+        return $this->hasMany('App\Professor', 'manager', 'id');
     }
 
     /**
@@ -156,12 +158,12 @@ class Professor extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function manager() {
-        return $this->belongsTo('App\Professor');
+        return $this->belongsTo('App\Professor', 'manager', 'id');
     }
 
     /**
-     * 함수명:                         accountSyncs
-     * 함수 설명:                      교수 테이블과 계정 연동 테이블의 연결 관계를 정의
+     * 함수명:                         primeAccount
+     * 함수 설명:                      교수 테이블과 계정 연동 테이블의 주 계정 칼럼 간의 연결 관계를 정의
      * 만든날:                         2018년 3월 19일
      *
      * 매개변수 목록
@@ -173,7 +175,25 @@ class Professor extends Model
      * 반환값
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function accountSyncs() {
-        return $this->hasMany('App\AccountSync');
+    public function primeAccount() {
+        return $this->hasMany('App\AccountSync', 'prime_account', 'id');
+    }
+
+    /**
+     * 함수명:                         connected
+     * 함수 설명:                      교수 테이블과 계정 연동 테이블의 연동 계정 칼럼 간의 연결 관계를 정의
+     * 만든날:                         2018년 3월 19일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function connected() {
+        return $this->hasMany('App\AccountSync', 'connected', 'id');
     }
 }

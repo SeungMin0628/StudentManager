@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Score extends Model
-{
+class Score extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +31,7 @@ class Score extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function lecture() {
-        return $this->belongsTo('App\Lecture');
+        return $this->belongsTo('App\Lecture', 'lecture_id', 'id');
     }
 
     /**
@@ -48,6 +49,6 @@ class Score extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function gainedScores() {
-        return $this->hasMany('App\GainedScore');
+        return $this->hasMany('App\GainedScore', 'score_type', 'id');
     }
 }

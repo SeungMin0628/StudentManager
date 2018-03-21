@@ -31,7 +31,7 @@ class CreateStudentsTable extends Migration
              *  password    varchar(100)    not null
              *              : 비밀번호
              *
-             *  name        varchar930)     not null
+             *  name        varchar(60)     not null
              *              : 학생 이름
              *
              *  phone       char(11)        not null
@@ -40,16 +40,16 @@ class CreateStudentsTable extends Migration
              *  email       varchar(50)     not null
              *              : 이메일
              *
-             *  face_photo  varchar(40)     default null
+             *  face_photo  varchar(40)     not null, default ""
              *              : 얼굴사진 위치 경로
              */
             $table->integer('id', FALSE, TRUE);
             $table->integer('group', FALSE, TRUE);
             $table->string('password', 100);
-            $table->string('name', 30);
+            $table->string('name', 60);
             $table->char('phone', 11);
             $table->string('email', 50);
-            $table->string('face_photo', 40)->nullable()->default(NULL);
+            $table->string('face_photo', 40)->default("");
 
             // 02. 제약조건 정의
             $table->primary('id');

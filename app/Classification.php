@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Classification extends Model
-{
+class Classification extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +31,7 @@ class Classification extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function comeSchool() {
-        return $this->hasMany('App\ComeSchool');
+        return $this->hasMany('App\ComeSchool', 'classification', 'id');
     }
 
     /**
@@ -48,6 +49,6 @@ class Classification extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function leaveSchool() {
-        return $this->hasMany('App\LeaveSchool');
+        return $this->hasMany('App\LeaveSchool', 'classification', 'id');
     }
 }

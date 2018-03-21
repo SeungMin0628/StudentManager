@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Comment extends Model
-{
+class Comment extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +31,7 @@ class Comment extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function student() {
-        return $this->belongsTo('App\Student');
+        return $this->belongsTo('App\Student', 'std_id', 'id');
     }
 
     /**
@@ -48,7 +49,7 @@ class Comment extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function professor() {
-        return $this->belongsTo('App\Professor');
+        return $this->belongsTo('App\Professor', 'prof_id', 'id');
     }
 
     /**
@@ -66,7 +67,7 @@ class Comment extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function childComments() {
-        return $this->hasMany('App\Comment');
+        return $this->hasMany('App\Comment', 'p_id', 'id');
     }
 
     /**
@@ -84,6 +85,6 @@ class Comment extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function parentComment() {
-        return $this->belongsTo('App\Comment');
+        return $this->belongsTo('App\Comment', 'p_id', 'id');
     }
 }

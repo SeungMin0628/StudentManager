@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class SignUpList extends Model
-{
+class SignUpList extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +31,7 @@ class SignUpList extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function student() {
-        return $this->belongsTo('App\Student');
+        return $this->belongsTo('App\Student', 'std_id', 'lecture_id');
     }
 
     /**
@@ -48,6 +49,6 @@ class SignUpList extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function lecture() {
-        return $this->belongsTo('App\Lecture');
+        return $this->belongsTo('App\Lecture', 'lecture_id', 'id');
     }
 }

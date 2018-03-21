@@ -10,9 +10,11 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Student extends Model
-{
+class Student extends Model {
     // 01. 멤버 변수 설정
+    public $incrementing    = false;
+    public $timestamps      = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +32,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function comments() {
-        return $this->hasMany('App\Comment');
+        return $this->hasMany('App\Comment', 'std_id', 'id');
     }
 
     /**
@@ -48,7 +50,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function counsels() {
-        return $this->hasMany('App\Counsel');
+        return $this->hasMany('App\Counsel', 'std_id', 'id');
     }
 
     /**
@@ -66,7 +68,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function attendances() {
-        return $this->hasMany('App\Attendance');
+        return $this->hasMany('App\Attendance', 'std_id', 'id');
     }
 
     /**
@@ -84,7 +86,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function positions() {
-        return $this->hasMany('App\Position');
+        return $this->hasMany('App\Position', 'std_id', 'id');
     }
 
     /**
@@ -102,7 +104,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function fingerprints() {
-        return $this->hasMany('App\Fingerprint');
+        return $this->hasMany('App\Fingerprint', 'std_id', 'id');
     }
 
     /**
@@ -120,7 +122,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function gainedScores() {
-        return $this->hasMany('App\GainedScore');
+        return $this->hasMany('App\GainedScore', 'std_id', 'id');
     }
 
     /**
@@ -138,7 +140,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function checkInLecture() {
-        return $this->hasMany('App\CheckInLecture');
+        return $this->hasMany('App\CheckInLecture', 'std_id', 'id');
     }
 
     /**
@@ -156,7 +158,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function signUpLists() {
-        return $this->hasMany('App\SignUpList');
+        return $this->hasMany('App\SignUpList', 'std_id', 'id');
     }
 
     /**
@@ -174,7 +176,7 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group() {
-        return $this->belongsTo('App\Group');
+        return $this->belongsTo('App\Group', 'group', 'id');
     }
 
     /**
@@ -192,6 +194,6 @@ class Student extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function alerts() {
-        return $this->hasMany('App\Alert');
+        return $this->hasMany('App\Alert', 'std_id', 'id');
     }
 }

@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Beacon extends Model
-{
+class Beacon extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,6 +31,6 @@ class Beacon extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function classroom() {
-        return $this->belongsTo('App\Classroom');
+        return $this->belongsTo('App\Classroom', 'site', 'id');
     }
 }

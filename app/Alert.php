@@ -5,14 +5,15 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 클래스명:                       AccountSync
- * 클래스 설명:                    계정 연동 테이블과 연결하는 모델
+ * 클래스명:                       Alert
+ * 클래스 설명:                    알림 테이블과 연결하는 모델
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class Alert extends Model
-{
+class Alert extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
@@ -30,7 +31,7 @@ class Alert extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function student() {
-        return $this->belongsTo('App\Student');
+        return $this->belongsTo('App\Student', 'std_id', 'id');
     }
 
     /**
@@ -48,6 +49,6 @@ class Alert extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function professor() {
-        return $this->belongsTo('App\Professor');
+        return $this->belongsTo('App\Professor', 'prof_id', 'id');
     }
 }

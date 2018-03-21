@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class group extends Model
-{
+class group extends Model {
     // 01. 멤버 변수 설정
+    public $timestamps  = false;
+
     // 02. 생성자 정의
     // 03. 멤버 메서드 설정
     /**
@@ -30,7 +31,7 @@ class group extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function students() {
-        return $this->hasMany('App\Student');
+        return $this->hasMany('App\Student', 'group', 'id');
     }
 
     /**
@@ -48,7 +49,7 @@ class group extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function professor() {
-        return $this->belongsTo('App\Professor');
+        return $this->belongsTo('App\Professor', 'tutor', 'id');
     }
 
     /**
@@ -66,6 +67,6 @@ class group extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function subjects() {
-        return $this->hasMany('App\Subject');
+        return $this->hasMany('App\Subject', 'group_id', 'id');
     }
 }

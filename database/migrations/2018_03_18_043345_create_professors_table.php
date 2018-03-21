@@ -53,11 +53,11 @@ class CreateProfessorsTable extends Migration
             $table->string('manager', 30)->nullable()->default(NULL);
             $table->date('expire_date')->nullable()->default(NULL);
             $table->string('password', 100);
-            $table->string('name', 30);
+            $table->string('name', 60);
             $table->char('phone', 11);
             $table->string('email', 50);
             $table->string('office', 30);
-            $table->string('face_photo', 40)->nullable()->default(NULL);
+            $table->string('face_photo', 40)->default("");
 
             // 02. 제약조건 정의
             $table->primary('id');
