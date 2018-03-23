@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class group extends Model {
+class Group extends Model {
     // 01. 멤버 변수 설정
     public $timestamps  = false;
 

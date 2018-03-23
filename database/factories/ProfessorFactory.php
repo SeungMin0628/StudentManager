@@ -18,6 +18,6 @@ $factory->define(App\Professor::class, function (Faker $faker) {
         'phone'         => "01012345678",
         'email'         => $faker->unique()->safeEmail,
         'office'        => "본관 100호",
-        'face_photo'    => null
+        'face_photo'    => ""
     ];
 });

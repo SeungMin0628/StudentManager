@@ -9,16 +9,7 @@ class StudentsTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
-        //
-
-        $groups = App\Group::all();
-
-        $groups->each(function ($group) {
-            $group->students()->save(
-                factory(App\Student::class, 20)->make()
-            );
-        });
+    public function run() {
+        factory(App\Student::class, 60)->create();
     }
 }

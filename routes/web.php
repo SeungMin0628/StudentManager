@@ -35,6 +35,11 @@ Route::post('/login', [
  * 02. 학생 관련 기능 라우팅
  */
 
+Route::post('/check/student', [
+    'as'    => 'student.check',
+    'uses'  => 'StudentController@check'
+]);
+
 Route::post('/store/student', [
     'as'    => 'student.store',
     'uses'  => 'StudentController@store'

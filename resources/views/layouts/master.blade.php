@@ -14,6 +14,14 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ $title }}</title>
+    <style type="text/css">
+        .footer {
+            position:       absolute;
+            bottom:         0;
+            width:          100%;
+            height:         70px;
+        }
+    </style>
     @yield('head')
 </head>
 <body>
@@ -23,8 +31,10 @@
     <section>
         @yield('body.section')
     </section>
-    <footer>
-        @yield('body.footer')
+    <footer class="footer">
+        {{--@yield('body.footer')--}}
+        @include('partials.footer')
     </footer>
+    @yield('body.out')
 </body>
 </html>
