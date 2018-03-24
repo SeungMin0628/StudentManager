@@ -12,11 +12,13 @@
     <form action="{{ route('student.store') }}" method="post">
         {!! csrf_field() !!}
 
-        <div class="form-group {{ $errors->has('std_id') ? 'has-error' : '' }}">
+        <div class="form-group {{ $errors->has('std_id') || $errors->has('std_id_check') ? 'has-error' : '' }}">
             <label for="std_id">학번</label>
             <input type="text" id="std_id" name="std_id" required placeholder="1234567" value="{{ old('std_id') }}" class="form-control">
-            <input type="button" id="std_id_check" value="확인">
+            <input type="button" id="std_id_check_button" value="확인">
+            <input type="hidden" id="std_id_check" name="std_id_check" value="0">
             {!! $errors->first('std_id', '<span class="form-error">:message</span>') !!}
+            {!! $errors->first('std_id_check', '<span class="form-error">:message</span>') !!}
         </div>
 
         <div class="form-group {{ $errors->has('name' ? 'has-error' : '') }}">
@@ -52,7 +54,7 @@
         <div><input type="submit" value="회원가입"></div>
     </form>
 @endsection
-@section('body.out')
+@section('script')
     <script language="JavaScript">
         /**
          * 함수명:                         x
@@ -75,7 +77,7 @@
          * 반환값
          * null
          */
-        document.getElementById('std_id_check').addEventListener('click', function() {
+        document.getElementById('std_id_check_button').addEventListener('click', function() {
             // 01. 웹 브라우저에 따른 AJAX 객체 할당
             let requestObj  = null;
             let url         = '{{ route('student.check') }}';
@@ -104,6 +106,7 @@
                     } else if(message === '') {
 
                     } else {
+                        document.getElementById('std_id_check').setAttribute('value', "1");
                         inputStdId.setAttribute('readonly', 'readonly');
                         inputName.value = message;
                     }

@@ -22,19 +22,20 @@
             height:         70px;
         }
     </style>
-    @yield('head')
+    @yield('style')
 </head>
 <body>
     <header>
         @yield('body.header')
     </header>
     <section>
+        @include('flash::message')
         @yield('body.section')
     </section>
     <footer class="footer">
         {{--@yield('body.footer')--}}
         @include('partials.footer')
     </footer>
-    @yield('body.out')
+    @yield('script')
 </body>
 </html>

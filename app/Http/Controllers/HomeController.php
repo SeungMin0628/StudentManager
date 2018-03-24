@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use function Symfony\Component\HttpKernel\Tests\Controller\controller_function;
+use function Symfony\Component\HttpKernel\Tests\controller_func;
 
 /**
  * 클래스명:                       HomeController
@@ -131,6 +133,15 @@ class HomeController extends Controller
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function login(Request $request) {
-        return '<h1>로그인</h1>';
+        // 01. 로그인 유형 추출
+        $type = $request->type;
+
+        if ($type == 'student') {
+
+        } else if ($type == 'professor') {
+
+        } else {
+
+        }
     }
 }
