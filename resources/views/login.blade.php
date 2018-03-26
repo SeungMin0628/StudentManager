@@ -14,20 +14,24 @@
         <div>
             <div>
                 <label for="student">학생</label>
-                <input type="radio" name="type" value="student" id="student">
+                <input type="radio" name="type" value="{{ $user_type['student'] }}" id="student" required>
+                {!! $errors->first('student', '<span class="form-error">:message</span>') !!}
             </div>
             <div>
                 <label for="professor">교수</label>
-                <input type="radio" name="type" value="professor" id="professor">
+                <input type="radio" name="type" value="{{ $user_type['professor'] }}" id="professor">
+                {!! $errors->first('professor', '<span class="form-error">:message</span>') !!}
             </div>
         </div>
         <div>
             <label for="id">아이디</label>
-            <input type="text" name="id" id="id" value="{{ old('id') }}">
+            <input type="text" name="id" id="id" value="{{ old('id') }}" required>
+            {!! $errors->first('id', '<span class="form-error">:message</span>') !!}
         </div>
         <div>
             <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password">
+            <input type="password" id="password" name="password" required>
+            {!! $errors->first('password', '<span class="form-error">:message</span>') !!}
         </div>
         <div>
             <button type="submit">Login</button>

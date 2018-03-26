@@ -10,8 +10,10 @@
 @extends('layouts.join')
 @section('join.form')
     <form action="{{ route('student.store') }}" method="post">
+        {{-- CSRF 공격 방지를 위한 필드 생성. 절대 삭제하지 말 것! --}}
         {!! csrf_field() !!}
 
+        {{-- 학번 입력 필드 --}}
         <div class="form-group {{ $errors->has('std_id') || $errors->has('std_id_check') ? 'has-error' : '' }}">
             <label for="std_id">학번</label>
             <input type="text" id="std_id" name="std_id" required placeholder="1234567" value="{{ old('std_id') }}" class="form-control">
@@ -53,6 +55,7 @@
 
         <div><input type="submit" value="회원가입"></div>
     </form>
+    <div><a href="{{route('home.index')}}">메인 페이지로</a></div>
 @endsection
 @section('script')
     <script language="JavaScript">
@@ -65,14 +68,11 @@
          * null
          *
          * 지역변수 목록
-         * requestObj(Object):
-         *              AJAX 통신에 사용하는 객체. 웹 브라우저에 따라 다르게 할당된다.
-         * url(string):
-         *              메시지를 전송하는 도착지
-         * sendMessage(string):
-         *              송신 메시지
-         * inputStdId(Element):
-         *              학번 입력 INPUT Element
+         * requestObj(Object):              AJAX 통신에 사용하는 객체. 웹 브라우저에 따라 다르게 할당된다.
+         * url(string):                     메시지를 전송하는 도착지
+         * sendMessage(string):             송신 메시지
+         * inputStdId(Element):             학번 INPUT Text Element
+         * inputName(Element):              학생 이름 INPUT Text Element
          *
          * 반환값
          * null

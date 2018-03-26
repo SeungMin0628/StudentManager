@@ -14,7 +14,7 @@ class StudentController extends Controller
     // 03. 멤버 메서드 정의
     /**
      * 함수명:                         index
-     * 함수 설명:                      학생이 로그인했을 때 가장 먼저 보는 메인 페이지
+     * 함수 설명:                      학생이 로그인했을 때 가장 먼저 보는 메인 페이지를 출력
      * 만든날:                         2018년 3월 16일
      *
      * 매개변수 목록
@@ -28,6 +28,11 @@ class StudentController extends Controller
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
+        $data = [
+            'title'     => 'student: main'
+        ];
+
+        return view('student_main', $data);
     }
 
     /**
@@ -56,13 +61,7 @@ class StudentController extends Controller
             'email'             => 'required|email',
             'phone'             => 'required|digits:11'
         ];
-
-        $validator = \Validator::make($request->all(), $rules);
-
-        // 검증 실패 시 로직 종료
-        if($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        $this->validate($request, $rules);
 
         // 02. 학생 데이터 입력
         $student = \App\Student::find($request->std_id);
@@ -76,7 +75,8 @@ class StudentController extends Controller
             return back()->with('flash_message', '에러: 회원가입 실패')->withInput();
         }
 
-        return redirect(route('home.index'))->with('flash_message', '회원가입 완료!');
+        flash('회원가입 완료!');
+        return redirect(route('home.index'));
     }
 
     /**
@@ -97,34 +97,24 @@ class StudentController extends Controller
         // 01. 변수 설정
         $reqMsg     = '';
         $input_id   = $request->post('std_id');
-        $pattern    = "/[0-9]/";
 
-        try {
-            // 02. 입력값 유효성 검사
-            if(strlen($input_id) != self::STD_ID_DIGITS || !preg_match($pattern, $input_id)) {
-                throw new Exception();
-            }
+        // 02. 해당 학번의 가입 여부 조회
+        $student = \App\Student::find($input_id);
 
-            // 03. 해당 학번의 가입 여부 조회
-            $student = \App\Student::find($input_id);
-
-            if (is_null($student)) {
-                throw new Exception();
-            } else if($student->password != "") {
-                $reqMsg = "EXISTS";
-            } else {
-                $reqMsg = $student->name;
-            }
-        } catch(Exception $e) {
+        if (is_null($student)) {
             $reqMsg = "FALSE";
-        } finally {
-            return response()->json(['msg' => $reqMsg], 200);
+        } else if($student->password != "") {
+            $reqMsg = "EXISTS";
+        } else {
+            $reqMsg = $student->name;
         }
+
+        return response()->json(['msg' => $reqMsg], 200);
     }
 
     /**
      * 함수명:                         login
-     * 함수 설명:                      아이디와 비밀번호를 받아 학생 로그인을 실행
+     * 함수 설명:                      아이디와 비밀번호를 받아 학생 로그인 알고리즘을 실행
      * 만든날:                         2018년 3월 24일
      *
      * 매개변수 목록
@@ -135,9 +125,28 @@ class StudentController extends Controller
      * null
      *
      * 반환값
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function login($argId, $argPw) {
+        // 01. 입력된 아이디를 조회
+        $student = \App\Student::find($argId);
 
+        // 02. 조회된 학생 계정의 유효성 검증
+
+        // 등록되지 않은 학생
+        if($student->password == "") {
+            flash()->warning('가입절차를 거치지 않은 학번입니다. 먼저 회원가입을 해주세요.')->important();
+            return back();
+
+        // 로그인 조건 만족
+        } else if(password_verify($argPw, $student->password)) {
+            flash()->success("환영합니다, {$student->name}님!");
+            return redirect(route('student.index'));
+
+        // 잘못된 입력
+        } else {
+            flash()->warning('잘못된 아이디 혹은 비밀번호입니다.')->important();
+            return back();
+        }
     }
 }

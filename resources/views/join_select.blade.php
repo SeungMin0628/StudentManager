@@ -9,7 +9,7 @@
 ?>
 @extends('layouts.join')
 @section('join.form')
-    <div><a href="{{ route('home.join').'/student' }}">학생</a></div>
-    <div><a href="{{ route('home.join').'/tutor' }}">지도교수</a></div>
-    <div><a href="{{ route('home.join').'/professor' }}">교과목교수</a></div>
+    <div><a href="{{ route('home.join')."/{$user_type['student']}"}}">학생</a></div>
+    <div><a href="{{ route('home.join')."/{$user_type['tutor']}" }}">지도교수</a></div>
+    <div><a href="{{ route('home.join')."/{$user_type['professor']}" }}">교과목교수</a></div>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use function Symfony\Component\HttpKernel\Tests\Controller\controller_function;
 use function Symfony\Component\HttpKernel\Tests\controller_func;
+use Whoops\Exception\ErrorException;
 
 /**
  * 클래스명:                       HomeController
@@ -23,6 +24,11 @@ use function Symfony\Component\HttpKernel\Tests\controller_func;
 class HomeController extends Controller
 {
     // 01. 멤버 변수 정의
+    const USER_TYPE = [
+        'student'       => 'student',
+        'tutor'         => 'tutor',
+        'professor'     => 'professor'
+    ];
 
     // 02. 생성자 정의
 
@@ -44,7 +50,8 @@ class HomeController extends Controller
      */
     public function index() {
         $data = [
-            'title' => 'home'
+            'title'         => 'home',
+            'user_type'     => self::USER_TYPE
         ];
 
         return view('login', $data);
@@ -66,7 +73,8 @@ class HomeController extends Controller
      */
     public function join() {
         $data = [
-            'title' => 'join: select type'
+            'title'     => 'join: select type',
+            'user_type' => self::USER_TYPE
         ];
 
         return view('join_select', $data);
@@ -78,7 +86,7 @@ class HomeController extends Controller
      * 만든날:                         2018년 3월 16일
      *
      * 매개변수 목록
-     * @param $joinType:               회원가입 유형을 정의
+     * @param $joinType :               회원가입 유형을 정의
      *
      * 지역변수 목록
      * $data(array):                   View 단에 전달하는 매개인자를 저장하는 배열
@@ -86,34 +94,32 @@ class HomeController extends Controller
      *      $type(string):             현재 회원가입 유형을 알림
      *
      * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
+     * 예외처리
+     * @throws ErrorException
      */
     public function setJoinForm($joinType) {
-        try {
-            $data = array();
+        $data = array();
 
-            switch ($joinType) {
-                case 'student':
-                    $data['title']  = 'join : student';
-                    $data['type']   = '학생';
+        switch ($joinType) {
+            case self::USER_TYPE['student']:
+                $data['title'] = 'join : student';
+                $data['type'] = '학생';
 
-                    return view('join_student', $data);
-                case 'tutor':
-                    $data['title']  = 'join : tutor';
-                    $data['type']   = '지도교수';
+                return view('join_student', $data);
+            case self::USER_TYPE['tutor']:
+                $data['title'] = 'join : tutor';
+                $data['type'] = '지도교수';
 
-                    return view('join_tutor', $data);
-                case 'professor':
-                    $data['title']  = 'join : professor';
-                    $data['type']   = '교과목 교수';
+                return view('join_tutor', $data);
+            case self::USER_TYPE['professor']:
+                $data['title'] = 'join : professor';
+                $data['type'] = '교과목 교수';
 
-                    return view('join_tutor', $data);
-                default:
-                    throw new Exception();
-            }
-        } catch(Exception $e) {
-            echo "<script>alert('허가되지 않은 접근');</script>";
-            redirect('home.index');
+                return view('join_tutor', $data);
+            default:
+                throw new ErrorException();
         }
     }
     /**
@@ -133,15 +139,34 @@ class HomeController extends Controller
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function login(Request $request) {
-        // 01. 로그인 유형 추출
-        $type = $request->type;
+        // 01. 로그인 관련 데이터 추출
+        $type   = $request->type;
+        $id     = $request->id;
+        $pw     = $request->password;
 
+        // 02. 로그인 유형에 따른 입력 데이터 검증
+        $typeValue_student      = self::USER_TYPE['student'];
+        $typeValue_professor    = self::USER_TYPE['professor'];
+        $rules = [
+            'type'      => "required|in:{$typeValue_student},{$typeValue_professor}",
+            'password'  => "required"
+        ];
+        switch($type) {
+            case self::USER_TYPE['student']:
+                $rules['id'] = 'required|digits:7|exists:students,id';
+                break;
+            case self::USER_TYPE['professor']:
+                $rules['id'] = 'required|exists:professors,id';
+                break;
+        }
+        $this->validate($request, $rules);
+
+
+        // 03. 로그인 유형에 따른 컨트롤러 라우팅
         if ($type == 'student') {
-
+            return app('App\Http\Controllers\StudentController')->login($id, $pw);
         } else if ($type == 'professor') {
-
-        } else {
-
+            return app('App\Http\Controllers\ProfessorController')->login($id, $pw);
         }
     }
 }
