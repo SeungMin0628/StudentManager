@@ -8,5 +8,6 @@
 ?>
 @extends('layouts.master')
 @section('body.header')
-   @include('partials.student_toolbar')
+    @include('partials.student_toolbar')
+    @include('partials.logout')
 @endsection

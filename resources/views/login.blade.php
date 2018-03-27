@@ -13,30 +13,30 @@
         {!! csrf_field() !!}
         <div>
             <div>
-                <label for="student">학생</label>
+                <label for="student">@lang('home.student')</label>
                 <input type="radio" name="type" value="{{ $user_type['student'] }}" id="student" required>
                 {!! $errors->first('student', '<span class="form-error">:message</span>') !!}
             </div>
             <div>
-                <label for="professor">교수</label>
+                <label for="professor">@lang('home.professor')</label>
                 <input type="radio" name="type" value="{{ $user_type['professor'] }}" id="professor">
                 {!! $errors->first('professor', '<span class="form-error">:message</span>') !!}
             </div>
         </div>
         <div>
-            <label for="id">아이디</label>
+            <label for="id">@lang('home.id')</label>
             <input type="text" name="id" id="id" value="{{ old('id') }}" required>
             {!! $errors->first('id', '<span class="form-error">:message</span>') !!}
         </div>
         <div>
-            <label for="password">비밀번호</label>
+            <label for="password">@lang('home.password')</label>
             <input type="password" id="password" name="password" required>
             {!! $errors->first('password', '<span class="form-error">:message</span>') !!}
         </div>
         <div>
-            <button type="submit">Login</button>
+            <button type="submit">@lang('home.login')</button>
         </div>
-        <div><a href="{{ route('home.join') }}">회원가입</a></div>
-        <div><a href="">아이디/비밀번호 찾기</a></div>
+        <div><a href="{{ route('home.join') }}">@lang('home.join')</a></div>
+        <div><a href="">@lang('home.forgot')</a></div>
     </form>
 @endsection

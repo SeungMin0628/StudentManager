@@ -30,13 +30,20 @@ Route::post('/login', [
     'uses'  => 'HomeController@login'
 ]);
 
+Route::get('/logout', [
+    'as'    => 'home.logout',
+    'uses'  => 'HomeController@logout'
+]);
+
+Route::get('language/{locale}', 'HomeController@setLanguage');
+
 
 /**
  * 02. 학생 관련 기능 라우팅
  */
 Route::post('/check/student', [
     'as'    => 'student.check',
-    'uses'  => 'StudentController@check'
+    'uses'  => 'StudentController@check_join'
 ]);
 
 Route::post('/store/student', [
@@ -47,4 +54,4 @@ Route::post('/store/student', [
 Route::get('/student', [
     'as'    => 'student.index',
     'uses'  => 'StudentController@index'
-]);
+])->middleware('check.login');

@@ -78,12 +78,14 @@
          * null
          */
         document.getElementById('std_id_check_button').addEventListener('click', function() {
-            // 01. 웹 브라우저에 따른 AJAX 객체 할당
+            // 01. 변수 정의
             let requestObj  = null;
             let url         = '{{ route('student.check') }}';
             let sendMessage = '';
             let inputStdId  = document.getElementById('std_id');
             let inputName   = document.getElementById('name');
+
+            // 웹 브라우저에 따른 AJAX 통신 객체 할당
             if(window.XMLHttpRequest) {
                 requestObj = new XMLHttpRequest();
             } else if(window.ActiveXObject) {
@@ -104,14 +106,14 @@
                         inputStdId.value = '';
                         inputName.value = '';
                     } else if(message === '') {
-
+                        /* 서버측의 응답 메시지가 없을 경우 */
                     } else {
                         document.getElementById('std_id_check').setAttribute('value', "1");
                         inputStdId.setAttribute('readonly', 'readonly');
                         inputName.value = message;
                     }
                 } else {
-
+                    /* 서버와의 통신 진행중... */
                 }
             };
 

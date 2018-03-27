@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Mockery\Exception;
 
-class StudentController extends Controller
-{
+class StudentController extends Controller {
     // 01. 멤버 변수
-    const STD_ID_DIGITS = 7;
+    const   STD_ID_DIGITS   = 7;
+    const   USER_TYPE       = \App\Http\Controllers\HomeController::USER_TYPE['student'];
 
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
@@ -28,6 +28,7 @@ class StudentController extends Controller
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
+        // 01. 현재 로그인 여부 검증
         $data = [
             'title'     => 'student: main'
         ];
@@ -72,7 +73,8 @@ class StudentController extends Controller
 
         // 저장 실패시 전 페이지로 돌아감
         if(!$student->save()) {
-            return back()->with('flash_message', '에러: 회원가입 실패')->withInput();
+            flash()->error('에러: 회원가입 실패!')->important();
+            return back();
         }
 
         flash('회원가입 완료!');
@@ -80,7 +82,7 @@ class StudentController extends Controller
     }
 
     /**
-     * 함수명:                         check
+     * 함수명:                         check_join
      * 함수 설명:                      사용자가 입력한 학번이 현재 회원가입된 학번인지 검증
      * 만든날:                         2018년 3월 23일
      *
@@ -93,7 +95,7 @@ class StudentController extends Controller
      * 반환값
      * @return \Illuminate\Http\JsonResponse
      */
-    public function check(Request $request) {
+    public function check_join(Request $request) {
         // 01. 변수 설정
         $reqMsg     = '';
         $input_id   = $request->post('std_id');
@@ -140,6 +142,14 @@ class StudentController extends Controller
 
         // 로그인 조건 만족
         } else if(password_verify($argPw, $student->password)) {
+            $user_type = self::USER_TYPE;
+            session([
+                'user' => [
+                    'type'  => $user_type,
+                    'info'  => $student
+                ]
+            ]);
+
             flash()->success("환영합니다, {$student->name}님!");
             return redirect(route('student.index'));
 

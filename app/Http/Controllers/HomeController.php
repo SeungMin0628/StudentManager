@@ -49,6 +49,13 @@ class HomeController extends Controller
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
+        // 01. 현재 로그인 여부 확인
+        if(session()->has('user')) {
+            $user_type = session()->get('user')['type'];
+            return redirect(route("{$user_type}.index"));
+        }
+
+        // 02. 데이터 바인딩
         $data = [
             'title'         => 'home',
             'user_type'     => self::USER_TYPE
@@ -168,5 +175,44 @@ class HomeController extends Controller
         } else if ($type == 'professor') {
             return app('App\Http\Controllers\ProfessorController')->login($id, $pw);
         }
+    }
+
+    /**
+     * 함수명:                         login
+     * 함수 설명:                      사용자가 작성한 로그인 양식을 받아, 회원 유형에 맞는 로그인 알고리즘을 실행
+     * 만든날:                         2018년 3월 18일
+     *
+     * 매개변수 목록
+     * @param $request:
+     *
+     * 지역변수 목록
+     * $data(array):                   View 단에 전달하는 매개인자를 저장하는 배열
+     *      $title(string):            HTML Title
+     *      $type(string):             현재 회원가입 유형을 알림
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function logout() {
+        if(session()->has('user')) {
+            session()->forget('user');
+            flash()->success('로그아웃 성공!');
+        }
+        return redirect(route('home.index'));
+    }
+
+    public function setLanguage($locale) {
+        // 01. 언어 설정
+        if(in_array($locale, config()->get('app.locales'))) {
+            //session()->put('')
+        }
+        app()->setLocale($locale);
+
+        flash()->success(app()->getLocale());
+        return redirect()->back();
+    }
+
+    public function nowLocale() {
+        return app()->getLocale();
     }
 }
