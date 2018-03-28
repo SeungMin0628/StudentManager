@@ -5,6 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Mockery\Exception;
 
+/**
+ * 클래스명:                       StudentController
+ * @package                        App\Http\Controllers
+ * 클래스 설명:                    학생이 사용하는 기능에 대해 정의하는 클래스
+ * 만든이:                         3-WDJ 8조 春目指す 1401213 이승민
+ * 만든날:                         2018년 3월 16일
+ *
+ * 생성자 매개변수 목록
+ *  null
+ *
+ * 멤버 메서드 목록
+ *
+ */
 class StudentController extends Controller {
     // 01. 멤버 변수
     const   STD_ID_DIGITS   = 7;
@@ -30,12 +43,13 @@ class StudentController extends Controller {
     public function index() {
         // 01. 현재 로그인 여부 검증
         $data = [
-            'title'     => 'student: main'
+            'title'     => __('page_title.student_index')
         ];
 
         return view('student_main', $data);
     }
 
+    // 03-01. 계정 관리
     /**
      * 함수명:                         store
      * 함수 설명:                      학생이 작성한 회원가입 양식을 검증하고 저장
@@ -73,11 +87,11 @@ class StudentController extends Controller {
 
         // 저장 실패시 전 페이지로 돌아감
         if(!$student->save()) {
-            flash()->error('에러: 회원가입 실패!')->important();
+            flash()->error(__('message.join_failed'))->important();
             return back();
         }
 
-        flash('회원가입 완료!');
+        flash(__('message.join_success'));
         return redirect(route('home.index'));
     }
 
@@ -137,7 +151,7 @@ class StudentController extends Controller {
 
         // 등록되지 않은 학생
         if($student->password == "") {
-            flash()->warning('가입절차를 거치지 않은 학번입니다. 먼저 회원가입을 해주세요.')->important();
+            flash()->warning(__('message.login_not_registered_std_id'))->important();
             return back();
 
         // 로그인 조건 만족
@@ -150,12 +164,12 @@ class StudentController extends Controller {
                 ]
             ]);
 
-            flash()->success("환영합니다, {$student->name}님!");
+            flash()->success(__('message.login_success', ['Name' => $student->name]));
             return redirect(route('student.index'));
 
         // 잘못된 입력
         } else {
-            flash()->warning('잘못된 아이디 혹은 비밀번호입니다.')->important();
+            flash()->warning(@lang('message.login_wrong_id_or_password'))->important();
             return back();
         }
     }

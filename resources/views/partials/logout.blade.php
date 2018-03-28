@@ -6,4 +6,4 @@
  * Time: 오후 12:32
  */
 ?>
-<div><a href="{{ route('home.logout') }}">로그아웃</a></div>
+<div><a href="{{ route('home.logout') }}">@lang('interface.logout')</a></div>

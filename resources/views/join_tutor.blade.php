@@ -61,7 +61,7 @@
     <script language="JavaScript">
         /**
          * 함수명:                         x
-         * 함수 설명:                      사용자가 입력한 학번의 사용 가능 여부를 조회
+         * 함수 설명:                      사용자가 입력한 아이디의 사용 가능 여부를 조회
          * 만든날:                         2018년 3월 23일
          *
          * 매개변수 목록
@@ -80,7 +80,7 @@
         document.getElementById('std_id_check_button').addEventListener('click', function() {
             // 01. 변수 정의
             let requestObj  = null;
-            let url         = '{{ route('student.check') }}';
+            let url         = '{{ route('professor.check_join') }}';
             let sendMessage = '';
             let inputStdId  = document.getElementById('std_id');
             let inputName   = document.getElementById('name');
@@ -123,8 +123,7 @@
             sendMessage += `&std_id=${std_id}`;
 
             // 04. 송신
-            requestObj.open('POST', url);
-            requestObj.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            requestObj.open('GET', url);
             requestObj.send(sendMessage);
         });
     </script>

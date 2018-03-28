@@ -8,7 +8,7 @@
 ?>
 @extends('layouts.master')
 @section('body.header')
-    <h1 align="left">회원가입</h1>
+    <h1 align="left">@lang('interface.join')</h1>
     <h1 align="right">
         @if(isset($type))
             {{ $type }}

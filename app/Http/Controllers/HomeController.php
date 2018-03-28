@@ -57,13 +57,14 @@ class HomeController extends Controller
 
         // 02. 데이터 바인딩
         $data = [
-            'title'         => 'home',
+            'title'         => __('page_title.home_index'),
             'user_type'     => self::USER_TYPE
         ];
 
         return view('login', $data);
     }
 
+    // 03-01. 회원 관리
     /**
      * 함수명:                         join
      * 함수 설명:                      회원가입의 유형을 선택하는 페이지를 출력
@@ -80,7 +81,7 @@ class HomeController extends Controller
      */
     public function join() {
         $data = [
-            'title'     => 'join: select type',
+            'title'     => __('page_title.home_join_select'),
             'user_type' => self::USER_TYPE
         ];
 
@@ -111,24 +112,25 @@ class HomeController extends Controller
 
         switch ($joinType) {
             case self::USER_TYPE['student']:
-                $data['title'] = 'join : student';
-                $data['type'] = '학생';
+                $data['title']  = __('page_title.home_join_student');
+                $data['type']   = __('account.student');
 
                 return view('join_student', $data);
             case self::USER_TYPE['tutor']:
-                $data['title'] = 'join : tutor';
-                $data['type'] = '지도교수';
+                $data['title']  = __('page_title.home_join_tutor');
+                $data['type']   = __('account.prof_tutor');
 
                 return view('join_tutor', $data);
             case self::USER_TYPE['professor']:
-                $data['title'] = 'join : professor';
-                $data['type'] = '교과목 교수';
+                $data['title']  = __('page_title.home_join_professor');
+                $data['type']   = __('account.prof_general');
 
                 return view('join_tutor', $data);
             default:
                 throw new ErrorException();
         }
     }
+
     /**
      * 함수명:                         login
      * 함수 설명:                      사용자가 작성한 로그인 양식을 받아, 회원 유형에 맞는 로그인 알고리즘을 실행
@@ -178,41 +180,66 @@ class HomeController extends Controller
     }
 
     /**
-     * 함수명:                         login
-     * 함수 설명:                      사용자가 작성한 로그인 양식을 받아, 회원 유형에 맞는 로그인 알고리즘을 실행
-     * 만든날:                         2018년 3월 18일
+     * 함수명:                         logout
+     * 함수 설명:                      현재 사용자의 로그아웃을 실행
+     * 만든날:                         2018년 3월 27일
      *
      * 매개변수 목록
-     * @param $request:
+     * null
      *
      * 지역변수 목록
-     * $data(array):                   View 단에 전달하는 매개인자를 저장하는 배열
-     *      $title(string):            HTML Title
-     *      $type(string):             현재 회원가입 유형을 알림
+     * null
      *
      * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return                         \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|void
      */
     public function logout() {
         if(session()->has('user')) {
             session()->forget('user');
-            flash()->success('로그아웃 성공!');
+            flash()->success(__('message.logout_success'));
         }
         return redirect(route('home.index'));
     }
 
+    // 03-02. 다국어 지원
+    /**
+     * 함수명:                         setLanguage
+     * 함수 설명:                      언어 변경 요청을 받아, 제공하는 언어 패키지를 변경
+     * 만든날:                         2018년 3월 27일
+     *
+     * 매개변수 목록
+     * @param $locale:                 View 단에서 변경을 요청한 언어 코드
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                          \Illuminate\Http\RedirectResponse
+     */
     public function setLanguage($locale) {
         // 01. 언어 설정
         if(in_array($locale, config()->get('app.locales'))) {
-            //session()->put('')
+            session()->put('locale', $locale);
         }
         app()->setLocale($locale);
 
-        flash()->success(app()->getLocale());
         return redirect()->back();
     }
 
-    public function nowLocale() {
+    /**
+     * 함수명:                         getLanguage
+     * 함수 설명:                      현재 설정된 언어 코드를 반환
+     * 만든날:                         2018년 3월 27일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * @return string
+     */
+    public function getLanguage() {
         return app()->getLocale();
     }
 }

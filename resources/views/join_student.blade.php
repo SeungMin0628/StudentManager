@@ -15,7 +15,7 @@
 
         {{-- 학번 입력 필드 --}}
         <div class="form-group {{ $errors->has('std_id') || $errors->has('std_id_check') ? 'has-error' : '' }}">
-            <label for="std_id">학번</label>
+            <label for="std_id">@lang('account.std_id')</label>
             <input type="text" id="std_id" name="std_id" required placeholder="1234567" value="{{ old('std_id') }}" class="form-control">
             <input type="button" id="std_id_check_button" value="확인">
             <input type="hidden" id="std_id_check" name="std_id_check" value="0">
@@ -24,38 +24,38 @@
         </div>
 
         <div class="form-group {{ $errors->has('name' ? 'has-error' : '') }}">
-            <label for="name">이름</label>
+            <label for="name">@lang('account.name')</label>
             <input type="text" id="name" name="name" readonly>
             {!! $errors->first('name', '<span class="form-error">:message</span>') !!}
         </div>
 
         <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
-            <label for="password">비밀번호</label>
+            <label for="password">@lang('account.password')</label>
             <input type="password" id="password" name="password" required>
             {!! $errors->first('password', '<span class="form-error">:message</span>') !!}
         </div>
 
         <div class="form-group {{ $errors->has('check_password' ? 'has-error' : '') }}">
-            <label for="check_password">비밀번호 확인</label>
-            <input type="password" id="check_password" name="check_password" placeholder="비밀번호 한 번 더 입력" required>
+            <label for="check_password">@lang('account.check_password')</label>
+            <input type="password" id="check_password" name="check_password" placeholder="@lang('interface.check_password')" required>
             {!! $errors->first('check_password', '<span class="form-error">:message</span>') !!}
         </div>
 
         <div class="form-group {{ $errors->has('email' ? 'has-error' : '') }}">
-            <label for="email">이메일</label>
+            <label for="email">@lang('account.email')</label>
             <input type="email" id="email" name="email" required placeholder="example@example.com">
             {!! $errors->first('email', '<span class="form-error">:message</span>') !!}
         </div>
 
         <div class="form-group {{ $errors->has('phone' ? 'has-error' : '') }}">
-            <label for="phone">전화번호</label>
-            <input type="tel" id="phone" name="phone" placeholder="'-'없이 입력: 01012345678" required>
+            <label for="phone">@lang('account.phone')</label>
+            <input type="tel" id="phone" name="phone" placeholder="@lang('interface.phone')" required>
             {!! $errors->first('phone', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div><input type="submit" value="회원가입"></div>
+        <div><input type="submit" value="@lang('interface.join')"></div>
     </form>
-    <div><a href="{{route('home.index')}}">메인 페이지로</a></div>
+    <div><a href="{{route('home.index')}}">@lang('interface.link_main_page')</a></div>
 @endsection
 @section('script')
     <script language="JavaScript">
@@ -80,7 +80,7 @@
         document.getElementById('std_id_check_button').addEventListener('click', function() {
             // 01. 변수 정의
             let requestObj  = null;
-            let url         = '{{ route('student.check') }}';
+            let url         = '{{ route('student.check_join') }}';
             let sendMessage = '';
             let inputStdId  = document.getElementById('std_id');
             let inputName   = document.getElementById('name');
@@ -98,11 +98,11 @@
                     let message = JSON.parse(requestObj.responseText)['msg'];
 
                     if(message === 'EXISTS') {
-                        alert('이미 가입된 학번입니다.');
+                        alert('@lang('message.join_joined_std_id')');
                         inputStdId.value = '';
                         inputName.value = '';
                     } else if (message === 'FALSE') {
-                        alert('잘못된 입력입니다.');
+                        alert('@lang('message.wrong_input')');
                         inputStdId.value = '';
                         inputName.value = '';
                     } else if(message === '') {
