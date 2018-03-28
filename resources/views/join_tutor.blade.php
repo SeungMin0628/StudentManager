@@ -1,61 +1,67 @@
 <?php
 /**
  * Created by PhpStorm.
- * 페이지 설명: 학생 회원가입 페이지
+ * 페이지 설명: 지도교수 회원가입 페이지
  * User: Seungmin Lee
- * Date: 2018-03-16
+ * Date: 2018-03-28
  * Time: 오후 7:25
  */
 ?>
 @extends('layouts.join')
 @section('join.form')
-    <form action="{{ route('student.store') }}" method="post">
+    <form action="{{ route('tutor.store') }}" method="post">
         {{-- CSRF 공격 방지를 위한 필드 생성. 절대 삭제하지 말 것! --}}
         {!! csrf_field() !!}
 
         {{-- 학번 입력 필드 --}}
-        <div class="form-group {{ $errors->has('std_id') || $errors->has('std_id_check') ? 'has-error' : '' }}">
-            <label for="std_id">학번</label>
-            <input type="text" id="std_id" name="std_id" required placeholder="1234567" value="{{ old('std_id') }}" class="form-control">
-            <input type="button" id="std_id_check_button" value="확인">
-            <input type="hidden" id="std_id_check" name="std_id_check" value="0">
-            {!! $errors->first('std_id', '<span class="form-error">:message</span>') !!}
-            {!! $errors->first('std_id_check', '<span class="form-error">:message</span>') !!}
+        <div class="form-group {{ $errors->has('id') || $errors->has('id_check') ? 'has-error' : '' }}">
+            <label for="std_id">@lang('account.id')</label>
+            <input type="text" id="id" name="id" required value="{{ old('id') }}">
+            <input type="button" id="id_check_button" value="@lang('interface.check')">
+            <input type="hidden" id="id_check" name="id_check" value="0">
+            {!! $errors->first('id', '<span class="form-error">:message</span>') !!}
+            {!! $errors->first('id_check', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div class="form-group {{ $errors->has('name' ? 'has-error' : '') }}">
-            <label for="name">이름</label>
-            <input type="text" id="name" name="name" readonly>
+        <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+            <label for="name">@lang('account.name')</label>
+            <input type="text" id="name" name="name" required>
             {!! $errors->first('name', '<span class="form-error">:message</span>') !!}
         </div>
 
         <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
-            <label for="password">비밀번호</label>
+            <label for="password">@lang('account.password')</label>
             <input type="password" id="password" name="password" required>
             {!! $errors->first('password', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div class="form-group {{ $errors->has('check_password' ? 'has-error' : '') }}">
-            <label for="check_password">비밀번호 확인</label>
-            <input type="password" id="check_password" name="check_password" placeholder="비밀번호 한 번 더 입력" required>
+        <div class="form-group {{ $errors->has('check_password') ? 'has-error' : '' }}">
+            <label for="check_password">@lang('account.check_password')</label>
+            <input type="password" id="check_password" name="check_password" placeholder="@lang('interface.check_password')" required>
             {!! $errors->first('check_password', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div class="form-group {{ $errors->has('email' ? 'has-error' : '') }}">
-            <label for="email">이메일</label>
+        <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
+            <label for="email">@lang('account.email')</label>
             <input type="email" id="email" name="email" required placeholder="example@example.com">
             {!! $errors->first('email', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div class="form-group {{ $errors->has('phone' ? 'has-error' : '') }}">
-            <label for="phone">전화번호</label>
-            <input type="tel" id="phone" name="phone" placeholder="'-'없이 입력: 01012345678" required>
+        <div class="form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
+            <label for="phone">@lang('account.phone')</label>
+            <input type="tel" id="phone" name="phone" placeholder="@lang('interface.phone')" required>
             {!! $errors->first('phone', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div><input type="submit" value="회원가입"></div>
+        <div class="form-group {{ $errors->has('office') ? 'has-error' : '' }}">
+            <label for="office">@lang('account.office')</label>
+            <input type="text" id="office" name="office" required>
+            {!! $errors->first('office', '<span class="form-error">:message</span>') !!}
+        </div>
+
+        <div><input type="submit" value="@lang('interface.join')"></div>
     </form>
-    <div><a href="{{route('home.index')}}">메인 페이지로</a></div>
+    <div><a href="{{route('home.index')}}">@lang('interface.link_main_page')</a></div>
 @endsection
 @section('script')
     <script language="JavaScript">
@@ -77,13 +83,12 @@
          * 반환값
          * null
          */
-        document.getElementById('std_id_check_button').addEventListener('click', function() {
+        document.getElementById('id_check_button').addEventListener('click', function() {
             // 01. 변수 정의
             let requestObj  = null;
             let url         = '{{ route('professor.check_join') }}';
             let sendMessage = '';
-            let inputStdId  = document.getElementById('std_id');
-            let inputName   = document.getElementById('name');
+            let inputId     = document.getElementById('id');
 
             // 웹 브라우저에 따른 AJAX 통신 객체 할당
             if(window.XMLHttpRequest) {
@@ -97,20 +102,16 @@
                 if(requestObj.readyState === 4 && requestObj.status === 200) {
                     let message = JSON.parse(requestObj.responseText)['msg'];
 
-                    if(message === 'EXISTS') {
-                        alert('이미 가입된 학번입니다.');
-                        inputStdId.value = '';
-                        inputName.value = '';
-                    } else if (message === 'FALSE') {
-                        alert('잘못된 입력입니다.');
-                        inputStdId.value = '';
-                        inputName.value = '';
+                    if(message === 'FALSE') {
+                        // 이미 존재하는 아이디인 경우 => 경고 메시지 출력
+                        alert('@lang('message.join_joined_prof_id')');
+                        inputId.value = '';
                     } else if(message === '') {
-                        /* 서버측의 응답 메시지가 없을 경우 */
+                        // 서버측의 응답 메시지가 없을 경우
                     } else {
-                        document.getElementById('std_id_check').setAttribute('value', "1");
-                        inputStdId.setAttribute('readonly', 'readonly');
-                        inputName.value = message;
+                        // 사용가능한 아이디인 경우 => 아이디 확인 여부를 TRUE
+                        alert('@lang('message.join_usable_id')');
+                        document.getElementById('id_check').setAttribute('value', '1');
                     }
                 } else {
                     /* 서버와의 통신 진행중... */
@@ -118,12 +119,13 @@
             };
 
             // 03. 송신문 정의
-            let std_id = inputStdId.value;
+            let id = inputId.value;
             sendMessage += '_token={{ csrf_token() }}';
-            sendMessage += `&std_id=${std_id}`;
+            sendMessage += `&id=${id}`;
 
             // 04. 송신
-            requestObj.open('GET', url);
+            requestObj.open('POST', url, true);
+            requestObj.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             requestObj.send(sendMessage);
         });
     </script>

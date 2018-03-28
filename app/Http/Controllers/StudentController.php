@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Student;
+use App\Http\Controllers\HomeController;
 use Illuminate\Http\Request;
 use Mockery\Exception;
 
@@ -21,7 +23,7 @@ use Mockery\Exception;
 class StudentController extends Controller {
     // 01. 멤버 변수
     const   STD_ID_DIGITS   = 7;
-    const   USER_TYPE       = \App\Http\Controllers\HomeController::USER_TYPE['student'];
+    const   USER_TYPE       = HomeController::USER_TYPE['student'];
 
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
@@ -41,7 +43,6 @@ class StudentController extends Controller {
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
-        // 01. 현재 로그인 여부 검증
         $data = [
             'title'     => __('page_title.student_index')
         ];
@@ -79,7 +80,7 @@ class StudentController extends Controller {
         $this->validate($request, $rules);
 
         // 02. 학생 데이터 입력
-        $student = \App\Student::find($request->std_id);
+        $student = Student::find($request->std_id);
 
         $student->password  = password_hash($request->password, PASSWORD_DEFAULT);
         $student->email     = $request->email;
@@ -101,7 +102,7 @@ class StudentController extends Controller {
      * 만든날:                         2018년 3월 23일
      *
      * 매개변수 목록
-     * @param Request $request         요청 객체
+     * @param $request:                요청 객체
      *
      * 지역변수 목록
      * null
@@ -115,7 +116,7 @@ class StudentController extends Controller {
         $input_id   = $request->post('std_id');
 
         // 02. 해당 학번의 가입 여부 조회
-        $student = \App\Student::find($input_id);
+        $student = Student::find($input_id);
 
         if (is_null($student)) {
             $reqMsg = "FALSE";
@@ -145,7 +146,7 @@ class StudentController extends Controller {
      */
     public function login($argId, $argPw) {
         // 01. 입력된 아이디를 조회
-        $student = \App\Student::find($argId);
+        $student = Student::find($argId);
 
         // 02. 조회된 학생 계정의 유효성 검증
 

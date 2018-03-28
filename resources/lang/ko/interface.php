@@ -13,6 +13,7 @@ return [
     "join"              => "회원가입",
     "forgot"            => "아이디/비밀번호 찾기",
     "link_main_page"    => "메인 페이지로",
+    "check"             => "확인",
 
     // 로그인/회원가입 보조 메시지
     "check_password"    => "비밀번호 한 번 더 입력",

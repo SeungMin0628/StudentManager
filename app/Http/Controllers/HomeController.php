@@ -225,21 +225,4 @@ class HomeController extends Controller
 
         return redirect()->back();
     }
-
-    /**
-     * 함수명:                         getLanguage
-     * 함수 설명:                      현재 설정된 언어 코드를 반환
-     * 만든날:                         2018년 3월 27일
-     *
-     * 매개변수 목록
-     * null
-     *
-     * 지역변수 목록
-     * null
-     *
-     * @return string
-     */
-    public function getLanguage() {
-        return app()->getLocale();
-    }
 }

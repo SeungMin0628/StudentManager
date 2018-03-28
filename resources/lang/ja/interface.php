@@ -13,6 +13,7 @@ return [
     "join"              => "新規登録",
     "forgot"            => "ログインができない方",
     "link_main_page"    => "ホームページへ",
+    "check"             => "確認",
 
     // 로그인/회원가입 보조 메시지
     "check_password"    => "パスワードを確認してください。",
@@ -21,5 +22,5 @@ return [
     // 언어설정
     "language"          => "言語(Language)",
     "korean"            => "한국어(韓国語)",
-    "japanese"          => "日本語"
+    "japanese"          => "日本語",
 ];

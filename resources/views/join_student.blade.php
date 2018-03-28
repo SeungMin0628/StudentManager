@@ -16,14 +16,14 @@
         {{-- 학번 입력 필드 --}}
         <div class="form-group {{ $errors->has('std_id') || $errors->has('std_id_check') ? 'has-error' : '' }}">
             <label for="std_id">@lang('account.std_id')</label>
-            <input type="text" id="std_id" name="std_id" required placeholder="1234567" value="{{ old('std_id') }}" class="form-control">
-            <input type="button" id="std_id_check_button" value="확인">
+            <input type="text" id="std_id" name="std_id" required placeholder="1234567" value="{{ old('std_id') }}">
+            <input type="button" id="std_id_check_button" value="@lang('interface.check')">
             <input type="hidden" id="std_id_check" name="std_id_check" value="0">
             {!! $errors->first('std_id', '<span class="form-error">:message</span>') !!}
             {!! $errors->first('std_id_check', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div class="form-group {{ $errors->has('name' ? 'has-error' : '') }}">
+        <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
             <label for="name">@lang('account.name')</label>
             <input type="text" id="name" name="name" readonly>
             {!! $errors->first('name', '<span class="form-error">:message</span>') !!}
@@ -35,19 +35,19 @@
             {!! $errors->first('password', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div class="form-group {{ $errors->has('check_password' ? 'has-error' : '') }}">
+        <div class="form-group {{ $errors->has('check_password') ? 'has-error' : '' }}">
             <label for="check_password">@lang('account.check_password')</label>
             <input type="password" id="check_password" name="check_password" placeholder="@lang('interface.check_password')" required>
             {!! $errors->first('check_password', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div class="form-group {{ $errors->has('email' ? 'has-error' : '') }}">
+        <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
             <label for="email">@lang('account.email')</label>
             <input type="email" id="email" name="email" required placeholder="example@example.com">
             {!! $errors->first('email', '<span class="form-error">:message</span>') !!}
         </div>
 
-        <div class="form-group {{ $errors->has('phone' ? 'has-error' : '') }}">
+        <div class="form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
             <label for="phone">@lang('account.phone')</label>
             <input type="tel" id="phone" name="phone" placeholder="@lang('interface.phone')" required>
             {!! $errors->first('phone', '<span class="form-error">:message</span>') !!}
@@ -123,7 +123,7 @@
             sendMessage += `&std_id=${std_id}`;
 
             // 04. 송신
-            requestObj.open('POST', url);
+            requestObj.open('POST', url, true);
             requestObj.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             requestObj.send(sendMessage);
         });
