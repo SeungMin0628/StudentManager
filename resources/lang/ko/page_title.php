@@ -12,7 +12,7 @@ return [
     'home_join_student'     => '회원가입: 학생',
     'home_join_tutor'       => '회원가입: 지도교수',
     'home_join_professor'   => '회원가입: 교과목교수',
-    'home_forgot'           => '아이디/비밀번호 찾기',
+    'home_forgot_select'    => '회원정보찾기: 유형 선택',
 
     // 02. 학생 컨트롤러에서 제공하는 페이지
     'student_index'         => '학생: 홈페이지',

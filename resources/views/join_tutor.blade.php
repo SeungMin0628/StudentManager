@@ -86,7 +86,7 @@
         document.getElementById('id_check_button').addEventListener('click', function() {
             // 01. 변수 정의
             let requestObj  = null;
-            let url         = '{{ route('professor.check_join') }}';
+            let url         = '{{ route('tutor.check_join') }}';
             let sendMessage = '';
             let inputId     = document.getElementById('id');
 
@@ -104,11 +104,11 @@
 
                     if(message === 'FALSE') {
                         // 이미 존재하는 아이디인 경우 => 경고 메시지 출력
-                        alert('@lang('message.join_joined_prof_id')');
+                        alert('@lang('message.join_unusable_prof_id')');
                         inputId.value = '';
                     } else if(message === '') {
                         // 서버측의 응답 메시지가 없을 경우
-                    } else {
+                    } else if(message === 'TRUE') {
                         // 사용가능한 아이디인 경우 => 아이디 확인 여부를 TRUE
                         alert('@lang('message.join_usable_id')');
                         document.getElementById('id_check').setAttribute('value', '1');

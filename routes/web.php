@@ -13,65 +13,142 @@
 /**
  *  01. 홈 화면 라우팅
  */
-// 전체 메인 페이지
-Route::get('/', [
-    'as'    =>'home.index',
-    'uses'  =>'HomeController@index'
-]);
+Route::name('home.')->group(function() {
 
-// 회원가입 페이지
-Route::get('/join', [
-   'as'     => 'home.join',
-   'uses'   => 'HomeController@join'
-]);
+    // 전체 메인 페이지
+    Route::get('/', [
+        'as'    => 'index',
+        'uses'  => 'HomeController@index'
+    ]);
+
+    // 회원가입 페이지
+    Route::get('/join', [
+        'as'    => 'join',
+        'uses'  => 'HomeController@join'
+    ]);
+
+    // 로그인 페이지
+    Route::post('/login', [
+        'as'    => 'login',
+        'uses'  => 'HomeController@login'
+    ]);
+
+    // 로그아웃 기능
+    Route::get('/logout', [
+        'as'    => 'logout',
+        'uses'  => 'HomeController@logout'
+    ]);
+
+    // 아이디/비밀번호 찾기 관련 기능 정의
+    Route::prefix('forget')->group(function() {
+
+        // 유형 선택
+        Route::get('/', [
+            'as'   => 'forgot.select_type',
+            'uses' => 'HomeController@forgot'
+        ]);
+    });
+});
 
 // 회원가입 유형 획득
 Route::get('/join/{joinType}', 'HomeController@setJoinForm');
 
-// 로그인 페이지
-Route::post('/login', [
-    'as'    => 'home.login',
-    'uses'  => 'HomeController@login'
-]);
-
-// 로그아웃 기능
-Route::get('/logout', [
-    'as'    => 'home.logout',
-    'uses'  => 'HomeController@logout'
-]);
-
 // 언어 설정
 Route::get('language/{locale}', 'HomeController@setLanguage');
-
-// 현재 언어설정 획득
-Route::get('language', [
-    'as'    => 'home.get_language',
-    'uses'  => 'HomeController@getLanguage'
-]);
 
 /**
  * 02. 학생 관련 기능 라우팅
  */
-Route::post('/check/student', [
-    'as'    => 'student.check_join',
-    'uses'  => 'StudentController@check_join'
-]);
+Route::name('student.')->group(function() {
+    Route::prefix('student')->group(function() {
 
-Route::post('/store/student', [
-    'as'    => 'student.store',
-    'uses'  => 'StudentController@store'
-]);
+        // 학생 회원가입 여부 확인 링크
+        Route::post('/check_join', [
+            'as'    => 'check_join',
+            'uses'  => 'StudentController@check_join'
+        ]);
 
-Route::get('/student', [
-    'as'    => 'student.index',
-    'uses'  => 'StudentController@index'
-])->middleware('check.login');
+        // 학생 회원가입
+        Route::post('/store', [
+            'as'    => 'store',
+            'uses'  => 'StudentController@store'
+        ]);
+
+        // 학생 계정 접속 이후 사용하는 기능들 => 로그인 여부 확인
+        Route::middleware(['check.login'])->group(function() {
+
+            // 학생 메인 페이지
+            Route::get('/', [
+                'as'    => 'index',
+                'uses'  => 'StudentController@index'
+            ]);
+
+            // 출결 관리 기능
+            // 출결관리 페이지
+            Route::get('/attendance', [
+                'as'    => 'attendance',
+                'uses'  => 'StudentController@getAttendanceRecords'
+            ]);
+        });
+    });
+});
 
 /**
- * 03. 교수 공통 기능 관련 라우팅
+ *  03. 지도교수 기능 관련 라우팅
  */
-// 교수 회원가입시 아이디 중복 확인
-Route::get('/check/professor', [
-    'as'    => 'professor.check_join',
-    'uses'  => 'ProfessorController@check_join'
-]);
+Route::name('tutor.')->group(function() {
+    Route::prefix('tutor')->group(function() {
+
+        // 지도교수 회원가입
+        Route::post('/store', [
+            'as'    => 'store',
+            'uses'  => 'TutorController@store'
+        ]);
+
+        // 지도교수 회원가입시 아이디 중복 확인
+        Route::post('/check_join', [
+            'as'    => 'check_join',
+            'uses'  => 'TutorController@check_join'
+        ]);
+
+        // 지도교수 로그인 이후 이용 가능 기능
+        Route::middleware(['check.login'])->group(function() {
+
+            // 지도교수 메인 페이지 출력
+            Route::get('/tutor', [
+                'as'    => 'index',
+                'uses'  => 'TutorController@index'
+            ]);
+        });
+    });
+});
+
+/**
+ *  04. 교과목 교수 기능 관련 라우팅
+ */
+
+Route::name('professor.')->group(function() {
+   Route::prefix("professor")->group(function() {
+       // 교과목교수 아이디 확인
+       Route::post('/check_join', [
+           'as'     => 'check_join',
+           'uses'   => 'ProfessorController@check_join'
+       ]);
+
+        // 교과목교수 회원가입
+       Route::post('/store', [
+           'as'    => 'store',
+           'uses'  => 'ProfessorController@store'
+       ]);
+
+       // 교과목교수 로그인 이후 사용 가능 기능
+       Route::middleware(['check.login'])->group(function() {
+
+           // 교과목교수 메인 페이지 출력
+           Route::get('/', [
+               'as'     => 'index',
+               'uses'   => 'ProfessorController@index'
+           ]);
+       });
+   });
+});

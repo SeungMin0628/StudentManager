@@ -21,7 +21,7 @@ return [
     "login_not_registered_std_id"   => '가입절차를 거치지 않은 학번입니다. 먼저 회원가입을 해주세요.',
     "login_wrong_id_or_password"    => '잘못된 아이디 혹은 비밀번호입니다.',
     "join_joined_std_id"            => '이미 가입된 학번입니다.',
-    "join_joined_prof_id"           => "해당 ID는 이미 존재합니다.",
+    "join_unusable_prof_id"         => "해당 ID는 사용할 수 없습니다.",
 
     // 에러 메시지
     "join_failed"                   => '에러: 회원가입 실패!',

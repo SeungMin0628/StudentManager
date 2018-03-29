@@ -125,7 +125,7 @@ class HomeController extends Controller
                 $data['title']  = __('page_title.home_join_professor');
                 $data['type']   = __('account.prof_general');
 
-                return view('join_tutor', $data);
+                return view('join_professor', $data);
             default:
                 throw new ErrorException();
         }
@@ -143,15 +143,12 @@ class HomeController extends Controller
      * $data(array):                   View 단에 전달하는 매개인자를 저장하는 배열
      *      $title(string):            HTML Title
      *      $type(string):             현재 회원가입 유형을 알림
-     *
-     * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function login(Request $request) {
         // 01. 로그인 관련 데이터 추출
-        $type   = $request->type;
-        $id     = $request->id;
-        $pw     = $request->password;
+        $type   = $request->post('type');
+        $id     = $request->post('id');
+        $pw     = $request->post('password');
 
         // 02. 로그인 유형에 따른 입력 데이터 검증
         $typeValue_student      = self::USER_TYPE['student'];
@@ -191,7 +188,7 @@ class HomeController extends Controller
      * null
      *
      * 반환값
-     * @return                         \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|void
+     * @return                         \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function logout() {
         if(session()->has('user')) {
@@ -199,6 +196,33 @@ class HomeController extends Controller
             flash()->success(__('message.logout_success'));
         }
         return redirect(route('home.index'));
+    }
+
+    /**
+     * 함수명:                         forgot
+     * 함수 설명:                      아이디/비밀번호 찾기 관련 기능을 실행
+     * 만든날:                         2018년 3월 29일
+     *
+     * 매개변수 목록
+     * @param $request:                사용자의 요청 메시지에 포함된 데이터
+     *
+     * 지역변수 목록
+     * $data(array):                   View 단에 전달하는 매개인자를 저장하는 배열
+     *      $title(string):            HTML Title
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function forgot(Request $request = null) {
+        if(is_null($request)) {
+            $data = [
+                'title' => __('page_title.home_forgot_select')
+            ];
+
+            return view('forgot_select', $data);
+        } else {
+
+        }
     }
 
     // 03-02. 다국어 지원

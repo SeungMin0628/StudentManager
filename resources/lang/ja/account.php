@@ -21,6 +21,8 @@ return [
     'phone'             => '携帯電話',
     'upload_face_photo' => "プロフィール写真登録",
 
+    //
+
     // 학생 전용 정보
     "std_id"            => "学籍番号",
 

@@ -80,11 +80,11 @@ class StudentController extends Controller {
         $this->validate($request, $rules);
 
         // 02. 학생 데이터 입력
-        $student = Student::find($request->std_id);
+        $student = Student::find($request->post('id'));
 
-        $student->password  = password_hash($request->password, PASSWORD_DEFAULT);
-        $student->email     = $request->email;
-        $student->phone     = $request->phone;
+        $student->password  = password_hash($request->post('password'), PASSWORD_DEFAULT);
+        $student->email     = $request->post('email');
+        $student->phone     = $request->post('phone');
 
         // 저장 실패시 전 페이지로 돌아감
         if(!$student->save()) {
@@ -173,5 +173,10 @@ class StudentController extends Controller {
             flash()->warning(@lang('message.login_wrong_id_or_password'))->important();
             return back();
         }
+    }
+
+    // 03-02. 출결 관리
+    public function getAttendanceRecords() {
+
     }
 }

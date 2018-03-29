@@ -11,6 +11,7 @@ return [
     "professor"         => "교수",
     "prof_tutor"        => "지도교수",
     "prof_general"      => "교과목교수",
+    "select_user_type"  => "회원 유형 선택",
 
     // 회원가입 시 필요 정보
     "id"                => "ID",
@@ -20,6 +21,10 @@ return [
     "email"             => '이메일',
     'phone'             => '전화번호',
     'upload_face_photo' => "프로필 사진 등록",
+
+    // 아이디/비밀번호 찾기에 필요한 정보
+    "search_id"         => "아이디 찾기",
+    "search_password"   => "비밀번호 찾기",
 
     // 학생 전용 정보
     "std_id"            => "학번",

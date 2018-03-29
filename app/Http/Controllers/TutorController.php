@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 class TutorController extends Controller {
     // 01. 멤버 변수 설정
     const   USER_TYPE   = HomeController::USER_TYPE['tutor'];
+    const   MIN_STRLEN  = 2;
 
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
@@ -47,19 +48,20 @@ class TutorController extends Controller {
     }
 
     // 03-01. 회원관리 기능
+
     /**
      * 함수명:                         store
      * 함수 설명:                      사용자의 회원가입 정보를 받아 검증 & 지도교수 데이터로 저장
      * 만든날:                         2018년 3월 28일
      *
      * 매개변수 목록
-     * @param $request:                View 단에서 전달받은 요청 데이터
+     * @param Request $request :                View 단에서 전달받은 요청 데이터
      *
      * 지역변수 목록
      * $rules(array):                  Form 데이터 유효성 검증 규칙
      *
      * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return                         \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(Request $request) {
         // 01. form 입력값 검증
@@ -77,12 +79,12 @@ class TutorController extends Controller {
 
         // 02. 교수 데이터 입력
         $professor = new Professor();
-        $professor->id          = $request->id;
-        $professor->name        = $request->name;
-        $professor->password    = password_hash($request->password, PASSWORD_DEFAULT);
-        $professor->email       = $request->email;
-        $professor->phone       = $request->phone;
-        $professor->office      = $request->office;
+        $professor->id          = $request->post('id');
+        $professor->name        = $request->post('name');
+        $professor->password    = password_hash($request->post('password'), PASSWORD_DEFAULT);
+        $professor->email       = $request->post('email');
+        $professor->phone       = $request->post('phone');
+        $professor->office      = $request->post('office');
 
         // 저장 실패시 전 페이지로 돌아감
         if(!$professor->save()) {
@@ -93,8 +95,42 @@ class TutorController extends Controller {
         flash(__('message.join_success'));
         return redirect(route('home.index'));
     }
+
     /**
-     * 함수명:                         store
+     * 함수명:                         check_join
+     * 함수 설명:                      사용자가 입력한 ID의 현재 회원가입 여부를 조회
+     * 만든날:                         2018년 3월 28일
+     *
+     * 매개변수 목록
+     * @param $request:                View 단의 요청 메시지
+     *
+     * 지역변수 목록
+     * $regMsg(string):                View 단에 반환할 메시지
+     * $input_id(string):              사용자가 입력한 ID
+     * $professor:                     입력 ID로 DB를 조회한 결과
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function check_join(Request $request) {
+        // 01. 변수 설정
+        $reqMsg     = '';
+        $input_id   = $request->post('id');
+
+        // 02. 해당 학번의 가입 여부 조회
+        $professor = Professor::find($input_id);
+
+        if (strlen($input_id) > self::MIN_STRLEN && is_null($professor)) {
+            $reqMsg = 'TRUE';
+        } else {
+            $reqMsg = "FALSE";
+        }
+
+        return response()->json(['msg' => $reqMsg], 200);
+    }
+
+    /**
+     * 함수명:                         login
      * 함수 설명:                      사용자의 회원가입 정보를 받아 검증 & 지도교수 데이터로 저장
      * 만든날:                         2018년 3월 28일
      *
@@ -105,7 +141,7 @@ class TutorController extends Controller {
      * null
      *
      * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return                         \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function login(Professor $professor) {
         // 01. 세션에 사용자 정보 등록

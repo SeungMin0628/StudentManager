@@ -21,7 +21,7 @@ return [
     "login_not_registered_std_id"   => 'まだ登録されていない学籍番号です。まず新規登録してください。',
     "login_wrong_id_or_password"    => 'IDやパスワードを誤入力しました。',
     "join_joined_std_id"            => 'すでに登録された学籍番号です。',
-    "join_joined_prof_id"           => "すでに登録されたIDです。",
+    "join_unusable_prof_id"         => "登録できないIDです。",
 
     // 에러 메시지
     "join_failed"                   => 'エラー：新規登録に失敗しました。',

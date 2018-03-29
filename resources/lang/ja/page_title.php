@@ -12,7 +12,7 @@ return [
     'home_join_student'     => '新規登録: 学生',
     'home_join_tutor'       => '新規登録: 指導教授',
     'home_join_professor'   => '新規登録: 教科目教授',
-    'home_forgot'           => 'ログインができない方',
+    'home_forgot_select'    => '会員情報探し：タイプ',
 
     // 02. 학생 컨트롤러에서 제공하는 페이지
     'student_index'         => '学生：ホームページ',

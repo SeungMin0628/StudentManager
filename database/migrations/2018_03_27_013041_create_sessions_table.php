@@ -4,6 +4,12 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * 클래스명:                       CreateSessionsTable
+ * 클래스 설명:                    세션을 관리하는 마이그레이션
+ * 만든이:                         3-WDJ 1401213 이승민
+ * 만든날:                         2018년 3월 27일
+ */
 class CreateSessionsTable extends Migration
 {
     /**
