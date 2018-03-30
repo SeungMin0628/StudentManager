@@ -7,6 +7,6 @@
  */
 ?>
 <div>&lt;학생&gt;프로젝트 로고</div>
-<div><a href="">@lang('attendance.title')</a></div>
+<div><a href="{{ route('student.attendance') }}">@lang('attendance.title')</a></div>
 <div>학업 관리</div>
 <div>상담 관리</div>

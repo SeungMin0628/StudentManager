@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Attendance;
 use App\Student;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ConstantEnum;
 use Illuminate\Http\Request;
 use Mockery\Exception;
+use Symfony\Component\CssSelector\Tests\Node\CombinedSelectorNodeTest;
 
 /**
  * 클래스명:                       StudentController
@@ -23,7 +26,7 @@ use Mockery\Exception;
 class StudentController extends Controller {
     // 01. 멤버 변수
     const   STD_ID_DIGITS   = 7;
-    const   USER_TYPE       = HomeController::USER_TYPE['student'];
+    const   USER_TYPE       = ConstantEnum::USER_TYPE['student'];
 
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
@@ -176,7 +179,50 @@ class StudentController extends Controller {
     }
 
     // 03-02. 출결 관리
-    public function getAttendanceRecords() {
+    public function getAttendanceRecords($argPeriod = ConstantEnum::PERIOD['weekly'], $argDate = null) {
+        // 01. 데이터 가져오기
+        $date   = is_null($argDate) ? today() : $argDate;
+        $db     = new Attendance();
+        $std_id = session()->get('user')['info']->id;
+        $result = $db->selectAttendanceRecords($std_id);
 
+        // 02. 데이터 가공
+        $start_date = null;
+        $end_date   = null;
+
+        switch($argPeriod) {
+            case ConstantEnum::PERIOD['weekly']:
+
+                break;
+            case ConstantEnum::PERIOD['monthly']:
+                break;
+            default:
+                return redirect(route('student.attendance'));
+        }
+
+        // 03. 매개 데이터 삽입
+        $data = [
+            'title'                 => __('page_title.student_attendance'),
+            'period'                => $argPeriod,
+
+            'date'                  => $argPeriod == ConstantEnum::PERIOD['weekly'] ? $date->format('Y-m-w') : $date->format('Y-m'),
+            'prev_date'             => '',
+            'next_date'             => $date == today() ? null : '',
+
+            'attendance_rate'       => 75,
+            'attendance'            => $result->{ConstantEnum::ATTENDANCE['ada']},
+            'nearest_attendance'    => $result->{ConstantEnum::ATTENDANCE['n_ada']},
+
+            'late'                  => $result->{ConstantEnum::ATTENDANCE['late']},
+            'nearest_late'          => $result->{ConstantEnum::ATTENDANCE['n_late']},
+
+            'absence'               => $result->{ConstantEnum::ATTENDANCE['absence']},
+            'nearest_absence'       => $result->{ConstantEnum::ATTENDANCE['n_absence']},
+
+            'early'                 => $result->{ConstantEnum::ATTENDANCE['early']},
+            'nearest_early'         => $result->{ConstantEnum::ATTENDANCE['n_early']},
+        ];
+
+        return view('student_attendance', $data);
     }
 }

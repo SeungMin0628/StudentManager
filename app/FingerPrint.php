@@ -5,13 +5,15 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 클래스명:                       FingerPrint
+ * 클래스명:                       Fingerprint
  * 클래스 설명:                    지문 테이블과 연결하는 모델
  * 만든이:                         3-WDJ 1401213 이승민
  * 만든날:                         2018년 3월 19일
  */
-class FingerPrint extends Model {
+class Fingerprint extends Model {
     // 01. 멤버 변수 설정
+
+    //protected $table = 'fingerprints';
     public $timestamps  = false;
 
     // 02. 생성자 정의

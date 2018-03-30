@@ -7,5 +7,19 @@
  */
 return [
     // 공통 정보
-    'title'         => '출결 관리'
+    'title'                 => '출결 관리',
+    'come_leave'            => '등・하교 출결',
+    'attendance_rate'       => '출석률',
+
+    'attendance'            => '출석',
+    "nearest_attendance"    => '최근 출석',
+
+    'late'                  => '지각',
+    'nearest_late'          => '최근 지각',
+
+    'absence'               => '결석',
+    'nearest_absence'       => '최근 결석',
+
+    'early'                 => '조퇴',
+    'nearest_early'         => '최근 조퇴',
 ];

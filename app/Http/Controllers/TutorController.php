@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Professor;
+use App\Http\Controllers\ConstantEnum;
 use Illuminate\Http\Request;
 
 /**
@@ -20,7 +21,7 @@ use Illuminate\Http\Request;
  */
 class TutorController extends Controller {
     // 01. 멤버 변수 설정
-    const   USER_TYPE   = HomeController::USER_TYPE['tutor'];
+    const   USER_TYPE   = ConstantEnum::USER_TYPE['tutor'];
     const   MIN_STRLEN  = 2;
 
     // 02. 생성자 정의

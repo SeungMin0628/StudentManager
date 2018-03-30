@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\ConstantEnum;
 use function Symfony\Component\HttpKernel\Tests\Controller\controller_function;
 use function Symfony\Component\HttpKernel\Tests\controller_func;
 use Whoops\Exception\ErrorException;
@@ -24,11 +25,6 @@ use Whoops\Exception\ErrorException;
 class HomeController extends Controller
 {
     // 01. 멤버 변수 정의
-    const USER_TYPE = [
-        'student'       => 'student',
-        'tutor'         => 'tutor',
-        'professor'     => 'professor'
-    ];
 
     // 02. 생성자 정의
 
@@ -58,7 +54,7 @@ class HomeController extends Controller
         // 02. 데이터 바인딩
         $data = [
             'title'         => __('page_title.home_index'),
-            'user_type'     => self::USER_TYPE
+            'user_type'     => ConstantEnum::USER_TYPE
         ];
 
         return view('login', $data);
@@ -82,7 +78,7 @@ class HomeController extends Controller
     public function join() {
         $data = [
             'title'     => __('page_title.home_join_select'),
-            'user_type' => self::USER_TYPE
+            'user_type' => ConstantEnum::USER_TYPE
         ];
 
         return view('join_select', $data);
@@ -111,17 +107,17 @@ class HomeController extends Controller
         $data = array();
 
         switch ($joinType) {
-            case self::USER_TYPE['student']:
+            case ConstantEnum::USER_TYPE['student']:
                 $data['title']  = __('page_title.home_join_student');
                 $data['type']   = __('account.student');
 
                 return view('join_student', $data);
-            case self::USER_TYPE['tutor']:
+            case ConstantEnum::USER_TYPE['tutor']:
                 $data['title']  = __('page_title.home_join_tutor');
                 $data['type']   = __('account.prof_tutor');
 
                 return view('join_tutor', $data);
-            case self::USER_TYPE['professor']:
+            case ConstantEnum::USER_TYPE['professor']:
                 $data['title']  = __('page_title.home_join_professor');
                 $data['type']   = __('account.prof_general');
 
@@ -151,17 +147,17 @@ class HomeController extends Controller
         $pw     = $request->post('password');
 
         // 02. 로그인 유형에 따른 입력 데이터 검증
-        $typeValue_student      = self::USER_TYPE['student'];
-        $typeValue_professor    = self::USER_TYPE['professor'];
+        $typeValue_student      = ConstantEnum::USER_TYPE['student'];
+        $typeValue_professor    = ConstantEnum::USER_TYPE['professor'];
         $rules = [
             'type'      => "required|in:{$typeValue_student},{$typeValue_professor}",
             'password'  => "required"
         ];
         switch($type) {
-            case self::USER_TYPE['student']:
+            case ConstantEnum::USER_TYPE['student']:
                 $rules['id'] = 'required|digits:7|exists:students,id';
                 break;
-            case self::USER_TYPE['professor']:
+            case ConstantEnum::USER_TYPE['professor']:
                 $rules['id'] = 'required|exists:professors,id';
                 break;
         }

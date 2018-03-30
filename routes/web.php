@@ -85,7 +85,7 @@ Route::name('student.')->group(function() {
 
             // 출결 관리 기능
             // 출결관리 페이지
-            Route::get('/attendance', [
+            Route::get('/attendance/{period?}/{date?}', [
                 'as'    => 'attendance',
                 'uses'  => 'StudentController@getAttendanceRecords'
             ]);
