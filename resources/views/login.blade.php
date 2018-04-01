@@ -12,16 +12,16 @@
     <form method="post" action="{{ route('home.login') }}">
         {!! csrf_field() !!}
         <div>
-            <div>
+            <span>
                 <label for="student">@lang('account.student')</label>
                 <input type="radio" name="type" value="{{ $user_type['student'] }}" id="student" required>
                 {!! $errors->first('student', '<span class="form-error">:message</span>') !!}
-            </div>
-            <div>
+            </span>
+            <span>
                 <label for="professor">@lang('account.professor')</label>
                 <input type="radio" name="type" value="{{ $user_type['professor'] }}" id="professor">
                 {!! $errors->first('professor', '<span class="form-error">:message</span>') !!}
-            </div>
+            </span>
         </div>
         <div>
             <label for="id">@lang('account.id')</label>

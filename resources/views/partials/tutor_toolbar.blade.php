@@ -6,8 +6,8 @@
  * Time: 오후 7:10
  */
 ?>
-<div>&lt;지도교수&gt;프로젝트 로고</div>
-<div>회원정보</div>
-<div>지도반</div>
-<div>상담 관리</div>
-<div>설정&관리</div>
+<span>&lt;지도교수&gt;프로젝트 로고</span>
+<span>회원정보</span>
+<span><a href="{{ route('tutor.myclass.attendance') }}">지도반</a></span>
+<span>상담 관리</span>
+<span>설정&관리</span>

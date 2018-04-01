@@ -115,9 +115,14 @@ Route::name('tutor.')->group(function() {
         Route::middleware(['check.login'])->group(function() {
 
             // 지도교수 메인 페이지 출력
-            Route::get('/tutor', [
+            Route::get('/', [
                 'as'    => 'index',
                 'uses'  => 'TutorController@index'
+            ]);
+
+            Route::get('/myclass/attendance', [
+                'as'    => 'myclass.attendance',
+                'uses'  => 'TutorController@getAttendanceRecordsMyClass'
             ]);
         });
     });

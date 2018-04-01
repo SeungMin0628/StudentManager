@@ -8,7 +8,7 @@
  */
 use App\Http\Controllers\ProfessorController;
 ?>
-@extends('layouts.join')
+@extends('layouts.join_master')
 @section('join.form')
     <form action="{{ route('professor.store') }}" method="post">
         {{-- CSRF 공격 방지를 위한 필드 생성. 절대 삭제하지 말 것! --}}

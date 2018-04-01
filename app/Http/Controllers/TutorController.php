@@ -157,4 +157,27 @@ class TutorController extends Controller {
         flash()->success(__('message.login_success', ['Name' => $professor->name]));
         return redirect(route('tutor.index'));
     }
+
+    // 03-02. 지도반 관리 기능
+    /**
+     * 함수명:                         getAttendanceRecordsMyClass
+     * 함수 설명:                      사용자의 지도반 학생들의 오늘 출결 데이터를 조회
+     * 만든날:                         2018년 4월 01일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function getAttendanceRecordsMyClass() {
+        $data  = [
+            'title'         => 'dummy',
+        ];
+
+        return view('tutor_myclass_attendance', $data);
+    }
 }

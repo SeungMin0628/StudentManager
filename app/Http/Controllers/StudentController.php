@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Attendance;
 use App\Student;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ConstantEnum;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Http\Request;
 use Mockery\Exception;
+use PhpParser\Error;
+use Psy\Exception\ErrorException;
 use Symfony\Component\CssSelector\Tests\Node\CombinedSelectorNodeTest;
+use Illuminate\Support\Carbon;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 /**
  * 클래스명:                       StudentController
@@ -173,54 +177,56 @@ class StudentController extends Controller {
 
         // 잘못된 입력
         } else {
-            flash()->warning(@lang('message.login_wrong_id_or_password'))->important();
+            flash()->warning(__('message.login_wrong_id_or_password'))->important();
             return back();
         }
     }
 
     // 03-02. 출결 관리
+    /**
+     * 함수명:                         getAttendanceRecords
+     * 함수 설명:                      해당 일자의 출결 기록을 조회
+     * 만든날:                         2018년 4월 01일
+     *
+     * 매개변수 목록
+     * @param $argPeriod:              조회기간 설정
+     * @param $argDate:                조회일자
+     *
+     * 지역변수 목록
+     * $std_id(integer):               현재 로그한 학생의 학번
+     * $attendanceData(array):         조회 결과
+     * $data(array):                   View 단에 바인딩할 데이터
+     *
+     * 반환값
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function getAttendanceRecords($argPeriod = ConstantEnum::PERIOD['weekly'], $argDate = null) {
-        // 01. 데이터 가져오기
-        $date   = is_null($argDate) ? today() : $argDate;
-        $db     = new Attendance();
+        // 01. 데이터 획득
         $std_id = session()->get('user')['info']->id;
-        $result = $db->selectAttendanceRecords($std_id);
+        $attendanceData =
+            app('App\Http\Controllers\AttendanceController')->getAttendanceRecords($std_id, $argPeriod, $argDate);
 
-        // 02. 데이터 가공
-        $start_date = null;
-        $end_date   = null;
-
-        switch($argPeriod) {
-            case ConstantEnum::PERIOD['weekly']:
-
-                break;
-            case ConstantEnum::PERIOD['monthly']:
-                break;
-            default:
-                return redirect(route('student.attendance'));
-        }
-
-        // 03. 매개 데이터 삽입
+        // 02. 매개 데이터 삽입
         $data = [
             'title'                 => __('page_title.student_attendance'),
             'period'                => $argPeriod,
 
-            'date'                  => $argPeriod == ConstantEnum::PERIOD['weekly'] ? $date->format('Y-m-w') : $date->format('Y-m'),
-            'prev_date'             => '',
-            'next_date'             => $date == today() ? null : '',
+            'date'                  => $attendanceData['now_date'],
+            'prev_date'             => $attendanceData['prev_date'],
+            'next_date'             => $attendanceData['next_date'],
 
-            'attendance_rate'       => 75,
-            'attendance'            => $result->{ConstantEnum::ATTENDANCE['ada']},
-            'nearest_attendance'    => $result->{ConstantEnum::ATTENDANCE['n_ada']},
+            'attendance_rate'       => number_format($attendanceData['rate'], 2),
+            'attendance'            => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['ada']},
+            'nearest_attendance'    => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['n_ada']},
 
-            'late'                  => $result->{ConstantEnum::ATTENDANCE['late']},
-            'nearest_late'          => $result->{ConstantEnum::ATTENDANCE['n_late']},
+            'late'                  => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['late']},
+            'nearest_late'          => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['n_late']},
 
-            'absence'               => $result->{ConstantEnum::ATTENDANCE['absence']},
-            'nearest_absence'       => $result->{ConstantEnum::ATTENDANCE['n_absence']},
+            'absence'               => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['absence']},
+            'nearest_absence'       => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['n_absence']},
 
-            'early'                 => $result->{ConstantEnum::ATTENDANCE['early']},
-            'nearest_early'         => $result->{ConstantEnum::ATTENDANCE['n_early']},
+            'early'                 => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['early']},
+            'nearest_early'         => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['n_early']},
         ];
 
         return view('student_attendance', $data);

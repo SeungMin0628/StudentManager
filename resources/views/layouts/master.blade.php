@@ -18,12 +18,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>{{ $title }}</title>
     {{-- 이하 jQuery와 BootStrap은 FlashMessage의 활성화를 위해 반드시 필요함 --}}
+
+    <!-- jQuery -->
+    <script language="JavaScript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+    <!-- 부트스트랩 -->
     <!-- 합쳐지고 최소화된 최신 CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <!-- 부가적인 테마 -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-    <!-- jQuery -->
-    <script language="JavaScript" src="http://code.jquery.com/jquery-latest.min.js"></script>
     <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
     <script language="JavaScript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <style type="text/css">

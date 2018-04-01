@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Psy\Exception\ErrorException;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -55,6 +56,7 @@ class Handler extends ExceptionHandler
                 'description'   => 'Sorry, the page or resource you are trying to view does not exist.'
             ]), 404);
         }
+
 
         return parent::render($request, $exception);
     }

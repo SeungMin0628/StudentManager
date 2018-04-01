@@ -7,7 +7,7 @@
  * Time: 오후 3:00
  */
 ?>
-@extends('layouts.join')
+@extends('layouts.join_master')
 @section('join.form')
     <div><a href="{{ route('home.join')."/{$user_type['student']}"}}">@lang('account.student')</a></div>
     <div><a href="{{ route('home.join')."/{$user_type['tutor']}" }}">@lang('account.prof_tutor')</a></div>

@@ -72,7 +72,7 @@ class Attendance extends Model {
         return $this->belongsTo('App\LeaveSchool', 'leave_school', 'id');
     }
 
-    public function selectAttendanceRecords($argStdId) {
+    public function selectAttendanceRecords($argStdId, $startDate, $endDate) {
         // 01. 지역 변수 선언
         $dbInfoSelf     = DbInfoEnum::ATTENDANCES;
         $dbInfoCome     = DbInfoEnum::COME_SCHOOLS;
@@ -82,8 +82,8 @@ class Attendance extends Model {
         return Attendance::
             where([
                 [DbInfoEnum::ATTENDANCES['std_id'], $argStdId],
-                [DbInfoEnum::ATTENDANCES['reg_date'], '>=', '2018-03-23'],
-                [DbInfoEnum::ATTENDANCES['reg_date'], '<=', '2018-03-30']
+                [DbInfoEnum::ATTENDANCES['reg_date'], '>=', $startDate],
+                [DbInfoEnum::ATTENDANCES['reg_date'], '<=', $endDate]
             ])
             // where([['std_id', $std_id], ['reg_date', '>=', $start_date], ['reg_date', '<=', $end_date]])
             ->join(
@@ -100,23 +100,24 @@ class Attendance extends Model {
             // join('leave_schools', 'attendances.leave_school', 'leave_schools.id')
             ->selectRaw("
                 COUNT(CASE {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} WHEN NOT NULL THEN FALSE ELSE TRUE END) AS '{$constList['ada']}', 
-                (SELECT MAX({$dbInfoSelf['reg_date']}) FROM {$dbInfoSelf['t_name']} WHERE {$dbInfoSelf['absence']} IS NULL) AS '{$constList['n_ada']}', 
+                DATE_FORMAT(MAX(CASE WHEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} IS NULL THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_ada']}', 
                 COUNT(CASE {$dbInfoCome['t_name']}.{$dbInfoCome['late']} WHEN TRUE THEN TRUE END) AS '{$constList['late']}', 
-                (SELECT DATE_FORMAT(MAX({$dbInfoCome['reg_time']}), '%Y-%m-%d') FROM {$dbInfoCome['t_name']} WHERE {$dbInfoCome['late']} = TRUE) AS '{$constList['n_late']}', 
+                DATE_FORMAT(MAX(CASE WHEN {$dbInfoCome['t_name']}.{$dbInfoCome['late']} IS TRUE THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_late']}', 
                 COUNT(CASE {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} WHEN NOT NULL THEN TRUE END) AS '{$constList['absence']}', 
-                (SELECT MAX({$dbInfoSelf['reg_date']}) FROM {$dbInfoSelf['t_name']} WHERE {$dbInfoSelf['absence']} = TRUE) AS '{$constList['n_absence']}', 
+                DATE_FORMAT(MAX(CASE WHEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} IS NOT NULL THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_absence']}', 
                 COUNT(CASE {$dbInfoLeave['t_name']}.{$dbInfoLeave['early']} WHEN TRUE THEN TRUE END) AS '{$constList['early']}', 
-                (SELECT DATE_FORMAT(MAX({$dbInfoLeave['reg_time']}), '%Y-%m-%d') FROM {$dbInfoLeave['t_name']} WHERE {$dbInfoLeave['early']} = TRUE) AS '{$constList['n_early']}'
+                DATE_FORMAT(MAX(CASE WHEN {$dbInfoLeave['t_name']}.{$dbInfoLeave['early']} IS TRUE THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_early']}'
             ")
             /* selectRaw("
-            COUNT(CASE attendances.absence_flag WHEN NOT NULL THEN FALSE ELSE TRUE END) AS 'attendance', 
-            (SELECT MAX(reg_date) FROM attendances WHERE absence_flag IS NULL) AS 'nearest_attendance',
-            COUNT(CASE come_schools.lateness_flag WHEN TRUE THEN TRUE END) AS 'late', 
-            (SELECT DATE_FORMAT(MAX(reg_time), '%Y-%m-%d') FROM come_schools WHERE lateness_flag = TRUE) AS 'nearest_late',
-            COUNT(CASE attendances.absence_flag WHEN NOT NULL THEN TRUE END) AS 'absence', 
-            (SELECT MAX(reg_date) FROM attendances WHERE absence_flag = TRUE) AS 'nearest_absence', 
-            COUNT(CASE leave_schools.early_flag WHEN TRUE THEN TRUE END) AS 'early',
-            (SELECT  DATE_FORMAT(MAX(reg_time), '%Y-%m-%d') FROM leave_schools WHERE early_flag = TRUE) AS 'nearest_early'")*/
+	            COUNT(CASE attendances.absence_flag WHEN NOT NULL THEN FALSE ELSE TRUE END) AS 'attendance',
+                MAX(CASE WHEN attendances.absence_flag IS NOT NULL THEN FALSE ELSE attendances.reg_date END) AS 'nearest_attendance',
+                COUNT(CASE come_schools.lateness_flag WHEN TRUE THEN TRUE END) AS 'late',
+	            MAX(CASE WHEN come_schools.lateness_flag IS TRUE THEN attendances.reg_date END) AS 'nearest_late',
+                COUNT(CASE attendances.absence_flag WHEN NOT NULL THEN TRUE END) AS 'absence',
+                MAX(CASE WHEN attendances.absence_flag IS NOT NULL THEN attendances.reg_date END) AS 'nearest_absence',
+                COUNT(CASE leave_schools.early_flag WHEN TRUE THEN TRUE END) AS 'early',
+                MAX(CASE WHEN leave_schools.early_flag IS TRUE THEN attendances.reg_date END) AS 'nearest_early'
+            ")*/
             ->get()[0];
     }
 }

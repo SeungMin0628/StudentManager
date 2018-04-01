@@ -177,7 +177,7 @@ class ProfessorController extends Controller {
 
         // 잘못된 입력
         } else {
-            flash()->warning(@lang('message.login_wrong_id_or_password'))->important();
+            flash()->warning(__('message.login_wrong_id_or_password'))->important();
             return back();
         }
     }

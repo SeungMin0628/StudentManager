@@ -34,7 +34,7 @@ class ModifyAttendancesTable01 extends Migration
          *              	absence_flag (Boolean)
          *                  	결석여부 확인 플래그
          *                  	기본값: NULL, 제약조건: X
-         *                  	출석 = NULL, 사유 결석 = TRUE, 무단 결석 = FASLE
+         *                  	출석 = NULL, 사유 결석 = TRUE, 무단 결석 = FALSE
          *          	기존 칼럼의 변경
          *              	come_school (int) – 제약조건 변경
          *                  	등교 데이터 번호

@@ -7,7 +7,7 @@
  * Time: 오후 7:25
  */
 ?>
-@extends('layouts.join')
+@extends('layouts.join_master')
 @section('join.form')
     <form action="{{ route('student.store') }}" method="post">
         {{-- CSRF 공격 방지를 위한 필드 생성. 절대 삭제하지 말 것! --}}
