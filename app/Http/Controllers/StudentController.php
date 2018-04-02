@@ -206,6 +206,11 @@ class StudentController extends Controller {
         $attendanceData =
             app('App\Http\Controllers\AttendanceController')->getAttendanceRecords($std_id, $argPeriod, $argDate);
 
+        if(is_null($attendanceData)) {
+            flash()->warning(__('message.ada_records_not_exists'));
+            return back();
+        }
+
         // 02. 매개 데이터 삽입
         $data = [
             'title'                 => __('page_title.student_attendance'),
@@ -230,5 +235,15 @@ class StudentController extends Controller {
         ];
 
         return view('student_attendance', $data);
+    }
+
+    // 03-03. 학업 관리 메인
+    public function lectureMain() {
+        // 03. View 단에 전송할 데이터
+        $data = [
+            'title'             => __('page_title.student_lecture_main'),
+        ];
+
+        return view('student_lecture_main', $data);
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App;
 
+use Doctrine\DBAL\DBALException;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\DbInfoEnum;
 
 /**
  * 클래스명:                       Professor
@@ -195,5 +197,26 @@ class Professor extends Model {
      */
     public function connected() {
         return $this->hasMany('App\AccountSync', 'connected', 'id');
+    }
+
+    // custom method
+    /**
+     * 함수명:                         isExistMyGroup
+     * 함수 설명:                      현재 사용자인 지도교수가 자신의 지도반을 가지고 있는지 조회
+     * 만든날:                         2018년 4월 02일
+     *
+     * 매개변수 목록
+     * @param $argProfId:              현재 접속중인 교수의 아이디
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         boolean
+     */
+    public function isExistMyGroup($argProfId) {
+        return sizeof(
+            Professor::find($argProfId)->group()->get()
+        ) > 0;
     }
 }

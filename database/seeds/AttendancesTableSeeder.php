@@ -5,6 +5,7 @@ use App\Student;
 use App\LeaveSchool;
 use App\ComeSchool;
 use App\Attendance;
+use App\Http\DbInfoEnum;
 use Illuminate\Support\Carbon;
 
 class AttendancesTableSeeder extends Seeder
@@ -21,6 +22,13 @@ class AttendancesTableSeeder extends Seeder
 
         for($iCount = 1; $iCount <= $today->day; $iCount++) {
             foreach($students as $student) {
+                $nowDate = Carbon::createFromDate($today->year, $today->month, $iCount);
+                if(sizeof(Attendance::where([
+                    [DbInfoEnum::ATTENDANCES['reg_date'], $nowDate->format('Y-m-d')],
+                        [DbInfoEnum::ATTENDANCES['std_id'], $student->id]])->get()) > 0) {
+                    continue;
+                }
+
                 // 등교 데이터 생성
                 $come_hour      = random_int(6, 9);
                 $zero_to_sixty  = random_int(0, 59);

@@ -8,5 +8,5 @@
  */
 ?>
 <div>@lang('attendance.title')</div>
-<div></div>
-<div></div>
+<div>@lang('attendance.manage_student')</div>
+<div>@lang('attendance.care_alert')</div>

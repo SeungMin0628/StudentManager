@@ -52,7 +52,7 @@ class CreateLecturesTable extends Migration
              */
             $table->increments('id');
             $table->integer('subject_id', FALSE, TRUE);
-            $table->string('divided_class_id', 2)->default(NULL);
+            $table->string('divided_class_id', 2);
             $table->string('professor', 30);
             $table->decimal('attendance_reflection', 3, 2)->default(0.2);
             $table->decimal('midterm_reflection', 3, 2)->default(0.3);

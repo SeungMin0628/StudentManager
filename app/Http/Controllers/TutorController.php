@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Professor;
+use App\Group;
 use App\Http\Controllers\ConstantEnum;
 use Illuminate\Http\Request;
+use PHPUnit\Util\RegularExpression;
 
 /**
  * 클래스명:                       TutorController
@@ -24,7 +26,6 @@ class TutorController extends Controller {
     const   USER_TYPE   = ConstantEnum::USER_TYPE['tutor'];
     const   MIN_STRLEN  = 2;
 
-    // 02. 생성자 정의
     // 03. 멤버 메서드 정의
     /**
      * 함수명:                         index
@@ -41,6 +42,19 @@ class TutorController extends Controller {
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
+        // 01. 내 지도반 존재여부 조회
+        // 현재 내 지도반이 있는지 조회
+        $prof       = new Professor();
+        $myId       = session()->get('user')['info']->id;
+
+        // 지도반이 없으면 지도반 생성 페이지로 이동
+        if(!$prof->isExistMyGroup($myId)) {
+            flash()->warning(__('message.tutor_not_exists_myclass'))->important();
+
+            return redirect(route('tutor.myclass.create'));
+        }
+
+        // 지도반이 있으면 타이틀을 설정하고 메인 페이지로 이동
         $data = [
             'title'     => __('page_title.tutor_index')
         ];
@@ -160,6 +174,58 @@ class TutorController extends Controller {
 
     // 03-02. 지도반 관리 기능
     /**
+     * 함수명:                         storeMyClass
+     * 함수 설명:                      사용자의 지도반 생성
+     * 만든날:                         2018년 4월 02일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function createMyClass(Request $request) {
+        // 01. 요청 데이터 수신
+        // 요청 데이터가 없을 경우 => 반 생성 양식을 반환
+        if(is_null($request->input('name'))) {
+            $data = [
+                'title'     => __('page_title.tutor_myclass_create'),
+                'req'       => $request
+            ];
+
+            return view('tutor_myclass_create', $data);
+        }
+        // 요청 데이터가 있을 경우 => 입력받은 데이터 검증
+        else {
+            // 데이터 검증 양식
+            $this->validate($request, [
+                'name'          => 'required|between:2,30',
+                'school_time'   => 'required|date_format:H:i',
+                'home_time'     => 'required|date_format:H:i|after:school_time'
+            ]);
+
+            // 반 생성
+            $group = new Group();
+            $group->tutor       = session()->get('user')['info']->id;
+            $group->name        = $request->input('name');
+            $group->school_time = $request->input('school_time');
+            $group->home_time   = $request->input('home_time');
+
+            if(!$group->save()) {
+                flash()->error(__('message.tutor_myclass_create'))->important();
+
+                return back();
+            }
+
+            flash()->success(__('message.tutor_store_myclass_success'));
+            return redirect(route('tutor.index'));
+        }
+    }
+
+    /**
      * 함수명:                         getAttendanceRecordsMyClass
      * 함수 설명:                      사용자의 지도반 학생들의 오늘 출결 데이터를 조회
      * 만든날:                         2018년 4월 01일
@@ -171,7 +237,7 @@ class TutorController extends Controller {
      * null
      *
      * 반환값
-     * @return                         \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function getAttendanceRecordsMyClass() {
         $data  = [

@@ -18,6 +18,31 @@ namespace App\Http;
  * 상수 목록
  */
 class DbInfoEnum {
+    // 교수 테이블
+    const PROFESSORS = [
+        't_name'        => 'professors',
+        'id'            => 'id',
+        'manager'       => 'manager',
+        'expire'        => 'expire_date',
+        'pw'            => 'password',
+        'name'          => 'name',
+        'phone'         => 'phone',
+        'email'         => 'email',
+        'office'        => 'office',
+        'f_p'           => 'face_photo'
+    ];
+
+    // 반 테이블
+    const GROUPS = [
+        't_name'        => 'groups',
+        'id'            => 'id',
+        'tutor'         => 'tutor',
+        'name'          => 'name',
+        's_time'        => 'school_time',
+        'h_time'        => 'home_time'
+    ];
+
+    // 학생 테이블
     const STUDENTS = [
         't_name'        => 'students',
         'id'            => 'id',
@@ -29,6 +54,7 @@ class DbInfoEnum {
         'f_p'           => 'face_photo'
     ];
 
+    // 출석 테이블
     const ATTENDANCES = [
         't_name'        => 'attendances' ,
         'reg_date'      => 'reg_date',
@@ -38,6 +64,7 @@ class DbInfoEnum {
         'absence'       => 'absence_flag'
     ];
 
+    // 하교 테이블
     const LEAVE_SCHOOLS = [
         't_name'        => 'leave_schools',
         'id'            => 'id',
@@ -46,6 +73,7 @@ class DbInfoEnum {
         'clf'           => 'classification'
     ];
 
+    // 등교 테이블
     const COME_SCHOOLS = [
         't_name'        => 'come_schools',
         'id'            => 'id',

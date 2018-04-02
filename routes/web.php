@@ -89,6 +89,12 @@ Route::name('student.')->group(function() {
                 'as'    => 'attendance',
                 'uses'  => 'StudentController@getAttendanceRecords'
             ]);
+
+            // 학업 관리 기능
+            Route::get('/lecture', [
+                'as'    => 'lecture.main',
+                'uses'  => 'StudentController@lectureMain'
+            ]);
         });
     });
 });
@@ -123,6 +129,11 @@ Route::name('tutor.')->group(function() {
             Route::get('/myclass/attendance', [
                 'as'    => 'myclass.attendance',
                 'uses'  => 'TutorController@getAttendanceRecordsMyClass'
+            ]);
+
+            Route::get('/myclass/create', [
+                'as'    => 'myclass.create',
+                'uses'  => 'TutorController@createMyClass'
             ]);
         });
     });

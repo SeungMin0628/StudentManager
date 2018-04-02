@@ -1,6 +1,14 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Professor;
+use App\Group;
+use App\Student;
+use App\Classification;
+use App\Attendance;
+use App\Classroom;
+use App\Subject;
+use App\Lecture;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,20 +22,30 @@ class DatabaseSeeder extends Seeder
             DB::statement('SET FOREIGN_KEY_CHECKS=0');
         }
 
-        App\Professor::truncate();
+        // 더미 데이터 삽입 시더
+        Professor::truncate();
         $this->call(ProfessorsTableSeeder::class);
 
-        App\Group::truncate();
+        Group::truncate();
         $this->call(GroupsTableSeeder::class);
 
-        App\Student::truncate();
+        Student::truncate();
         $this->call(StudentsTableSeeder::class);
 
-        App\Classification::truncate();
+        Classification::truncate();
         $this->call(ClassificationsTableSeeder::class);
 
-        App\Attendance::truncate();
+        Attendance::truncate();
         $this->call(AttendancesTableSeeder::class);
+
+        Classroom::truncate();
+        $this->call(ClassroomsTableSeeder::class);
+
+        Subject::truncate();
+        $this->call(SubjectsTableSeeder::class);
+
+        Lecture::truncate();
+        $this->call(LecturesTableSeeder::class);
 
         if(config('database.default') !== 'sqlite') {
             DB::statement('SET FOREIGN_KEY_CHECKS=1');

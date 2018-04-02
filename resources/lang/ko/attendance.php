@@ -22,4 +22,10 @@ return [
 
     'early'                 => '조퇴',
     'nearest_early'         => '최근 조퇴',
+
+    // 지도교수
+
+    // 지도반 관리
+    'manage_student'        => '학생 관리',
+    'care_alert'            => '알림 설정',
 ];

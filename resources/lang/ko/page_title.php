@@ -17,9 +17,11 @@ return [
     // 02. 학생 컨트롤러에서 제공하는 페이지
     'student_index'         => '학생: 홈페이지',
     'student_attendance'    => '학생: 출결관리',
+    'student_lecture_main'  => "학생: 학업관리 메인",
 
     // 03. 지도교수 컨트롤러에서 제공하는 페이지
     'tutor_index'           => "지도교수: 홈페이지",
+    'tutor_myclass_create'  => '지도교수: 내 지도반 만들기',
 
     // 04. 교과목교수 컨트롤러에서 제공하는 페이지
     'professor_index'       => '교과목교수: 홈페이지',

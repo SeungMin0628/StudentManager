@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\DbInfoEnum;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ConstantEnum;
 use Psy\Exception\ErrorException;
@@ -70,9 +71,9 @@ class AttendanceController extends Controller {
             $argDate = explode('-', $argDate);
             // 검색단위가 week 이고, 기간을 parse 한 결과 배열 길이가 3일 때
             if ($argPeriod === ConstantEnum::PERIOD['weekly'] && sizeof($argDate) == 3) {
-                $date->year = $argDate[0];
+                $date->year  = $argDate[0];
                 $date->month = $argDate[1];
-                $date->day = (($argDate[2] - 1) * 7) + 1;
+                $date->day   = ($argDate[2] - 1) * 7 + 1;
             } // 검색단위가 month 이고, 기간을 parse 한 결과 배열 길이가 2일 때
             else if ($argPeriod === ConstantEnum::PERIOD['monthly'] && sizeof($argDate) == 2) {
                 $date->year = $argDate[0];
@@ -82,19 +83,19 @@ class AttendanceController extends Controller {
             }
         }
 
-        // 조회 일자가 현재보다 미래인 경우 - 예외 처리
-        if (today()->lte($date) &&
-                $argPeriod == ConstantEnum::PERIOD['weekly'] ? today()->weekOfMonth != $date->weekOfMonth : TRUE) {
-            throw new ErrorException();
-        }
-
         // 각 기간에 대한 문자열 추출
         switch ($argPeriod) {
             case ConstantEnum::PERIOD['weekly'];
                 $nowDate = $date->copy()->format('Y-m-') . $date->copy()->weekOfMonth;
                 $prevDate = $date->copy()->subWeek(1)->format('Y-m-') . $date->copy()->subWeek(1)->weekOfMonth;
+
+                $same_week_flag = 0;    // 다음주가 이번주와 같은 주인지 판단
+                if($date->copy()->addDay(6)->startOfWeek() === $date->copy()->startOfWeek()) {
+                    $same_week_flag = 1;
+                }
+
                 $nextDate = today()->lte($date) ? NULL :
-                    $date->copy()->addWeek(1)->format('Y-m-') . $date->copy()->addWeek(1)->weekOfMonth;
+                    $date->copy()->addWeek(1 + $same_week_flag)->format('Y-m-') . $date->copy()->addWeek(1)->weekOfMonth;
                 break;
             case ConstantEnum::PERIOD['monthly'];
                 $nowDate = $date->copy()->format($formatMonth);
@@ -115,6 +116,10 @@ class AttendanceController extends Controller {
         } else if ($argPeriod === ConstantEnum::PERIOD['monthly']) {
             $result = $db->selectAttendanceRecords($std_id,
                 $date->copy()->startOfMonth()->format($formatDay), $date->copy()->endOfMonth()->format($formatDay));
+        }
+
+        if(($result->{ConstantEnum::ATTENDANCE['ada']} + $result->{ConstantEnum::ATTENDANCE['absence']}) <= 0) {
+            return NULL;
         }
 
         // 출석율 계산

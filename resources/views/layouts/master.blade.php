@@ -17,6 +17,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>{{ $title }}</title>
+    <!-- 웹 페이지 헤드 아이콘-->
+    <link rel="shortcut icon" href="/resources/views/source/favicon.ico">
     {{-- 이하 jQuery와 BootStrap은 FlashMessage의 활성화를 위해 반드시 필요함 --}}
 
     <!-- jQuery -->

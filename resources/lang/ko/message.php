@@ -9,7 +9,7 @@ return [
     // 공통 메시지
     "wrong_input"                   => '잘못된 입력입니다.',
 
-    // 01. 로그인 / 회원가입
+    // 01. 회원관리
 
     // 성공 메시지
     "join_success"                  => '회원가입 완료!',
@@ -25,4 +25,19 @@ return [
 
     // 에러 메시지
     "join_failed"                   => '에러: 회원가입 실패!',
+
+
+    // 02. 출석 관리
+
+    // 성공 메시지
+    'tutor_store_myclass_success'   => "반 생성에 성공하였습니다.",
+
+    // 경고 메시지
+    'tutor_not_exists_myclass'      => '현재 지도반이 없습니다. 지도반을 생성하십시오.',
+
+    // 에러 메시지
+    "ada_records_not_exists"        => '해당 기간의 출석 내역이 없습니다.',
+    'tutor_store_myclass_failed'    => '반 생성에 실패하였습니다.',
+
+    // 03. 성적 관리
 ];
