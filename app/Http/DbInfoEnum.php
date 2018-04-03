@@ -82,9 +82,61 @@ class DbInfoEnum {
         'clf'           => 'classification'
     ];
 
+    // 등/하교 유형 테이블
     const CLASSIFICATIONS = [
         't_name'        => 'classifications',
         'id'            => 'id',
         'content'       => 'content'
+    ];
+
+    // 학생 수강목록 테이블
+    const SIGN_UP_LISTS = [
+        't_name'        => 'sign_up_lists',
+        'id'            => 'id',
+        "lec"           => 'lecture_id',
+        's_id'          => 'std_id',
+        'ach'           => 'achievement'
+    ];
+
+    // 개설 강의 목록 테이블
+    const LECTURES = [
+        't_name'        => 'lectures',
+        'id'            => 'id',
+        'sub_id'        => 'subject',
+        'divided'       => 'divided_class_id',
+        'prof'          => 'professor',
+        'ada_ref'       => 'attendance_reflection',
+        'mid_ref'       => 'midterm_reflection',
+        'fin_ref'       => 'final_reflection',
+        'tsk_ref'       => 'task_reflection',
+        'quz_ref'       => 'quiz_reflection'
+    ];
+
+    // 성적 유형 테이블
+    const SCORES = [
+        't_name'        => 'scores',
+        'id'            => 'id',
+        'reg_date'      => 'reg_date',
+        'type'          => 'type',
+        'content'       => 'content',
+        'prefect'       => 'perfect_score'
+    ];
+
+    // 취득 점수 테이블
+    const GAINED_SCORES = [
+        't_name'        => 'gained_score',
+        'type'          => 'score_type',
+        'std_id'        => 'std_id',
+        'score'         => 'score',
+    ];
+
+    const SUBJECTS = [
+        't_name'        => 'subjects',
+        'year'          => 'year',
+        'term'          => 'term',
+        'group'         => 'group_id',
+        'id'            => 'id',
+        'name'          => 'name',
+        'div'           => 'division_flag'
     ];
 }

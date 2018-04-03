@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Attendance;
+use App\Http\DbInfoEnum;
+use App\Lecture;
 use App\Student;
 use App\Http\Controllers\ConstantEnum;
 use App\Http\Controllers\AttendanceController;
@@ -87,7 +89,7 @@ class StudentController extends Controller {
         $this->validate($request, $rules);
 
         // 02. 학생 데이터 입력
-        $student = Student::find($request->post('id'));
+        $student = Student::find($request->post('std_id'));
 
         $student->password  = password_hash($request->post('password'), PASSWORD_DEFAULT);
         $student->email     = $request->post('email');
@@ -238,10 +240,59 @@ class StudentController extends Controller {
     }
 
     // 03-03. 학업 관리 메인
-    public function lectureMain() {
+    public function lectureMain($argDate = null) {
+        // 01. 변수 정의
+        $stdId          = session()->get('user')['info']->id;
+        $student        = Student::find($stdId);
+        $lecturesList   = $student->signUpLists()
+                            ->join('lectures', 'sign_up_lists.lecture_id', 'lectures.id')
+                            ->join('subjects', function($join) {
+                                $join->on('lectures.subject_id', 'subjects.id')
+                                    ->where([
+                                       ['subjects.year', 2018],
+                                       ['subjects.term', 1]
+                                    ]);
+                            })
+                            ->get()->all();
+
+        //$gainedScoreList    = ;
+
+        $lectureDataSet = [];
+
+        // 성적 정보 삽입
+        $scoreList = [
+            ConstantEnum::SCORE['midterm']    => [],
+            ConstantEnum::SCORE['final']      => [],
+            ConstantEnum::SCORE['task']       => [],
+            ConstantEnum::SCORE['quiz']       => [],
+        ];
+        foreach($scoreList as $score) {
+           $score = [
+               'count',
+               'perfect_score',
+               'gained_score',
+               'average',
+               'achievement'    => '',
+           ];
+       }
+
+
+        // 수강 강의별 필요 정보 삽입
+        foreach($lecturesList as $item) {
+            $temp = [
+                'title'          => $item[DbInfoEnum::SUBJECTS['name']],
+                'score'          => $scoreList,
+                'achievement'    => number_format($item[DbInfoEnum::SIGN_UP_LISTS['ach']] * 100, 2),
+                'data'           => $item
+            ];
+
+            array_push($lectureDataSet, $temp);
+        }
+
         // 03. View 단에 전송할 데이터
         $data = [
             'title'             => __('page_title.student_lecture_main'),
+            'lecture_list'      => $lectureDataSet,
         ];
 
         return view('student_lecture_main', $data);

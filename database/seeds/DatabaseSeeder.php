@@ -9,6 +9,9 @@ use App\Attendance;
 use App\Classroom;
 use App\Subject;
 use App\Lecture;
+use App\Score;
+use App\GainedScore;
+use App\SignUpList;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,6 +26,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // 더미 데이터 삽입 시더
+        /*
         Professor::truncate();
         $this->call(ProfessorsTableSeeder::class);
 
@@ -34,7 +38,7 @@ class DatabaseSeeder extends Seeder
 
         Classification::truncate();
         $this->call(ClassificationsTableSeeder::class);
-
+        */
         Attendance::truncate();
         $this->call(AttendancesTableSeeder::class);
 
@@ -46,6 +50,15 @@ class DatabaseSeeder extends Seeder
 
         Lecture::truncate();
         $this->call(LecturesTableSeeder::class);
+
+        Score::truncate();
+        $this->call(ScoresTableSeeder::class);
+
+        SignUpList::truncate();
+        $this->call(SignUpListsTableSeeder::class);
+
+        GainedScore::truncate();
+        $this->call(GainedScoresTableSeeder::class);
 
         if(config('database.default') !== 'sqlite') {
             DB::statement('SET FOREIGN_KEY_CHECKS=1');

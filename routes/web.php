@@ -91,7 +91,7 @@ Route::name('student.')->group(function() {
             ]);
 
             // 학업 관리 기능
-            Route::get('/lecture', [
+            Route::get('/lecture/{date?}', [
                 'as'    => 'lecture.main',
                 'uses'  => 'StudentController@lectureMain'
             ]);

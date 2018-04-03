@@ -41,4 +41,11 @@ class ConstantEnum {
         'early'         => 'early',
         'n_early'       => 'nearest_early'
     ];
+
+    const SCORE         = [
+        'midterm'       => 1,
+        'final'         => 2,
+        'task'          => 3,
+        'quiz'          => 4,
+    ];
 }

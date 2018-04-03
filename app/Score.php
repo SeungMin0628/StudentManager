@@ -48,7 +48,9 @@ class Score extends Model {
      * 반환값
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function gainedScores() {
+    public function gainedScore() {
         return $this->hasMany('App\GainedScore', 'score_type', 'id');
     }
+
+    //public function
 }
