@@ -15,9 +15,10 @@ return [
     'home_forgot_select'    => '회원정보찾기: 유형 선택',
 
     // 02. 학생 컨트롤러에서 제공하는 페이지
-    'student_index'         => '학생: 홈페이지',
-    'student_attendance'    => '학생: 출결관리',
-    'student_lecture_main'  => "학생: 학업관리 메인",
+    'student_index'             => '학생: 홈페이지',
+    'student_attendance'        => '학생: 출결관리',
+    'student_lecture_main'      => "학생: 학업관리 메인",
+    'student_lecture_details'   => '학생: :name 상세',
 
     // 03. 지도교수 컨트롤러에서 제공하는 페이지
     'tutor_index'           => "지도교수: 홈페이지",

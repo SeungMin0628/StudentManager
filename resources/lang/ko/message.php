@@ -8,6 +8,7 @@
 return [
     // 공통 메시지
     "wrong_input"                   => '잘못된 입력입니다.',
+    'catch_error_exception'         => '잘못된 접근입니다.',
 
     // 01. 회원관리
 

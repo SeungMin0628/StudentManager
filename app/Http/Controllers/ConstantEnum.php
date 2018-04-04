@@ -42,10 +42,23 @@ class ConstantEnum {
         'n_early'       => 'nearest_early'
     ];
 
+    // 과제 유형
     const SCORE         = [
+        1               => 'midterm',
+        2               => 'final',
+        3               => 'task',
+        4               => 'quiz',
         'midterm'       => 1,
         'final'         => 2,
         'task'          => 3,
         'quiz'          => 4,
+    ];
+
+    // 학기 유형
+    const TERM = [
+        '1'                 => 1,
+        'summer_vacation'   => 2,
+        '2'                 => 3,
+        'winter_vacation'   => 4
     ];
 }

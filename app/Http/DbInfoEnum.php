@@ -102,7 +102,7 @@ class DbInfoEnum {
     const LECTURES = [
         't_name'        => 'lectures',
         'id'            => 'id',
-        'sub_id'        => 'subject',
+        'sub_id'        => 'subject_id',
         'divided'       => 'divided_class_id',
         'prof'          => 'professor',
         'ada_ref'       => 'attendance_reflection',
@@ -116,6 +116,7 @@ class DbInfoEnum {
     const SCORES = [
         't_name'        => 'scores',
         'id'            => 'id',
+        'lecture'       => 'lecture_id',
         'reg_date'      => 'reg_date',
         'type'          => 'type',
         'content'       => 'content',
@@ -124,7 +125,7 @@ class DbInfoEnum {
 
     // 취득 점수 테이블
     const GAINED_SCORES = [
-        't_name'        => 'gained_score',
+        't_name'        => 'gained_scores',
         'type'          => 'score_type',
         'std_id'        => 'std_id',
         'score'         => 'score',

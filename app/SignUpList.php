@@ -51,4 +51,6 @@ class SignUpList extends Model {
     public function lecture() {
         return $this->belongsTo('App\Lecture', 'lecture_id', 'id');
     }
+
+
 }

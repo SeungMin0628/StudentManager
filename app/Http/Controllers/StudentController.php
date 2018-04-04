@@ -239,62 +239,91 @@ class StudentController extends Controller {
         return view('student_attendance', $data);
     }
 
-    // 03-03. 학업 관리 메인
+    // 03-03. 학업 관리
     public function lectureMain($argDate = null) {
-        // 01. 변수 정의
-        $stdId          = session()->get('user')['info']->id;
-        $student        = Student::find($stdId);
-        $lecturesList   = $student->signUpLists()
-                            ->join('lectures', 'sign_up_lists.lecture_id', 'lectures.id')
-                            ->join('subjects', function($join) {
-                                $join->on('lectures.subject_id', 'subjects.id')
-                                    ->where([
-                                       ['subjects.year', 2018],
-                                       ['subjects.term', 1]
-                                    ]);
-                            })
-                            ->get()->all();
+        // 01. 변수 설정
+        $dateInfo   = null;
+        $term       = null;
+        $prev_term  = null;
+        $next_term  = null;
 
-        //$gainedScoreList    = ;
-
-        $lectureDataSet = [];
-
-        // 성적 정보 삽입
-        $scoreList = [
-            ConstantEnum::SCORE['midterm']    => [],
-            ConstantEnum::SCORE['final']      => [],
-            ConstantEnum::SCORE['task']       => [],
-            ConstantEnum::SCORE['quiz']       => [],
-        ];
-        foreach($scoreList as $score) {
-           $score = [
-               'count',
-               'perfect_score',
-               'gained_score',
-               'average',
-               'achievement'    => '',
-           ];
-       }
+        // 02. 학기 정보 설정
+        // 데이터 예외처리
+        // 매개인자가 정해진 형식을 지키지 않을 경우 예외 발생
+        if(!is_null($argDate)) {
+            if(sizeof($dateInfo = explode('-', $argDate)) < 2) {
+                throw new ErrorException();
+            }
 
 
-        // 수강 강의별 필요 정보 삽입
-        foreach($lecturesList as $item) {
-            $temp = [
-                'title'          => $item[DbInfoEnum::SUBJECTS['name']],
-                'score'          => $scoreList,
-                'achievement'    => number_format($item[DbInfoEnum::SIGN_UP_LISTS['ach']] * 100, 2),
-                'data'           => $item
-            ];
-
-            array_push($lectureDataSet, $temp);
+            // 이전/다음 학기 정보 설정
+            if($dateInfo[1] == ConstantEnum::TERM['1']) {
+                // 설정 학기가 1학기인 경우 -> 지난학기 연도에서 1 감소
+                $prev_term  = ($dateInfo[0] - 1).'-'.ConstantEnum::TERM['winter_vacation'];
+            } else if($dateInfo[1] == ConstantEnum::TERM['winter_vacation']) {
+                $next_term  = ($dateInfo[0] + 1).'-'.ConstantEnum::TERM['1'];
+            }
+            $prev_term = is_null($prev_term) ? $dateInfo[0].'-'.($dateInfo[1] - 1) : $prev_term;
+            $next_term = is_null($next_term) ? $dateInfo[0].'-'.($dateInfo[1] + 1) : $next_term;
+        } else {
+            // 오늘 날짜에 따른 최초 학기 세팅
+            // 임시 분류
+            switch(today()->month) {
+                // 겨울방학
+                case 1:
+                case 2:
+                    $term       = ConstantEnum::TERM['winter_vacation'];
+                    $next_term  = (today()->year + 1).'-'.ConstantEnum::TERM['1'];
+                    break;
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    $term = ConstantEnum::TERM['1'];
+                    $prev_term  = (today()->year - 1).'-'.ConstantEnum::TERM['winter_vacation'];
+                    break;
+                case 7:
+                case 8:
+                    $term = ConstantEnum::TERM['summer_vacation'];
+                    break;
+                case 9:
+                case 10:
+                case 11:
+                case 12:
+                    $term       = ConstantEnum::TERM['2'];
+                    break;
+            }
+            $prev_term = is_null($prev_term) ? today()->year.'-'.($term - 1) : $prev_term;
+            $next_term = is_null($prev_term) ? today()->year.'-'.($term + 1) : $next_term;
         }
 
-        // 03. View 단에 전송할 데이터
+        // 03. 학업 데이터 추출
+        $stdId          = session()->get('user')['info']->id;
+        $year           = is_null($argDate) ? today()->year : $dateInfo[0];
+        $term           = is_null($argDate) ? $term : $dateInfo[1];
+        $dataList       =
+            app('App\Http\Controllers\StudyController')->getStudyAchievement($stdId, $year, $term);
+
+        // 04. View 단에 전송할 데이터
         $data = [
             'title'             => __('page_title.student_lecture_main'),
-            'lecture_list'      => $lectureDataSet,
+            'lecture_list'      => $dataList,
+            'year'              => $year,
+            'term'              => $term,
+            'prev_term'         => $prev_term,
+            'next_term'         => $next_term
         ];
 
         return view('student_lecture_main', $data);
+    }
+
+    // 학업 정보 상세조회
+    public function lectureDetails($argLectureId) {
+        // View 단에 전송할 데이터 바인딩
+        $data = [
+            'title' => __('page_title.student_lecture_details', ['name' => $argLectureId]),
+        ];
+
+        return view('student_lecture_details', $data);
     }
 }

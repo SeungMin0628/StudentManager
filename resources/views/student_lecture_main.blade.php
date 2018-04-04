@@ -14,9 +14,13 @@ use App\Http\DbInfoEnum;
     <div>
         <span>@lang('lecture.title')</span>
         <span>
-            <input type="button" value="@lang('pagination.previous')">
-            <span>2018년 1학기</span>
-            <input type="button" value="@lang('pagination.next')">
+            <input type="button" value="@lang('pagination.previous')"
+                   onclick="location.assign('{{ route('student.lecture.main', $prev_term) }}')">
+            <span>@lang('lecture.term', ['year' => $year, 'term' => $term])</span>
+            @if(!is_null($next_term))
+                <input type="button" value="@lang('pagination.next')"
+                       onclick="location.assign('{{ route('student.lecture.main', $next_term) }}')">
+            @endif
         </span>
     </div>
     <div style="overflow-y: auto; height: 600px;">
@@ -24,43 +28,41 @@ use App\Http\DbInfoEnum;
             <div>
                 <span>
                     <div>이미지</div>
-                    <div>과목명: {{ $lecture['title'] }}</div>
+                    <div>@lang('lecture.subject_name'): {{ $lecture['title'] }}</div>
                 </span>
                 <span>
                     <table border="1">
                         <tr>
                             <td></td>
-                            <td>횟수</td>
-                            <td>취득가능점수</td>
-                            <td>취득점수</td>
-                            <td>평균</td>
-                            <td>반영비율</td>
+                            <td>@lang('lecture.count')</td>
+                            <td>@lang('lecture.gettable_score')</td>
+                            <td>@lang('lecture.gained_score')</td>
+                            <td>@lang('lecture.average')</td>
+                            <td>@lang('lecture.reflection')</td>
                         </tr>
                         @foreach($lecture['score'] as $gainedScore)
                             <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>{{ $gainedScore['type'] }}</td>
+                                <td>{{ $gainedScore['count'] }}</td>
+                                <td>{{ $gainedScore['perfect_score'] }}</td>
+                                <td>{{ $gainedScore['gained_score'] }}</td>
+                                <td>{{ $gainedScore['average'] }}</td>
+                                <td>{{ $gainedScore['reflection'] }}%</td>
                             </tr>
                         @endforeach
                     </table>
                 </span>
             </div>
             <div>
-                학업성취도: {{ $lecture['achievement'] }}%
+                @lang('lecture.achievement'): {{ $lecture['achievement'] }}%
             </div>
             <div>
-                <input type="button" value="상세보기">
-            </div>
-            <div>
-                {{ var_dump($lecture) }}
+                <input type="button" value="@lang('interface.details')"
+                       onclick="location.assign('{{ route('student.lecture.details', $lecture['lecture_id']) }}')">
             </div>
             <hr>
         @empty
-            <span>현재 수강중 과목 없음</span>
+            <span>@lang('lecture.not_exists_lecture')</span>
         @endforelse
     </div>
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\DbInfoEnum;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -52,5 +53,20 @@ class Score extends Model {
         return $this->hasMany('App\GainedScore', 'score_type', 'id');
     }
 
-    //public function
+    public function selectGainedScoreForStudent($lectureId, $stdId) {
+        return Score::where(DbInfoEnum::SCORES['lecture'], $lectureId)
+            ->join(DbInfoEnum::GAINED_SCORES['t_name'], function($join) use ($stdId) {
+                 $join->on(DbInfoEnum::GAINED_SCORES['t_name'].'.'.DbInfoEnum::GAINED_SCORES['type'], DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['id'])
+                     ->where(DbInfoEnum::GAINED_SCORES['t_name'].'.'.DbInfoEnum::GAINED_SCORES['std_id'], $stdId);
+            })
+            ->selectRaw(
+                DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['type']." AS 'type',
+                COUNT(".DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['id'].") AS 'count',  
+                AVG(".DbInfoEnum::GAINED_SCORES['t_name'].".".DbInfoEnum::GAINED_SCORES['score'].") AS 'average',
+                SUM(".DbInfoEnum::GAINED_SCORES['t_name'].".".DbInfoEnum::GAINED_SCORES['score'].") AS 'gained_score', 
+                SUM(".DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['prefect'].") AS 'perfect_score'
+             ")
+            ->groupBy(DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['type'])
+            ->get()->all();
+    }
 }

@@ -95,6 +95,12 @@ Route::name('student.')->group(function() {
                 'as'    => 'lecture.main',
                 'uses'  => 'StudentController@lectureMain'
             ]);
+
+            // 학업 정보 조회 상세
+            Route::get('/lecture/details/{lectureId}', [
+                'as'    => 'lecture.details',
+                'uses'  => 'StudentController@lectureDetails'
+            ]);
         });
     });
 });

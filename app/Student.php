@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Http\DbInfoEnum;
 
 /**
  * 클래스명:                       Student
@@ -195,5 +196,41 @@ class Student extends Model {
      */
     public function alerts() {
         return $this->hasMany('App\Alert', 'std_id', 'id');
+    }
+
+    /**
+     *  함수명:                            getLecturesInfo
+     *  함수 설명:                         해당 학생이 수강하는 과목별 학업성취도와 성적 반영율을 조회
+     *  만든날:                            2018년 4월 4일
+     *
+     *  매개변수 목록
+     *  @param $argStdId:                  학번
+     *  @param $argYear:                   조회 연도
+     *  @param $argTerm:                   조회 학기
+     *
+     *  지역변수 목록
+     *  $student:                          조회한 학생 정보
+     *
+     *  반환값
+     *  @return                            mixed
+     */
+    public function getLecturesInfo($argStdId, $argYear, $argTerm) {
+        return Student::find($argStdId)->signUpLists()
+            // 수강 과목 테이블 조인 - 강의 코드와 과제별 성적 반영율을 획득
+            ->join(DbInfoEnum::LECTURES['t_name'], DbInfoEnum::SIGN_UP_LISTS['t_name'].'.'.DbInfoEnum::SIGN_UP_LISTS['lec'], DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['id'])
+            // 과목 테이블 조인 - 조회 연도와 학기를 제한하기 위해
+            ->join(DbInfoEnum::SUBJECTS['t_name'], function($join) use ($argYear, $argTerm) {
+                $join->on(DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['sub_id'], DbInfoEnum::SUBJECTS['t_name'].'.'.DbInfoEnum::SUBJECTS['id'])
+                    ->where([
+                        [DbInfoEnum::SUBJECTS['t_name'].'.'.DbInfoEnum::SUBJECTS['year'], $argYear],
+                        [DbInfoEnum::SUBJECTS['t_name'].'.'.DbInfoEnum::SUBJECTS['term'], $argTerm]
+                    ]);
+            })
+            // 조회목록 : 강의 아이디, 과목명, 학업 성취율, (기말, 중간, 과제, 쪽지) 성적 반영율
+            ->select(
+                DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['id'], DbInfoEnum::SUBJECTS['t_name'].'.'.DbInfoEnum::SUBJECTS['name'],DbInfoEnum::SIGN_UP_LISTS['t_name'].'.'.DbInfoEnum::SIGN_UP_LISTS['ach'], DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['fin_ref'],
+                DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['mid_ref'], DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['tsk_ref'], DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['quz_ref']
+            )
+            ->get()->all();
     }
 }

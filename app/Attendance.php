@@ -72,6 +72,22 @@ class Attendance extends Model {
         return $this->belongsTo('App\LeaveSchool', 'leave_school', 'id');
     }
 
+    /**
+     * 함수명:                         selectAttendanceRecords
+     * 함수 설명:                      하교 테이블과 출석 테이블의 연결 관계를 정의
+     * 만든날:                         2018년 4월 3일
+     *
+     * 매개변수 목록
+     * @param $argStdId:               학번
+     * @param $startDate:              조회 시작일
+     * @param $endDate:                조회 종료일
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         array
+     */
     public function selectAttendanceRecords($argStdId, $startDate, $endDate) {
         // 01. 지역 변수 선언
         $dbInfoSelf     = DbInfoEnum::ATTENDANCES;
@@ -118,6 +134,6 @@ class Attendance extends Model {
                 COUNT(CASE leave_schools.early_flag WHEN TRUE THEN TRUE END) AS 'early',
                 MAX(CASE WHEN leave_schools.early_flag IS TRUE THEN attendances.reg_date END) AS 'nearest_early'
             ")*/
-            ->get()[0];
+            ->get()->all()[0];
     }
 }

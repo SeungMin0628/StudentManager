@@ -29,7 +29,7 @@
             {!! $errors->first('id', '<span class="form-error">:message</span>') !!}
         </div>
         <div>
-            <label for="password">@lang('account.password')</label>
+            <label for="password">@lang('account.pw')</label>
             <input type="password" id="password" name="password" required>
             {!! $errors->first('password', '<span class="form-error">:message</span>') !!}
         </div>

@@ -14,6 +14,7 @@ return [
 
     // 회원가입 시 필요 정보
     "id"                => "ID",
+    'pw'                => 'pw',
     "name"              => "姓名",
     "password"          => "パスワード",
     "check_password"    => 'パスワード確認',
