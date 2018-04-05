@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Controllers\ConstantEnum;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\DbInfoEnum;
 
@@ -200,22 +201,21 @@ class Student extends Model {
 
     /**
      *  함수명:                            getLecturesInfo
-     *  함수 설명:                         해당 학생이 수강하는 과목별 학업성취도와 성적 반영율을 조회
+     *  함수 설명:                         해당 학생이 해당 학기에 수강한 강의의 코드를 조회
      *  만든날:                            2018년 4월 4일
      *
      *  매개변수 목록
-     *  @param $argStdId:                  학번
      *  @param $argYear:                   조회 연도
      *  @param $argTerm:                   조회 학기
      *
      *  지역변수 목록
-     *  $student:                          조회한 학생 정보
+     *  null
      *
      *  반환값
      *  @return                            mixed
      */
-    public function getLecturesInfo($argStdId, $argYear, $argTerm) {
-        return Student::find($argStdId)->signUpLists()
+    public function getLecturesIdAtThisTerm($argYear, $argTerm) {
+        return $this->signUpLists()
             // 수강 과목 테이블 조인 - 강의 코드와 과제별 성적 반영율을 획득
             ->join(DbInfoEnum::LECTURES['t_name'], DbInfoEnum::SIGN_UP_LISTS['t_name'].'.'.DbInfoEnum::SIGN_UP_LISTS['lec'], DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['id'])
             // 과목 테이블 조인 - 조회 연도와 학기를 제한하기 위해
@@ -226,11 +226,58 @@ class Student extends Model {
                         [DbInfoEnum::SUBJECTS['t_name'].'.'.DbInfoEnum::SUBJECTS['term'], $argTerm]
                     ]);
             })
-            // 조회목록 : 강의 아이디, 과목명, 학업 성취율, (기말, 중간, 과제, 쪽지) 성적 반영율
-            ->select(
-                DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['id'], DbInfoEnum::SUBJECTS['t_name'].'.'.DbInfoEnum::SUBJECTS['name'],DbInfoEnum::SIGN_UP_LISTS['t_name'].'.'.DbInfoEnum::SIGN_UP_LISTS['ach'], DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['fin_ref'],
-                DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['mid_ref'], DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['tsk_ref'], DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['quz_ref']
-            )
+            // 조회목록 : 강의 아이디
+            ->select(DbInfoEnum::LECTURES['t_name'].'.'.DbInfoEnum::LECTURES['id'])
             ->get()->all();
+    }
+
+    /**
+     *  함수명:                            getDetailsOfLecture
+     *  함수 설명:                         해당 강의에서 학생이 취득한 성적을 조회
+     *  만든날:                            2018년 4월 4일
+     *
+     *  매개변수 목록
+     *  @param $argLectureId:              조회하는 강의 번호
+     *
+     *  지역변수 목록
+     *  null
+     *
+     *  반환값
+     *  @return                            mixed
+     */
+    public function getDetailsOfLecture($argLectureId) {
+        return $this->gainedScores()
+            ->rightJoin(DbInfoEnum::SCORES['t_name'], function($join) use ($argLectureId) {
+                $join->on(DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['id'], DbInfoEnum::GAINED_SCORES['t_name'].'.'.DbInfoEnum::GAINED_SCORES['type'])
+                    ->where(DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['lecture'], $argLectureId);
+            })->selectRaw(
+                DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['reg_date'].",
+                CASE ".DBInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['type']." 
+                WHEN ".ConstantEnum::TERM['1st_term']." THEN '".__('lecture.1st_term')."'
+                WHEN ".ConstantEnum::TERM['summer_vacation']." THEN '".__('lecture.summer_vacation')."'
+                WHEN ".ConstantEnum::TERM['2nd_term']." THEN '".__('lecture.2nd_term')."'
+                WHEN ".ConstantEnum::TERM['winter_vacation']." THEN '".__('lecture.winter_vacation')."' 
+                END AS '".DbInfoEnum::SCORES['type']."', 
+                ".DBInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['content'].", 
+                ".DBInfoEnum::GAINED_SCORES['t_name'].'.'.DbInfoEnum::GAINED_SCORES['score'].", 
+                ".DBInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['prefect']
+            )->orderBy(DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['reg_date'], 'desc')
+            ->get()->all();
+
+        /*
+         * Student::find(9885116)->gainedScores()
+         * ->join('scores', function($join) {
+         *      $join->on('scores.id', 'gained_scores.score_type')
+         *          ->where('scores.lecture_id', 14);
+         * })->selectRaw("
+         *      scores.reg_date,
+         *      CASE scores.type
+         *          WHEN 1 THEN 'AAA'
+         *          ELSE 'BBB' END AS 'TYPE',
+         *      scores.content, gained_scores.score,
+         *      scores.perfect_score
+         * ")->orderBy('scores.reg_date', 'desc')
+         * ->paginate(3)
+         */
     }
 }

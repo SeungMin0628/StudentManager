@@ -123,4 +123,8 @@ class Lecture extends Model {
     public function timetables() {
         return $this->hasMany('App\TimeTable', 'lecture_id', 'id');
     }
+
+    public function getLecturesInfo($argLectureId) {
+
+    }
 }

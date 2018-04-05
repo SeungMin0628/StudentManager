@@ -12,6 +12,7 @@ return [
     "submit"            => "등록",
 
     // 기간 설정
+    'date'              => '날짜',
     "weekly"            => '주간',
     'monthly'           => '월간',
 

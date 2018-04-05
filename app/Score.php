@@ -53,6 +53,21 @@ class Score extends Model {
         return $this->hasMany('App\GainedScore', 'score_type', 'id');
     }
 
+    /**
+     * 함수명:                         selectGainedScoreForStudent
+     * 함수 설명:                      해당 학생이 해당 과목에서 취득한 점수 목록을 출력
+     * 만든날:                         2018년 4월 05일
+     *
+     * 매개변수 목록
+     * @param $lectureId:              과목 번호
+     * @param $stdId:                  학번
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                          mixed
+     */
     public function selectGainedScoreForStudent($lectureId, $stdId) {
         return Score::where(DbInfoEnum::SCORES['lecture'], $lectureId)
             ->join(DbInfoEnum::GAINED_SCORES['t_name'], function($join) use ($stdId) {
@@ -64,7 +79,7 @@ class Score extends Model {
                 COUNT(".DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['id'].") AS 'count',  
                 AVG(".DbInfoEnum::GAINED_SCORES['t_name'].".".DbInfoEnum::GAINED_SCORES['score'].") AS 'average',
                 SUM(".DbInfoEnum::GAINED_SCORES['t_name'].".".DbInfoEnum::GAINED_SCORES['score'].") AS 'gained_score', 
-                SUM(".DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['prefect'].") AS 'perfect_score'
+                SUM(".DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['prefect'].") AS 'perfect_score'            
              ")
             ->groupBy(DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['type'])
             ->get()->all();

@@ -7,6 +7,7 @@
  */
 ?>
 <span>&lt;학생&gt;프로젝트 로고</span>
+<span><a href="{{ route('student.info') }}">@lang('account.title')</a></span>
 <span><a href="{{ route('student.attendance') }}">@lang('attendance.title')</a></span>
-<span><a href="{{ route('student.lecture.main') }}">@lang('lecture.title')</a></span>
-<span>상담 관리</span>
+<span><a href="{{ route('student.lecture') }}">@lang('lecture.title')</a></span>
+<span><a href="{{ route('student.counsel') }}">@lang('counsel.title')</a></span>

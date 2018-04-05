@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\NotAccessibleException;
+use App\Lecture;
 use Illuminate\Http\Request;
 use App\Student;
 use App\Score;
 use App\Http\DbInfoEnum;
+use Psy\Exception\ErrorException;
 
 /**
  * 클래스명:                       StudyController
@@ -26,7 +29,7 @@ class StudyController extends Controller {
     // 02. 멤버 메서드 정의
     /**
      * 함수명:                         getStudyAchievement
-     * 함수 설명:                      해당 학생의 과목별 학업성취도를 획득
+     * 함수 설명:                      해당 학생이 해당 학기에 수강한 모든 과목별 학업성취도를 획득
      * 만든날:                         2018년 4월 04일
      *
      * 매개변수 목록
@@ -35,67 +38,84 @@ class StudyController extends Controller {
      * @param $argTerm:                조회 학기
      *
      * 지역변수 목록
-     * null
+     * $student:                       학생 테이블 접근용 모델
+     * $lectureList:                   학생이 수강한 과목 정보
+     * $lectureDataSet:                각 과목별 학업성취 데이터
      *
      * 반환값
      * @return                         array
      */
-    public function getStudyAchievement($argStdId, $argYear, $argTerm) {
+    public function getStudyAchievementList($argStdId, $argYear, $argTerm) {
         // 변수 설정
-        $student = new Student();
-        $lectureList = $student->getLecturesInfo($argStdId, $argYear, $argTerm);
+        $student = Student::find($argStdId);
+        $lectureList = $student->getLecturesIdAtThisTerm($argYear, $argTerm);
 
 
         // 수강 강의별 필요 정보 삽입
         $lectureDataSet = [];
         foreach($lectureList as $lecture) {
-            $scores     = new Score();
-            $scoreInfo  = $scores->selectGainedScoreForStudent($lecture->id, $argStdId);
-
-            $scoreList          = array();      // 각 과목별 점수 데이터를 저장하기 위한 배열
-            $achievementList    = array();      // 각 과목별 학업성취율 계산을 위한 배열
-            foreach($scoreInfo as $value) {
-                $reflection = 0;
-                switch($value['type']) {
-                    case ConstantEnum::SCORE['midterm']:
-                        $reflection = $lecture[DbInfoEnum::LECTURES['mid_ref']];
-                        break;
-                    case ConstantEnum::SCORE['final']:
-                        $reflection = $lecture[DbInfoEnum::LECTURES['fin_ref']];
-                        break;
-                    case ConstantEnum::SCORE['task']:
-                        $reflection = $lecture[DbInfoEnum::LECTURES['tsk_ref']];
-                        break;
-                    case ConstantEnum::SCORE['quiz']:
-                        $reflection = $lecture[DbInfoEnum::LECTURES['quz_ref']];
-                        break;
-                }
-
-                // 성적별 점수 도출
-                $achievement = ($value['gained_score'] / $value['perfect_score']) * $reflection;
-                array_push($achievementList, $achievement);
-
-                $scoreList[$value['type']] = [
-                    'type'              => __('lecture.'.ConstantEnum::SCORE[$value['type']]),
-                    'count'             => $value['count'],
-                    'perfect_score'     => $value['perfect_score'],
-                    'gained_score'      => $value['gained_score'],
-                    'average'           => number_format($value['average'], 2),
-                    'reflection'        => number_format($reflection * 100, 2),
-                ];
-            }
-
-            // 필요 데이터 삽입
-            $temp = [
-                'title'          => $lecture[DbInfoEnum::SUBJECTS['name']],
-                'score'          => $scoreList,
-                'achievement'    => number_format(array_sum($achievementList) * 100, 2),
-                'lecture_id'     => $lecture[DbInfoEnum::LECTURES['id']]
-            ];
-
-            array_push($lectureDataSet, $temp);
+            array_push($lectureDataSet, $this->getStudyAchievement($lecture->id, $argStdId));
         }
 
         return $lectureDataSet;
+    }
+
+    public function getStudyAchievement($lectureId, $stdId) {
+        $scoreModel     = new Score();
+        $lecture        = Lecture::find($lectureId);
+
+        // 존재하지 않는 강의에 접근하려는 경우 -> 예외 발생
+        if(is_null($lecture)) {
+            throw new ErrorException();
+        }
+
+        $subject        = $lecture->subject()->get()[0];
+        $scoreInfo      = $scoreModel->selectGainedScoreForStudent($lectureId, $stdId);
+
+        // 조회한 과목이 해당 학생이 수강하는 과목이 아닌 경우
+        if(sizeof($scoreInfo) <= 0) {
+            throw new NotAccessibleException(__('exception.not_sign_upped_lecture'));
+        }
+
+        $scoreList          = array();      // 각 과목별 점수 데이터를 저장하기 위한 배열
+        $achievementList    = array();      // 각 과목별 학업성취율 계산을 위한 배열
+        foreach($scoreInfo as $value) {
+            $reflection = 0;
+            switch($value['type']) {
+                case ConstantEnum::SCORE['midterm']:
+                    $reflection = $lecture->{DbInfoEnum::LECTURES['mid_ref']};
+                    break;
+                case ConstantEnum::SCORE['final']:
+                    $reflection = $lecture->{DbInfoEnum::LECTURES['fin_ref']};
+                    break;
+                case ConstantEnum::SCORE['task']:
+                    $reflection = $lecture->{DbInfoEnum::LECTURES['tsk_ref']};
+                    break;
+                case ConstantEnum::SCORE['quiz']:
+                    $reflection = $lecture->{DbInfoEnum::LECTURES['quz_ref']};
+                    break;
+            }
+
+            // 성적별 점수 도출
+            $achievement = ($value['gained_score'] / $value['perfect_score']) * $reflection;
+            array_push($achievementList, $achievement);
+
+            $scoreList[$value['type']] = [
+                'type'              => __('lecture.'.ConstantEnum::SCORE[$value['type']]),
+                'count'             => $value['count'],
+                'perfect_score'     => $value['perfect_score'],
+                'gained_score'      => $value['gained_score'],
+                'average'           => number_format($value['average'], 2),
+                'reflection'        => number_format($reflection * 100, 0),
+            ];
+        }
+
+        // 필요 데이터 삽입
+        return [
+            'title'          => $subject->{DbInfoEnum::SUBJECTS['name']},
+            'score'          => $scoreList,
+            'achievement'    => number_format(array_sum($achievementList) * 100, 2),
+            'gained_score'   => Student::find($stdId)->getDetailsOfLecture($lectureId)
+        ];
     }
 }

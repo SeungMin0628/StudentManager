@@ -40,14 +40,10 @@ Route::name('home.')->group(function() {
     ]);
 
     // 아이디/비밀번호 찾기 관련 기능 정의
-    Route::prefix('forget')->group(function() {
-
-        // 유형 선택
-        Route::get('/', [
-            'as'   => 'forgot.select_type',
-            'uses' => 'HomeController@forgot'
-        ]);
-    });
+    Route::get('/forgot', [
+        'as'   => 'forgot',
+        'uses' => 'HomeController@forgot'
+    ]);
 });
 
 // 회원가입 유형 획득
@@ -83,8 +79,13 @@ Route::name('student.')->group(function() {
                 'uses'  => 'StudentController@index'
             ]);
 
+            // 학생 회원관리 페이지
+            Route::get('/info', [
+                'as'    => 'info',
+                'uses'  => 'StudentController@info'
+            ]);
+
             // 출결 관리 기능
-            // 출결관리 페이지
             Route::get('/attendance/{period?}/{date?}', [
                 'as'    => 'attendance',
                 'uses'  => 'StudentController@getAttendanceRecords'
@@ -92,14 +93,13 @@ Route::name('student.')->group(function() {
 
             // 학업 관리 기능
             Route::get('/lecture/{date?}', [
-                'as'    => 'lecture.main',
+                'as'    => 'lecture',
                 'uses'  => 'StudentController@lectureMain'
             ]);
 
-            // 학업 정보 조회 상세
-            Route::get('/lecture/details/{lectureId}', [
-                'as'    => 'lecture.details',
-                'uses'  => 'StudentController@lectureDetails'
+            Route::get('/counsel', [
+                'as'    => 'counsel',
+                'uses'  => 'StudentController@counsel'
             ]);
         });
     });
@@ -132,14 +132,36 @@ Route::name('tutor.')->group(function() {
                 'uses'  => 'TutorController@index'
             ]);
 
-            Route::get('/myclass/attendance', [
-                'as'    => 'myclass.attendance',
-                'uses'  => 'TutorController@getAttendanceRecordsMyClass'
+            // 계정관리
+            Route::get('/info', [
+                'as'    => 'info',
+                'uses'  => 'TutorController@info'
             ]);
 
+            // 지도반 관련
+
+            // 내 지도반 관리
+            Route::get('/myclass/manage', [
+                'as'    => 'myclass.manage',
+                'uses'  => 'TutorController@manageMyClass'
+            ]);
+
+            // 내 지도반 생성
             Route::get('/myclass/create', [
                 'as'    => 'myclass.create',
                 'uses'  => 'TutorController@createMyClass'
+            ]);
+
+            // 상담관리
+            Route::get('/counsel', [
+                'as'    => 'counsel',
+                'uses'  => 'TutorController@counsel'
+            ]);
+
+            // 관리 & 설정
+            Route::get('/config', [
+                'as'    => 'config',
+                'uses'  => 'TutorController@config'
             ]);
         });
     });
@@ -170,6 +192,24 @@ Route::name('professor.')->group(function() {
            Route::get('/', [
                'as'     => 'index',
                'uses'   => 'ProfessorController@index'
+           ]);
+
+           // 교과목교수 계정관리 페이지
+           Route::get('/info', [
+                'as'    => 'info',
+                'uses'  => 'ProfessorController@info'
+           ]);
+
+           // 교과목교수 수강반 관리 페이지
+           Route::get('/lecture', [
+               'as'     => 'lecture',
+               'uses'   => 'ProfessorController@lecture'
+           ]);
+
+           // 교과목교수 상담관리 페이지
+           Route::get('/counsel', [
+               'as'     => 'counsel',
+               'uses'   => 'ProfessorController@counsel'
            ]);
        });
    });

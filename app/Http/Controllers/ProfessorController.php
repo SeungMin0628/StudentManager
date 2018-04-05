@@ -29,6 +29,8 @@ class ProfessorController extends Controller {
     // 03. 멤버 메서드 정의
 
     // 교과목 교수 전용 기능
+
+    // 03-01-01. 회원 관리 기능
     /**
      * 함수명:                         index
      * 함수 설명:                      교과목 교수가 로그인했을 때 가장 먼저 보는 메인 페이지를 출력
@@ -128,9 +130,79 @@ class ProfessorController extends Controller {
         return response()->json(['msg' => $regMsg], 200);
     }
 
+    /**
+     * 함수명:                         info
+     * 함수 설명:                      사용자의 계정을 관리하기 위한 페이지를 출력
+     * 만든날:                         2018년 4월 05일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function info() {
+        $data = [
+            'title'             => __('page_title.professor_info'),
+        ];
+
+        return view('professor_info', $data);
+    }
+
+    // 03-01-02. 수강반 관리
+
+    /**
+     * 함수명:                         lecture
+     * 함수 설명:                      사용자의 수강반을 관리하기 위한 페이지를 출력
+     * 만든날:                         2018년 4월 05일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function lecture() {
+        $data = [
+            'title'         => __('page_title.professor_lecture'),
+        ];
+
+        return view('professor_lecture', $data);
+    }
+
+    // 03-01-03. 상담 관리
+
+    /**
+     * 함수명:                         counsel
+     * 함수 설명:                      사용자의 상담을 관리하기 위한 페이지를 출력
+     * 만든날:                         2018년 4월 05일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function counsel() {
+        $data = [
+            'title'         => __('page_title.professor_counsel'),
+        ];
+
+        return view('professor_counsel', $data);
+    }
+
     // 교수 공통 기능
 
-    // 01. 회원 관리
+    // 03-02-01. 회원 관리
     /**
      * 함수명:                         login
      * 함수 설명:                      (교수 공통) 사용자가 입력한 ID로 로그인 알고리즘 실행

@@ -209,16 +209,12 @@ class HomeController extends Controller
      * 반환값
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function forgot(Request $request = null) {
-        if(is_null($request)) {
-            $data = [
-                'title' => __('page_title.home_forgot_select')
-            ];
+    public function forgot() {
+        $data = [
+            'title' => __('page_title.home_forgot_select')
+        ];
 
-            return view('forgot_select', $data);
-        } else {
-
-        }
+        return view('forgot', $data);
     }
 
     // 03-02. 다국어 지원

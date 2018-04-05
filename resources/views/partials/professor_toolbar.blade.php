@@ -7,6 +7,6 @@
  */
 ?>
 <span>&lt;교과목교수&gt;프로젝트 로고</span>
-<span>회원정보</span>
-<span>수강반</span>
-<span>상담 관리</span>
+<span><a href="{{ route('professor.info') }}">@lang('account.title')</a></span>
+<span><a href="{{ route('professor.lecture') }}">@lang('lecture.class')</a></span>
+<span><a href="{{ route('professor.counsel') }}">@lang('counsel.title')</a></span>

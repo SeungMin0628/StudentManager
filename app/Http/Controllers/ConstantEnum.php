@@ -15,6 +15,8 @@ namespace App\Http\Controllers;
  *      ATTENDANCE :               출석 관련 정보를 정의
  */
 class ConstantEnum {
+    const GAINED_SCORE_PAGINATION   = 3;
+
     //  사용자 유형을 정의
     const USER_TYPE     = [
         'student'       => 'student',
@@ -56,9 +58,13 @@ class ConstantEnum {
 
     // 학기 유형
     const TERM = [
-        '1'                 => 1,
+        '1st_term'          => 1,
         'summer_vacation'   => 2,
-        '2'                 => 3,
-        'winter_vacation'   => 4
+        '2nd_term'          => 3,
+        'winter_vacation'   => 4,
+        1                   => '1st_term',
+        2                   => 'summer_vacation',
+        3                   => '2nd_term',
+        4                   => 'winter_vacation',
     ];
 }

@@ -37,6 +37,6 @@
             <button type="submit">@lang('interface.login')</button>
         </div>
         <div><a href="{{ route('home.join') }}">@lang('interface.join')</a></div>
-        <div><a href="{{ route('home.forgot.select_type') }}">@lang('interface.forgot')</a></div>
+        <div><a href="{{ route('home.forgot') }}">@lang('interface.forgot')</a></div>
     </form>
 @endsection

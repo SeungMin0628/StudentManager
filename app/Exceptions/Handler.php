@@ -50,16 +50,14 @@ class Handler extends ExceptionHandler
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception) {
-        if ($exception instanceof ErrorException) {
-            flash()->warning(__('message.catch_error_exception').' 예외 사항: '.$exception->getMessage());
+        if ($exception instanceof NotAccessibleException) {
+            flash()->error(is_null($exception->getMessage()) ? __('exception.catch_not_accessible_exception') : $exception->getMessage());
             return back();
-
-            /*
+        } else if ($exception instanceof ErrorException) {
             return response(view('errors.notice', [
                 'title'         => 'Page Not Found',
                 'description'   => 'Sorry, the page or resource you are trying to view does not exist. '
-                                    ."{$exception->getMessage()}"
-            ]), 404);*/
+            ]), 404);
         }
 
 

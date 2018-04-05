@@ -2,19 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Attendance;
+use App\Exceptions\NotAccessibleException;
 use App\Http\DbInfoEnum;
-use App\Lecture;
 use App\Student;
-use App\Http\Controllers\ConstantEnum;
-use App\Http\Controllers\AttendanceController;
+use App\Subject;
+use App\Score;
+use App\Lecture;
 use Illuminate\Http\Request;
-use Mockery\Exception;
-use PhpParser\Error;
 use Psy\Exception\ErrorException;
-use Symfony\Component\CssSelector\Tests\Node\CombinedSelectorNodeTest;
-use Illuminate\Support\Carbon;
-use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 /**
  * 클래스명:                       StudentController
@@ -36,6 +31,9 @@ class StudentController extends Controller {
 
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
+
+    // #Web
+
     /**
      * 함수명:                         index
      * 함수 설명:                      학생이 로그인했을 때 가장 먼저 보는 메인 페이지를 출력
@@ -60,20 +58,24 @@ class StudentController extends Controller {
     }
 
     // 03-01. 계정 관리
+
     /**
      * 함수명:                         store
      * 함수 설명:                      학생이 작성한 회원가입 양식을 검증하고 저장
      * 만든날:                         2018년 3월 16일
      *
      * 매개변수 목록
-     * @param $request:                학생이 작성한 회원가입 Form 데이터
+     * @param Request $request :                학생이 작성한 회원가입 Form 데이터
      *
      * 지역변수 목록
      * $data(array):                   View 단에 전달하는 매개인자를 저장하는 배열
      *      $title(string):            HTML Title
      *
      * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View 예외
+     *
+     * 예외
+     * @throws                         NotAccessibleException
      */
     public function store(Request $request) {
         // 01. form 입력값 검증
@@ -97,8 +99,7 @@ class StudentController extends Controller {
 
         // 저장 실패시 전 페이지로 돌아감
         if(!$student->save()) {
-            flash()->error(__('message.join_failed'))->important();
-            return back();
+            throw new NotAccessibleException(__('exception.join_failed'));
         }
 
         flash(__('message.join_success'));
@@ -184,15 +185,38 @@ class StudentController extends Controller {
         }
     }
 
+    /**
+     * 함수명:                         info
+     * 함수 설명:                      사용자 정보 관리 페이지를 출력
+     * 만든날:                         2018년 4월 05일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function info() {
+        $data = [
+            'title'     => __('page_title.student_info'),
+        ];
+
+        return view('student_info', $data);
+    }
+
     // 03-02. 출결 관리
+
     /**
      * 함수명:                         getAttendanceRecords
      * 함수 설명:                      해당 일자의 출결 기록을 조회
      * 만든날:                         2018년 4월 01일
      *
      * 매개변수 목록
-     * @param $argPeriod:              조회기간 설정
-     * @param $argDate:                조회일자
+     * @param $argPeriod :             조회기간 설정
+     * @param $argDate :               조회일자
      *
      * 지역변수 목록
      * $std_id(integer):               현재 로그한 학생의 학번
@@ -200,7 +224,10 @@ class StudentController extends Controller {
      * $data(array):                   View 단에 바인딩할 데이터
      *
      * 반환값
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View 예외
+     *
+     * 예외
+     * @throws                          NotAccessibleException
      */
     public function getAttendanceRecords($argPeriod = ConstantEnum::PERIOD['weekly'], $argDate = null) {
         // 01. 데이터 획득
@@ -208,9 +235,9 @@ class StudentController extends Controller {
         $attendanceData =
             app('App\Http\Controllers\AttendanceController')->getAttendanceRecords($std_id, $argPeriod, $argDate);
 
+        // 해당 기간동안 출석 데이터가
         if(is_null($attendanceData)) {
-            flash()->warning(__('message.ada_records_not_exists'));
-            return back();
+            throw new NotAccessibleException(__('exception.ada_records_not_exists'));
         }
 
         // 02. 매개 데이터 삽입
@@ -240,73 +267,123 @@ class StudentController extends Controller {
     }
 
     // 03-03. 학업 관리
-    public function lectureMain($argDate = null) {
-        // 01. 변수 설정
-        $dateInfo   = null;
-        $term       = null;
-        $prev_term  = null;
-        $next_term  = null;
 
-        // 02. 학기 정보 설정
-        // 데이터 예외처리
-        // 매개인자가 정해진 형식을 지키지 않을 경우 예외 발생
+    /**
+     * 함수명:                         lectureMain
+     * 함수 설명:                      사용자가 해당 학기에 수강한 과목에 대한 전과목 학업기록을 조회
+     * 만든날:                         2018년 4월 05일
+     *
+     * 매개변수 목록
+     * @param $argDate :               조회일자
+     *
+     * 지역변수 목록
+     * $dateInfo(array):               기간 정보
+     *      [0]:                       연도
+     *      [1]:                       학기
+     * $nowTerm(integer):              현재 학기
+     * $term(integer):                 조회 시점이 되는 학기
+     * $prev_term(integer):            지난 학기
+     * $next_term(integer):            다음 학기
+     * $stdId(integer):                사용자의 학번
+     * $dataList(array):               조회된 과목별 학업 데이터
+     *
+     * $data(array):                   View 단에 바인딩할 데이터
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View 예외
+     *
+     * 예외
+     * @throws ErrorException
+     * @throws NotAccessibleException
+     */
+    public function lectureMain($argDate = null) {
+        // 예외처리
+        $dateInfo = null;
         if(!is_null($argDate)) {
-            if(sizeof($dateInfo = explode('-', $argDate)) < 2) {
+            if (sizeof($dateInfo = explode('-', $argDate)) < 2) {
+                // 매개인자가 정해진 형식을 지키지 않을 경우 예외 발생
                 throw new ErrorException();
             }
+        }
 
+        // 01. 변수 설정
+        $nowTerm        = null;
+        $prev_term      = null;
+        $next_term      = null;
+        $stdId          = session()->get('user')['info']->id;
+
+        // 02. 학기 정보 설정
+        // 오늘 날짜에 따른 최초 학기 세팅
+        // 임시 분류
+        switch(today()->month) {
+            // 겨울방학
+            case 1:
+            case 2:
+                $nowTerm = ConstantEnum::TERM['winter_vacation'];
+                break;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                $nowTerm = ConstantEnum::TERM['1st_term'];
+                break;
+            case 7:
+            case 8:
+                $nowTerm = ConstantEnum::TERM['summer_vacation'];
+                break;
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                $nowTerm = ConstantEnum::TERM['2nd_term'];
+                break;
+        }
+        $year           = is_null($argDate) ? today()->year : $dateInfo[0];
+        $term           = is_null($argDate) ? $nowTerm : $dateInfo[1];
+
+        // 데이터 예외처리
+        // 학기 정보가 전송된 경우
+        if(!is_null($argDate)) {
+            // 현재 학기에서 조회된 데이터가 없을 경우 예외 발생
+            if (sizeof(Subject::where([[DbInfoEnum::SUBJECTS['year'], $year], [DbInfoEnum::SUBJECTS['term'], $term]])
+                ->get()->all()) <= 0) {
+                throw new NotAccessibleException(__('exception.not_exists_scores_data'));
+            }
 
             // 이전/다음 학기 정보 설정
-            if($dateInfo[1] == ConstantEnum::TERM['1']) {
+            if($dateInfo[1] == ConstantEnum::TERM['1st_term']) {
                 // 설정 학기가 1학기인 경우 -> 지난학기 연도에서 1 감소
                 $prev_term  = ($dateInfo[0] - 1).'-'.ConstantEnum::TERM['winter_vacation'];
             } else if($dateInfo[1] == ConstantEnum::TERM['winter_vacation']) {
-                $next_term  = ($dateInfo[0] + 1).'-'.ConstantEnum::TERM['1'];
+                // 설정 학기가 겨울방학인 경우 -> 다음학기 연도에 1 증가
+                $next_term  = ($dateInfo[0] + 1).'-'.ConstantEnum::TERM['1st_term'];
             }
-            $prev_term = is_null($prev_term) ? $dateInfo[0].'-'.($dateInfo[1] - 1) : $prev_term;
-            $next_term = is_null($next_term) ? $dateInfo[0].'-'.($dateInfo[1] + 1) : $next_term;
         } else {
-            // 오늘 날짜에 따른 최초 학기 세팅
-            // 임시 분류
-            switch(today()->month) {
-                // 겨울방학
-                case 1:
-                case 2:
-                    $term       = ConstantEnum::TERM['winter_vacation'];
-                    $next_term  = (today()->year + 1).'-'.ConstantEnum::TERM['1'];
-                    break;
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                    $term = ConstantEnum::TERM['1'];
-                    $prev_term  = (today()->year - 1).'-'.ConstantEnum::TERM['winter_vacation'];
-                    break;
-                case 7:
-                case 8:
-                    $term = ConstantEnum::TERM['summer_vacation'];
-                    break;
-                case 9:
-                case 10:
-                case 11:
-                case 12:
-                    $term       = ConstantEnum::TERM['2'];
-                    break;
+            // 현재 학기
+            // 이전/다음 학기 정보 설정
+            if($dateInfo[1] == ConstantEnum::TERM['1st_term']) {
+                // 설정 학기가 1학기인 경우 -> 지난학기 연도에서 1 감소
+                $prev_term  = (today()->year - 1).'-'.ConstantEnum::TERM['winter_vacation'];
+            } else if($dateInfo[1] == ConstantEnum::TERM['winter_vacation']) {
+                // 설정 학기가 겨울방학인 경우 -> 다음학기 연도에 1 증가
+                $next_term  = (today()->year + 1).'-'.ConstantEnum::TERM['1st_term'];
             }
-            $prev_term = is_null($prev_term) ? today()->year.'-'.($term - 1) : $prev_term;
-            $next_term = is_null($prev_term) ? today()->year.'-'.($term + 1) : $next_term;
         }
 
         // 03. 학업 데이터 추출
-        $stdId          = session()->get('user')['info']->id;
-        $year           = is_null($argDate) ? today()->year : $dateInfo[0];
-        $term           = is_null($argDate) ? $term : $dateInfo[1];
+        $prev_term = is_null($prev_term) ? $dateInfo[0].'-'.($dateInfo[1] - 1) : $prev_term;
+        if(today()->year <= $year && $nowTerm <= $term) {
+            $next_term = null;
+        } else {
+            $next_term = is_null($next_term) ? $dateInfo[0] . '-' . ($dateInfo[1] + 1) : $next_term;
+        }
         $dataList       =
-            app('App\Http\Controllers\StudyController')->getStudyAchievement($stdId, $year, $term);
+            app('App\Http\Controllers\StudyController')->getStudyAchievementList($stdId, $year, $term);
 
         // 04. View 단에 전송할 데이터
+        $term = __('lecture.'.ConstantEnum::TERM[$term]);
         $data = [
-            'title'             => __('page_title.student_lecture_main'),
+            'title'             => __('page_title.student_lecture'),
             'lecture_list'      => $dataList,
             'year'              => $year,
             'term'              => $term,
@@ -314,16 +391,30 @@ class StudentController extends Controller {
             'next_term'         => $next_term
         ];
 
-        return view('student_lecture_main', $data);
+        return view('student_lecture', $data);
     }
 
-    // 학업 정보 상세조회
-    public function lectureDetails($argLectureId) {
-        // View 단에 전송할 데이터 바인딩
+    // 03-04. 상담관리
+
+    /**
+     * 함수명:                         counsel
+     * 함수 설명:                      해당 일자의 출결 기록을 조회
+     * 만든날:                         2018년 4월 05일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View 예외
+     */
+    public function counsel() {
         $data = [
-            'title' => __('page_title.student_lecture_details', ['name' => $argLectureId]),
+            'title'                 => __('page_title.student_counsel')
         ];
 
-        return view('student_lecture_details', $data);
+        return view('student_counsel', $data);
     }
 }
