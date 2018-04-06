@@ -43,8 +43,10 @@ class ScoresTableSeeder extends Seeder {
                     // 과제 상세설명 등록
                     switch ($iCount) {
                         case 1:
+                            $score->content = '중간고사';
+                            break;
                         case 2:
-                            $score->content = '';
+                            $score->content = '기말고사';
                             break;
                         case 3:
                             $score->content = '과제 상세 설명';

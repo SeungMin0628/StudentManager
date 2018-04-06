@@ -8,6 +8,9 @@
 return [
     // 공통 정보
     'title'                 => '출결 관리',
+    'check'                 => '출석 체크',
+    'select_records'        => '출결 내역 조회',
+
     'come_leave'            => '등・하교 출결',
     'attendance_rate'       => '출석률',
 
@@ -28,4 +31,8 @@ return [
     // 지도반 관리
     'manage_student'        => '학생 관리',
     'care_alert'            => '알림 설정',
+
+    // 교과목 교수
+
+    // 출석체크
 ];

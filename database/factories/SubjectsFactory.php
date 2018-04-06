@@ -15,7 +15,7 @@ $factory->define(Subject::class, function (Faker $faker) {
 
     // 더미 과목명
     $subject_names = [
-        'JAVA', 'ANDROID', 'PHP', 'NODE.JS', 'SQL', 'MYSQL', 'ORACLE', 'JAPANESE', 'NULL', 'C-LANGUAGE',
+        'JAVA', 'ANDROID', 'PHP', 'NODE.JS', 'SQL', 'MYSQL', 'ORACLE', 'JAPANESE', 'RUBY', 'C-LANGUAGE',
         'KOREAN', 'SCIENCE', 'MATH', 'SPI', 'JLPT', 'ENGLISH', 'PHOTOSHOP', 'FLASH', 'COMPUTER', 'OBJECT-C',
         'SWIFT', 'IOS PROGRAMMING', 'DATABASE', 'OS PRACTICE'
     ];

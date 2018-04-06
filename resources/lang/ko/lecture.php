@@ -10,6 +10,11 @@ return [
     // 공통 부분
     'title'             => '학업 관리',
     'class'             => '수강반',
+    'store'             => '성적 등록',
+    'select'            => '성적 확인',
+    'update_reflection' => '성적 반영비 설정',
+
+    // 기간
     'term'              => ':year 년 :term',
     '1st_term'          => '1학기',
     'summer_vacation'   => '여름방학',

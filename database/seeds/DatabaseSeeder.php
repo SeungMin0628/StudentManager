@@ -5,6 +5,8 @@ use App\Professor;
 use App\Group;
 use App\Student;
 use App\Classification;
+use App\ComeSchool;
+use App\LeaveSchool;
 use App\Attendance;
 use App\Classroom;
 use App\Subject;
@@ -26,7 +28,6 @@ class DatabaseSeeder extends Seeder
         }
 
         // 더미 데이터 삽입 시더
-        /*
         Professor::truncate();
         $this->call(ProfessorsTableSeeder::class);
 
@@ -38,9 +39,13 @@ class DatabaseSeeder extends Seeder
 
         Classification::truncate();
         $this->call(ClassificationsTableSeeder::class);
-        */
+
+
+        ComeSchool::truncate();
+        LeaveSchool::truncate();
         Attendance::truncate();
         $this->call(AttendancesTableSeeder::class);
+
 
         Classroom::truncate();
         $this->call(ClassroomsTableSeeder::class);

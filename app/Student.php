@@ -141,7 +141,7 @@ class Student extends Model {
      * 반환값
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function checkInLecture() {
+    public function checkInLectures() {
         return $this->hasMany('App\CheckInLecture', 'std_id', 'id');
     }
 
@@ -253,16 +253,15 @@ class Student extends Model {
             })->selectRaw(
                 DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['reg_date'].",
                 CASE ".DBInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['type']." 
-                WHEN ".ConstantEnum::TERM['1st_term']." THEN '".__('lecture.1st_term')."'
-                WHEN ".ConstantEnum::TERM['summer_vacation']." THEN '".__('lecture.summer_vacation')."'
-                WHEN ".ConstantEnum::TERM['2nd_term']." THEN '".__('lecture.2nd_term')."'
-                WHEN ".ConstantEnum::TERM['winter_vacation']." THEN '".__('lecture.winter_vacation')."' 
+                WHEN ".ConstantEnum::SCORE['midterm']." THEN '".__('lecture.midterm')."'
+                WHEN ".ConstantEnum::SCORE['final']." THEN '".__('lecture.final')."'
+                    WHEN ".ConstantEnum::SCORE['quiz']." THEN '".__('lecture.quiz')."'
+                WHEN ".ConstantEnum::SCORE['task']." THEN '".__('lecture.task')."' 
                 END AS '".DbInfoEnum::SCORES['type']."', 
                 ".DBInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['content'].", 
                 ".DBInfoEnum::GAINED_SCORES['t_name'].'.'.DbInfoEnum::GAINED_SCORES['score'].", 
                 ".DBInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['prefect']
-            )->orderBy(DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['reg_date'], 'desc')
-            ->get()->all();
+            )->orderBy(DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['reg_date'], 'desc');
 
         /*
          * Student::find(9885116)->gainedScores()

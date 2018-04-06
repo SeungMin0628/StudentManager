@@ -1,13 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * 페이지 설명: <학생> 학업관리 메인 페이지
+ * 페이지 설명: <학생> 학업관리 페이지
  * User: Seungmin Lee
  * Date: 2018-04-02
  * Time: 오후 6:47
  */
-
-use App\Http\DbInfoEnum;
 ?>
 @extends('layouts.student_master')
 @section('body.section')
@@ -27,10 +24,17 @@ use App\Http\DbInfoEnum;
         @forelse($lecture_list as $lecture)
             <div>
                 <span>
-                    <div>이미지</div>
-                    <div>@lang('lecture.subject_name'): {{ $lecture['title'] }}</div>
+                    @if(strlen($lecture['prof_info']->face_photo) > 0)
+                        <div>{{ Html::image('source/prof_face/'.$lecture['prof_info']->face_photo, 'professor',
+                                    ['width' => 100, 'height' => 100]) }}</div>
+                    @else
+                        <div>{{ Html::image('source/prof_face/default.png', 'default',
+                                    [ 'width' => 100, 'height' => 100]) }}</div>
+                    @endif
+                    <div>{{ $lecture['prof_info']->name }}</div>
                 </span>
                 <span>
+                    <div>@lang('lecture.subject_name'): {{ $lecture['title'] }}</div>
                     <table border="1">
                         <thead>
                             <tr>

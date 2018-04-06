@@ -4,7 +4,6 @@ use Illuminate\Database\Seeder;
 use App\Lecture;
 use App\Subject;
 use App\Professor;
-use App\Http\DbInfoEnum;
 
 /**
  * 클래스명:                       LecturesTableSeeder
@@ -19,28 +18,30 @@ class LecturesTableSeeder extends Seeder {
      * @return void
      */
     public function run() {
-
         // 과목 목록 구하기
-        $subjects = Subject::all();
+        $subjects = Subject::all()->all();
 
-        $subjects->each(function($subject) {
-            // 교과목 교수 목록 구하기
-            $professors = Professor::where([
-                [DbInfoEnum::PROFESSORS['manager'], '<>', NULL],
-                [DbInfoEnum::PROFESSORS['expire'], '<>', NULL]
-            ])->get()->all();
+        // 교과목교수 구하기
+        $professors = Professor::getProfessors()->all();
+
+        foreach($subjects as $subject) {
+            // 현재 강의가 개설된 반의 교과목 교수 목록 구하기
+            //    => 교과목교수의 관리자 ID가 해당 과목이 소속된 반의 지도교수 ID와 같을 시
+            $filteredProfessors = array_filter($professors, function ($value) use ($subject) {
+                return $value->manager == $subject->group()->get()[0]->tutor;
+            });
 
             $loop_count = $subject->division_flag ? 2 : 1;
-            for($iCount = 0; $iCount <= $loop_count; $iCount++) {
-                shuffle($professors);
+            for ($iCount = 0; $iCount < $loop_count; $iCount++) {
                 $lecture = new Lecture();
 
-                $lecture->subject_id        = $subject->id;
-                $lecture->divided_class_id  = $subject->division_flag ? NULL : chr($iCount + 65);
-                $lecture->professor         = $professors[0]->id;
+                $lecture->subject_id = $subject->id;
+                $lecture->divided_class_id = $subject->division_flag ? chr($iCount + 65) : NULL;
+                $lecture->professor = $professors[array_keys($filteredProfessors)[0]]->id;
+                array_splice($professors, array_keys($filteredProfessors)[0], 1);
 
                 $lecture->save();
             }
-        });
+        };
     }
 }

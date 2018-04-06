@@ -19,6 +19,8 @@ class Professor extends Model {
 
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
+
+    // 모델 연결관계 정의
     /**
      * 함수명:                         counsels
      * 함수 설명:                      상담 테이블과 교수 테이블의 연결 관계를 정의
@@ -199,7 +201,46 @@ class Professor extends Model {
         return $this->hasMany('App\AccountSync', 'connected', 'id');
     }
 
-    // custom method
+    // 사용자 정의 - 클래스 함수
+    /**
+     * 함수명:                         getTutors
+     * 함수 설명:                      지도교수 목록을 조회
+     * 만든날:                         2018년 4월 06일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         mixed
+     */
+    public static function getTutors() {
+        return self::whereNull(DbInfoEnum::PROFESSORS['expire'])
+            ->whereNull(DbInfoEnum::PROFESSORS['manager'])->get();
+    }
+
+    /**
+     * 함수명:                         getProfessors
+     * 함수 설명:                      교과목교수 목록을 조회
+     * 만든날:                         2018년 4월 06일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return                         mixed
+     */
+    public static function getProfessors() {
+        return self::whereNotNull(DbInfoEnum::PROFESSORS['expire'])
+            ->whereNotNull(DbInfoEnum::PROFESSORS['manager'])->get();
+    }
+
+    // 사용자 정의 - 멤버 메서드
     /**
      * 함수명:                         isExistMyGroup
      * 함수 설명:                      현재 사용자인 지도교수가 자신의 지도반을 가지고 있는지 조회
@@ -218,5 +259,17 @@ class Professor extends Model {
         return sizeof(
             Professor::find($argProfId)->group()->get()
         ) > 0;
+    }
+
+    public function getStudentsListOfMyLecture() {
+        return $this->lecture()->get()[0]->signUpLists()
+            ->join(DbInfoEnum::STUDENTS['t_name'],
+                DbInfoEnum::STUDENTS['t_name'].'.'.DbInfoEnum::STUDENTS['id'],
+                DbInfoEnum::SIGN_UP_LISTS['t_name'].'.'.DbInfoEnum::SIGN_UP_LISTS['s_id'])
+            ->select(
+                DbInfoEnum::STUDENTS['t_name'].'.'.DbInfoEnum::STUDENTS['id'],
+                DbInfoEnum::STUDENTS['t_name'].'.'.DbInfoEnum::STUDENTS['name']
+            )
+            ->get();
     }
 }

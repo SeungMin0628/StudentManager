@@ -30,8 +30,13 @@ return [
     'tutor_config'          => '지도교수: 관리&설정',
 
     // 04. 교과목교수 컨트롤러에서 제공하는 페이지
-    'professor_index'       => '교과목교수: 홈페이지',
-    'professor_info'        => '교과목교수: 계정관리',
-    'professor_lecture'     => '교과목교수: 수강반 관리',
-    'professor_counsel'     => '교과목교수: 상담관리',
+    'professor_index'               => '교과목교수: 홈페이지',
+    'professor_myinfo_read'         => '교과목교수: 내 정보 확인',
+    'professor_myinfo_update'       => '교과목교수: 정보 수정',
+    'professor_myinfo_account'      => '교과목교수: 간편계정 관리',
+
+    'professor_my_student_details'  => '교과목교수: :name 학생 상세정보',
+    'professor_check_attendance'    => '교과목교수: 출석체크',
+
+    'professor_counsel'             => '교과목교수: 상담관리',
 ];

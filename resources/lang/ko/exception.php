@@ -17,7 +17,7 @@ return [
     "ada_records_not_exists"            => '해당 기간의 출석 내역이 없습니다.',
 
     // 학업 관리
-    'not_exists_scores_data'            => "해당 학기에 조회된 데이터가 없습니다.",
+    'not_exists_scores_data'            => "해당 학기에 조회된 성적이 없습니다.",
     'not_sign_upped_lecture'            => '수강하는 과목이 아닙니다.',
 
     // 학생 메시지
@@ -27,4 +27,5 @@ return [
     'tutor_store_myclass_failed'        => '반 생성에 실패하였습니다.',
 
     // 교과목교수 메시지
+    'professor_not_my_student'          => '사용자의 강의를 수강하는 학생이 아닙니다.',
 ];

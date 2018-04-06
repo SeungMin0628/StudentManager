@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Subject;
+use App\Group;
 
 /**
  * 클래스명:                       SubjectsTableSeeder
@@ -17,6 +18,34 @@ class SubjectsTableSeeder extends Seeder {
      */
     public function run() {
         //
-        factory(Subject::class, 30)->create();
+        //factory(Subject::class, 30)->create();
+
+        $groups = Group::all();
+
+        $groups->each(function($group) {
+            // 전공 과목 - 분반 생성
+            $major = new Subject();
+
+            $major->year            = 2018;
+            $major->term            = 1;
+            $major->group_id        = $group->id;
+            $major->id              = random_int(10000000, 99999999);
+            $major->name            = "WEB PROGRAMMING";
+            $major->division_flag   = TRUE;
+
+            $major->save();
+
+            // 일본어 과목 - 단일
+            $japanese = new Subject();
+
+            $japanese->year            = 2018;
+            $japanese->term            = 1;
+            $japanese->group_id        = $group->id;
+            $japanese->id              = random_int(10000000, 99999999);
+            $japanese->name            = "BUSINESS JAPANESE";
+            $japanese->division_flag   = FALSE;
+
+            $japanese->save();
+        });
     }
 }

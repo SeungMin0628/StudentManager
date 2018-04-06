@@ -34,18 +34,20 @@ class ModifyLecturesTable02 extends Migration {
          *                  	출석 성적 반영 비율
          */
         Schema::table('lectures', function(Blueprint $table) {
+            $table->decimal('quiz_reflection', 3, 2)->default(0.2)->change();
             $table->dropColumn('attendance_reflection');
         });
     }
 
     /**
-     * Reverse the migrations.
+    Reverse the migrations.
      *
      * @return void
      */
     public function down() {
         //
         Schema::table('lectures', function(Blueprint $table) {
+            $table->decimal('quiz_reflection')->default(0)->change();
             $table->decimal('attendance_reflection', 3, 2)->default(0.2);
         });
     }

@@ -19,8 +19,11 @@ class AttendancesTableSeeder extends Seeder
         // 01. 변수 설정
         $today = today();
         $students = Student::all();
+        $recent_attendance = new Carbon(Attendance::whereMonth(
+            DbInfoEnum::ATTENDANCES['reg_date'], '>=', today()->startOfMonth()->format('m')
+            )->max('reg_date'));
 
-        for($iCount = 1; $iCount <= $today->day; $iCount++) {
+        for($iCount = $recent_attendance->day; $iCount <= $today->day; $iCount++) {
             foreach($students as $student) {
                 $nowDate = Carbon::createFromDate($today->year, $today->month, $iCount);
                 if(sizeof(Attendance::where([

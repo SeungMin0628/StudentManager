@@ -194,16 +194,25 @@ Route::name('professor.')->group(function() {
                'uses'   => 'ProfessorController@index'
            ]);
 
-           // 교과목교수 계정관리 페이지
-           Route::get('/info', [
-                'as'    => 'info',
-                'uses'  => 'ProfessorController@info'
+           // 수강반 관리
+
+           // 출석체크
+           Route::get('/lecture/check_attendance', [
+               'as'     => 'lecture.attendance.check',
+               'uses'   => 'ProfessorController@checkAttendance'
            ]);
 
-           // 교과목교수 수강반 관리 페이지
-           Route::get('/lecture', [
-               'as'     => 'lecture',
-               'uses'   => 'ProfessorController@lecture'
+           // 학생 관리
+           // 성적 조회
+           Route::get('/details/scores/{stdId}', [
+                'as'    => 'details.scores',
+                'uses'  => 'ProfessorController@detailsOfStudent'
+           ]);
+
+           // 코멘트 조회
+           Route::get('/details/comment/{stdId}/{term?}', [
+               'as'     => 'details.comments',
+               'uses'   => 'ProfessorController@commentsOfStudent'
            ]);
 
            // 교과목교수 상담관리 페이지

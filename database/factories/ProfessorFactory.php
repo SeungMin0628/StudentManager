@@ -13,7 +13,7 @@ $factory->define(App\Professor::class, function (Faker $faker) {
         'id'            => $firstName,
         'manager'       => null,
         'expire_date'   => null,
-        'password'      => bcrypt('password'),
+        'password'      => password_hash('password', PASSWORD_DEFAULT),
         'name'          => $firstName.' '.$lastName,
         'phone'         => "01012345678",
         'email'         => $faker->unique()->safeEmail,

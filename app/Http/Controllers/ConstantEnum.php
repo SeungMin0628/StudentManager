@@ -15,7 +15,7 @@ namespace App\Http\Controllers;
  *      ATTENDANCE :               출석 관련 정보를 정의
  */
 class ConstantEnum {
-    const GAINED_SCORE_PAGINATION   = 3;
+    const GAINED_SCORE_PAGINATION   = 5;        // 성적목록의 페이지별 출력데이터
 
     //  사용자 유형을 정의
     const USER_TYPE     = [

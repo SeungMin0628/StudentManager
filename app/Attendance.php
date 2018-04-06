@@ -88,6 +88,7 @@ class Attendance extends Model {
      * 반환값
      * @return                         array
      */
+    // 고쳐야 됨
     public function selectAttendanceRecords($argStdId, $startDate, $endDate) {
         // 01. 지역 변수 선언
         $dbInfoSelf     = DbInfoEnum::ATTENDANCES;
@@ -115,7 +116,8 @@ class Attendance extends Model {
             )
             // join('leave_schools', 'attendances.leave_school', 'leave_schools.id')
             ->selectRaw("
-                COUNT(CASE {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} WHEN NOT NULL THEN FALSE ELSE TRUE END) AS '{$constList['ada']}', 
+                (COUNT(CASE {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} WHEN NOT NULL THEN FALSE ELSE TRUE END)
+                 - COUNT(CASE {$dbInfoCome['t_name']}.{$dbInfoCome['late']} WHEN TRUE THEN TRUE END)) AS '{$constList['ada']}', 
                 DATE_FORMAT(MAX(CASE WHEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} IS NULL THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_ada']}', 
                 COUNT(CASE {$dbInfoCome['t_name']}.{$dbInfoCome['late']} WHEN TRUE THEN TRUE END) AS '{$constList['late']}', 
                 DATE_FORMAT(MAX(CASE WHEN {$dbInfoCome['t_name']}.{$dbInfoCome['late']} IS TRUE THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_late']}', 

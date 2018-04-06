@@ -18,7 +18,7 @@
             <label for="std_id">@lang('account.std_id')</label>
             <input type="text" id="std_id" name="std_id" required placeholder="1234567" value="{{ old('std_id') }}">
             <input type="button" id="std_id_check_button" value="@lang('interface.check')">
-            <input type="hidden" id="std_id_check" name="std_id_check" value="0">
+            <input type="hidden" id="std_id_check" name="std_id_check" value="{{ old('std_id_check') }}">
             {!! $errors->first('std_id', '<span class="form-error">:message</span>') !!}
             {!! $errors->first('std_id_check', '<span class="form-error">:message</span>') !!}
         </div>
@@ -43,7 +43,7 @@
 
         <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
             <label for="email">@lang('account.email')</label>
-            <input type="email" id="email" name="email" required placeholder="example@example.com">
+            <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="example@example.com">
             {!! $errors->first('email', '<span class="form-error">:message</span>') !!}
         </div>
 

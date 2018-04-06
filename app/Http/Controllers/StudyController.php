@@ -115,7 +115,10 @@ class StudyController extends Controller {
             'title'          => $subject->{DbInfoEnum::SUBJECTS['name']},
             'score'          => $scoreList,
             'achievement'    => number_format(array_sum($achievementList) * 100, 2),
-            'gained_score'   => Student::find($stdId)->getDetailsOfLecture($lectureId)
+            'gained_score'   => Student::find($stdId)->getDetailsOfLecture($lectureId)->get()->all(),
+            'prof_info'      => $lecture->professor()
+                                ->select(DbInfoEnum::PROFESSORS['name'], DbInfoEnum::PROFESSORS['f_p'])
+                                ->get()[0]
         ];
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Professor;
+use App\Group;
 
 class GroupsTableSeeder extends Seeder
 {
@@ -12,11 +14,11 @@ class GroupsTableSeeder extends Seeder
     public function run()
     {
         //
-        $professors = App\Professor::all();
+        $professors = Professor::getTutors();
 
         $professors->each(function ($professor) {
             $professor->group()->save(
-                factory(App\Group::class)->make()
+                factory(Group::class)->make()
             );
         });
     }

@@ -123,12 +123,8 @@ class AttendanceController extends Controller {
         }
 
         // 출석율 계산
-        $rate = null;
-        if ($argPeriod == ConstantEnum::PERIOD['weekly']) {
-            $rate = ($result->{ConstantEnum::ATTENDANCE['ada']} / 7) * 100;
-        } else if ($argPeriod == ConstantEnum::PERIOD['monthly']) {
-            $rate = ($result->{ConstantEnum::ATTENDANCE['ada']} / $date->copy()->endOfMonth()->format('d')) * 100;
-        }
+        $rate = ($result->{ConstantEnum::ATTENDANCE['ada']} /
+                ($result->{ConstantEnum::ATTENDANCE['ada']} + $result->{ConstantEnum::ATTENDANCE['absence']})) * 100;
 
         return [
             'query_result'  => $result,

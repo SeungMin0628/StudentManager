@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\NotAccessibleException;
+use App\Http\DbInfoEnum;
 use App\Professor;
+use App\Student;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\ConstantEnum;
 use Illuminate\Http\Request;
@@ -121,7 +124,7 @@ class ProfessorController extends Controller {
         $professor  = Professor::find($inputId);
 
         // 03. 조건 검사
-        if($professor->password === "" && !is_null($professor->expire_date)) {
+        if(is_object($professor) && $professor->password === "" && !is_null($professor->expire_date)) {
             $regMsg = "TRUE";
         } else {
             $regMsg = "FALSE";
@@ -130,34 +133,75 @@ class ProfessorController extends Controller {
         return response()->json(['msg' => $regMsg], 200);
     }
 
-    /**
-     * 함수명:                         info
-     * 함수 설명:                      사용자의 계정을 관리하기 위한 페이지를 출력
-     * 만든날:                         2018년 4월 05일
-     *
-     * 매개변수 목록
-     * null
-     *
-     * 지역변수 목록
-     * null
-     *
-     * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function info() {
-        $data = [
-            'title'             => __('page_title.professor_info'),
-        ];
-
-        return view('professor_info', $data);
-    }
 
     // 03-01-02. 수강반 관리
 
     /**
-     * 함수명:                         lecture
-     * 함수 설명:                      사용자의 수강반을 관리하기 위한 페이지를 출력
-     * 만든날:                         2018년 4월 05일
+     * 함수명:                         detailsOfStudent
+     * 함수 설명:                      조회한 학생에 대한 상세 성적 정보를 열람
+     * 만든날:                         2018년 4월 06일
+     *
+     * 매개변수 목록
+     * @param $argStdId :              조회 학생의 학번
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
+     * 예외
+     * @throws NotAccessibleException
+     */
+    public function detailsOfStudent($argStdId) {
+        // 01. 변수 설정
+        $professor  = Professor::find(session()->get('user')['info']->id);
+        $student    = Student::find($argStdId);
+        $lectureId  = $professor->lecture()->get()[0]->id;
+
+        // 해당 학생이 내 수강반이 맞는지 검증
+        //      => 해당 학생의 수강 목록에 현재 교수의 과목이 있는지 조회
+        //      => !! 예외 발생
+        if(sizeof($student->signUpLists()
+            ->where(DbInfoEnum::SIGN_UP_LISTS['lec'], $lectureId)
+            ->get()->all()) <= 0) {
+            throw new NotAccessibleException(__('exception.professor_not_my_student'));
+        }
+
+        // 02. 성적 리스트 획득
+        $scoreList = $student->getDetailsOfLecture($lectureId);
+
+        // View 단에 전달할 데이터 바인딩
+        $data = [
+            'title'             => __('page_title.professor_my_student_details', ['name' => $student->name]),
+            'student_info'      => ['id'            => $student->id,
+                                    'name'          => $student->name,
+                                    'face_photo'    => $student->face_photo],
+            'scores_list'       => $scoreList->paginate(ConstantEnum::GAINED_SCORE_PAGINATION)
+        ];
+
+        return view('professor_details_scores', $data);
+    }
+
+    public function commentsOfStudent($argStdId, $argTerm = null) {
+        // 01. 변수 설정
+        $professor  = Professor::find(session()->get('user')['info']->id);
+        $student    = Student::find($argStdId);
+
+        $data = [
+            'title'             => __('page_title.professor_my_student_details', ['name' => $student->name]),
+            'student_info'      => ['id'            => $student->id,
+                                    'name'          => $student->name,
+                                    'face_photo'    => $student->face_photo],
+        ];
+
+        return view('professor_details_comments', $data);
+    }
+
+    /**
+     * 함수명:                         checkAttendance
+     * 함수 설명:                      사용자의 수강반에 대해 출석 체크를 실시
+     * 만든날:                         2018년 4월 06일
      *
      * 매개변수 목록
      * null
@@ -168,37 +212,21 @@ class ProfessorController extends Controller {
      * 반환값
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function lecture() {
+    public function checkAttendance() {
+        // 01. 변수 설정
+        $professor      = Professor::find(session()->get('user')['info']->id);
+        $studentsList   = $professor->getStudentsListOfMyLecture();
+
         $data = [
-            'title'         => __('page_title.professor_lecture'),
+            'title'         => __('page_title.professor_check_attendance'),
+            'studentList'   => $studentsList,
         ];
 
-        return view('professor_lecture', $data);
+        return view('professor_check_attendance', $data);
     }
 
     // 03-01-03. 상담 관리
 
-    /**
-     * 함수명:                         counsel
-     * 함수 설명:                      사용자의 상담을 관리하기 위한 페이지를 출력
-     * 만든날:                         2018년 4월 05일
-     *
-     * 매개변수 목록
-     * null
-     *
-     * 지역변수 목록
-     * null
-     *
-     * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function counsel() {
-        $data = [
-            'title'         => __('page_title.professor_counsel'),
-        ];
-
-        return view('professor_counsel', $data);
-    }
 
     // 교수 공통 기능
 
