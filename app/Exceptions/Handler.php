@@ -56,7 +56,7 @@ class Handler extends ExceptionHandler
         } else if ($exception instanceof ErrorException) {
             return response(view('errors.notice', [
                 'title'         => 'Page Not Found',
-                'description'   => 'Sorry, the page or resource you are trying to view does not exist. '
+                'description'   => 'Sorry, the page or resource you are trying to view does not exist. Message: '.$exception->getRawMessage()
             ]), 404);
         }
 

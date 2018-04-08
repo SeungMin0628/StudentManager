@@ -61,46 +61,32 @@ class AttendanceController extends Controller {
     public function getAttendanceRecords($argStdId, $argPeriod, $argDate) {
         // 01. 데이터 가져오기
         // 조회 날짜 획득
-        $date = today();
-        $nowDate = NULL;
-        $prevDate = NULL;
-        $nextDate = NULL;
-        $formatDay = "Y-m-d";
-        $formatMonth = "Y-m";
-        if (!is_null($argDate)) {
-            $argDate = explode('-', $argDate);
-            // 검색단위가 week 이고, 기간을 parse 한 결과 배열 길이가 3일 때
-            if ($argPeriod === ConstantEnum::PERIOD['weekly'] && sizeof($argDate) == 3) {
-                $date->year  = $argDate[0];
-                $date->month = $argDate[1];
-                $date->day   = ($argDate[2] - 1) * 7 + 1;
-            } // 검색단위가 month 이고, 기간을 parse 한 결과 배열 길이가 2일 때
-            else if ($argPeriod === ConstantEnum::PERIOD['monthly'] && sizeof($argDate) == 2) {
-                $date->year = $argDate[0];
-                $date->month = $argDate[1];
-            } else {
-                throw new ErrorException();
-            }
+        $date           = null;
+        $nowDate        = null;
+        $prevDate       = null;
+        $nextDate       = null;
+        $formatDay      = "Y-m-d";
+        $formatMonth    = "Y-m";
+        // 설정 조회기간에 따른 날짜 데이터 획득
+        if($argPeriod === ConstantEnum::PERIOD['weekly']) {
+            $date = $this->getWeeklyValue($argDate);
+        } else if($argPeriod === ConstantEnum::PERIOD['monthly']) {
+            $date = $this->getMonthlyValue($argDate);
         }
 
         // 각 기간에 대한 문자열 추출
         switch ($argPeriod) {
+            // 주 단위
             case ConstantEnum::PERIOD['weekly'];
-                $nowDate = $date->copy()->format('Y-m-') . $date->copy()->weekOfMonth;
-                $prevDate = $date->copy()->subWeek(1)->format('Y-m-') . $date->copy()->subWeek(1)->weekOfMonth;
-
-                $same_week_flag = 0;    // 다음주가 이번주와 같은 주인지 판단
-                if($date->copy()->addDay(6)->startOfWeek() === $date->copy()->startOfWeek()) {
-                    $same_week_flag = 1;
-                }
-
-                $nextDate = today()->lte($date) ? NULL :
-                    $date->copy()->addWeek(1 + $same_week_flag)->format('Y-m-') . $date->copy()->addWeek(1)->weekOfMonth;
+                $nowDate    = $date['this_week']->copy()->format($formatMonth).'-'.$date['this_week']->copy()->weekOfMonth;
+                $prevDate   = $date['prev_week']->copy()->format($formatMonth).'-'.$date['prev_week']->copy()->weekOfMonth;
+                $nextDate   = is_null($date['next_week']) ? NULL : $date['next_week']->copy()->format($formatMonth).'-'.$date['next_week']->copy()->weekOfMonth;
                 break;
+            // 월 단위
             case ConstantEnum::PERIOD['monthly'];
-                $nowDate = $date->copy()->format($formatMonth);
-                $prevDate = $date->copy()->subMonth(1)->format($formatMonth);
-                $nextDate = today()->lte($date) ? NULL : $date->copy()->addMonth(1)->format($formatMonth);
+                $nowDate    = $date['this_month']->copy()->format($formatMonth);
+                $prevDate   = $date['prev_month']->copy()->format($formatMonth);
+                $nextDate   = is_null($date['next_month']) ? NULL : $date['next_month']->copy()->format($formatMonth);
                 break;
         }
 
@@ -111,11 +97,15 @@ class AttendanceController extends Controller {
         $db = new Attendance();
         $result = NULL;
         if ($argPeriod === ConstantEnum::PERIOD['weekly']) {
+            // 조회단위가 주인 경우 -> 이번주의 출석 기록을 조회
             $result = $db->selectAttendanceRecords($std_id,
-                $date->copy()->startOfWeek()->format($formatDay), $date->copy()->endOfWeek()->format($formatDay));
+                $date['this_week']->copy()->startOfWeek()->format($formatDay),
+                $date['this_week']->copy()->endOfWeek()->format($formatDay));
         } else if ($argPeriod === ConstantEnum::PERIOD['monthly']) {
+            // 조회단위가 달인 경우 -> 이번달의 출석기록을 조회
             $result = $db->selectAttendanceRecords($std_id,
-                $date->copy()->startOfMonth()->format($formatDay), $date->copy()->endOfMonth()->format($formatDay));
+                $date['this_month']->copy()->startOfMonth()->format($formatDay),
+                $date['this_month']->copy()->endOfMonth()->format($formatDay));
         }
 
         if(($result->{ConstantEnum::ATTENDANCE['ada']} + $result->{ConstantEnum::ATTENDANCE['absence']}) <= 0) {

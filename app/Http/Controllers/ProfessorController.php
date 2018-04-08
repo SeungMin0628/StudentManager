@@ -193,6 +193,7 @@ class ProfessorController extends Controller {
             'student_info'      => ['id'            => $student->id,
                                     'name'          => $student->name,
                                     'face_photo'    => $student->face_photo],
+            'professor_name'    => $professor->name,
         ];
 
         return view('professor_details_comments', $data);

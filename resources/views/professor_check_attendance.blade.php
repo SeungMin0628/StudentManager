@@ -33,9 +33,6 @@
                 </tbody>
             </table>
         </span>
-    @else
-        <span>현재 정보 없음</span>
-    @endif
         <span>
             <input type="button" value="@lang('interface.check_attendance')">
             <div>
@@ -45,8 +42,11 @@
                 @lang('interface.process_time'): <input type="text" maxlength="1" size="1">@lang('interface.minute')
             </div>
             <div>
-                @lang('interface.total_people'): {{-- $총원 --}}
+                @lang('interface.total_people'): 0/{{ sizeof($studentList) }}
             </div>
         </span>
+        @else
+            <span>현재 정보 없음</span>
+        @endif
     </div>
 @endsection

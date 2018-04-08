@@ -274,7 +274,7 @@ class StudentController extends Controller {
      * 만든날:                         2018년 4월 05일
      *
      * 매개변수 목록
-     * @param $argDate :               조회일자
+     * @param $argTerm :               조회 학기
      *
      * 지역변수 목록
      * $dateInfo(array):               기간 정보
@@ -296,87 +296,30 @@ class StudentController extends Controller {
      * @throws ErrorException
      * @throws NotAccessibleException
      */
-    public function lectureMain($argDate = null) {
-        // 예외처리
-        $dateInfo = null;
-        if(!is_null($argDate)) {
-            if (sizeof($dateInfo = explode('-', $argDate)) < 2) {
-                // 매개인자가 정해진 형식을 지키지 않을 경우 예외 발생
-                throw new ErrorException();
-            }
-        }
-
+    public function lectureMain($argTerm = null) {
         // 01. 변수 설정
-        $nowTerm        = null;
-        $prev_term      = null;
-        $next_term      = null;
+        $term           = $this->getTermValue($argTerm);
+        $thisTerm       = $term['this_term'];
+        $prevTerm       = $term['prev_term'];
+        $nextTerm       = $term['next_term'];
         $stdId          = session()->get('user')['info']->id;
 
         // 02. 학기 정보 설정
-        // 오늘 날짜에 따른 최초 학기 세팅
-        // 임시 분류
-        switch(today()->month) {
-            // 겨울방학
-            case 1:
-            case 2:
-                $nowTerm = ConstantEnum::TERM['winter_vacation'];
-                break;
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-                $nowTerm = ConstantEnum::TERM['1st_term'];
-                break;
-            case 7:
-            case 8:
-                $nowTerm = ConstantEnum::TERM['summer_vacation'];
-                break;
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-                $nowTerm = ConstantEnum::TERM['2nd_term'];
-                break;
-        }
-        $year           = is_null($argDate) ? today()->year : $dateInfo[0];
-        $term           = is_null($argDate) ? $nowTerm : $dateInfo[1];
+        $term_info  = explode('-', $thisTerm);
+        $year       = $term_info[0];
+        $term       = $term_info[1];
 
         // 데이터 예외처리
         // 학기 정보가 전송된 경우
-        if(!is_null($argDate)) {
+        if(!is_null($argTerm)) {
             // 현재 학기에서 조회된 데이터가 없을 경우 예외 발생
             if (sizeof(Subject::where([[DbInfoEnum::SUBJECTS['year'], $year], [DbInfoEnum::SUBJECTS['term'], $term]])
-                ->get()->all()) <= 0) {
+                    ->get()->all()) <= 0) {
                 throw new NotAccessibleException(__('exception.not_exists_scores_data'));
-            }
-
-            // 이전/다음 학기 정보 설정
-            if($dateInfo[1] == ConstantEnum::TERM['1st_term']) {
-                // 설정 학기가 1학기인 경우 -> 지난학기 연도에서 1 감소
-                $prev_term  = ($dateInfo[0] - 1).'-'.ConstantEnum::TERM['winter_vacation'];
-            } else if($dateInfo[1] == ConstantEnum::TERM['winter_vacation']) {
-                // 설정 학기가 겨울방학인 경우 -> 다음학기 연도에 1 증가
-                $next_term  = ($dateInfo[0] + 1).'-'.ConstantEnum::TERM['1st_term'];
-            }
-        } else {
-            // 현재 학기
-            // 이전/다음 학기 정보 설정
-            if($dateInfo[1] == ConstantEnum::TERM['1st_term']) {
-                // 설정 학기가 1학기인 경우 -> 지난학기 연도에서 1 감소
-                $prev_term  = (today()->year - 1).'-'.ConstantEnum::TERM['winter_vacation'];
-            } else if($dateInfo[1] == ConstantEnum::TERM['winter_vacation']) {
-                // 설정 학기가 겨울방학인 경우 -> 다음학기 연도에 1 증가
-                $next_term  = (today()->year + 1).'-'.ConstantEnum::TERM['1st_term'];
             }
         }
 
         // 03. 학업 데이터 추출
-        $prev_term = is_null($prev_term) ? $dateInfo[0].'-'.($dateInfo[1] - 1) : $prev_term;
-        if(today()->year <= $year && $nowTerm <= $term) {
-            $next_term = null;
-        } else {
-            $next_term = is_null($next_term) ? $dateInfo[0] . '-' . ($dateInfo[1] + 1) : $next_term;
-        }
         $dataList       =
             app('App\Http\Controllers\StudyController')->getStudyAchievementList($stdId, $year, $term);
 
@@ -387,8 +330,8 @@ class StudentController extends Controller {
             'lecture_list'      => $dataList,
             'year'              => $year,
             'term'              => $term,
-            'prev_term'         => $prev_term,
-            'next_term'         => $next_term
+            'prev_term'         => $prevTerm,
+            'next_term'         => $nextTerm
         ];
 
         return view('student_lecture', $data);

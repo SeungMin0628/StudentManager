@@ -50,7 +50,7 @@
     </div>
     <hr>
     {{-- 내 코멘트 입력창 --}}
-    <div>강강강 교수님{{-- $교수->이름 --}}</div>
+    <div>{{  $professor_name }}</div>
     <textarea>
     </textarea>
     <input type="button" value="@lang('interface.submit')">

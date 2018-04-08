@@ -14,12 +14,14 @@
         <div>
             <span>
                 <label for="student">@lang('account.student')</label>
-                <input type="radio" name="type" value="{{ $user_type['student'] }}" id="student" required>
+                <input type="radio" name="type" value="{{ $user_type['student'] }}" id="student"
+                       @if(old('type') == $user_type['student']) checked @endif required>
                 {!! $errors->first('student', '<span class="form-error">:message</span>') !!}
             </span>
             <span>
                 <label for="professor">@lang('account.professor')</label>
-                <input type="radio" name="type" value="{{ $user_type['professor'] }}" id="professor">
+                <input type="radio" name="type" value="{{ $user_type['professor'] }}" id="professor"
+                        @if(old('type') == $user_type['professor']) checked @endif>
                 {!! $errors->first('professor', '<span class="form-error">:message</span>') !!}
             </span>
         </div>

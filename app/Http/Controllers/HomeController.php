@@ -22,8 +22,7 @@ use Whoops\Exception\ErrorException;
  *  public index(null):            메인에서 로그인 화면을 출력
  *
  */
-class HomeController extends Controller
-{
+class HomeController extends Controller {
     // 01. 멤버 변수 정의
 
     // 02. 생성자 정의
@@ -200,7 +199,7 @@ class HomeController extends Controller
      * 만든날:                         2018년 3월 29일
      *
      * 매개변수 목록
-     * @param $request:                사용자의 요청 메시지에 포함된 데이터
+     * null
      *
      * 지역변수 목록
      * $data(array):                   View 단에 전달하는 매개인자를 저장하는 배열
