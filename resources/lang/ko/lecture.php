@@ -10,6 +10,7 @@ return [
     // 공통 부분
     'title'             => '학업 관리',
     'class'             => '수강반',
+    'lecture_id'        => '강의 번호',
     'store'             => '성적 등록',
     'select'            => '성적 확인',
     'update_reflection' => '성적 반영비 설정',

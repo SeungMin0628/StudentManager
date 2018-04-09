@@ -16,12 +16,12 @@
         {{-- 학기 조회 --}}
         <div>
             <input type="button" value="@lang('pagination.previous')"
-                {{-- onclick="location.assign('{{ $이전학기 }}')" --}}>
-            2018년 1학기{{-- $현재학기 --}}
-            {{-- if(!is_null($다음학기)) --}}
+                onclick="location.assign('{{ route('professor.details.comments', ['stdId' => $student_info['id'], 'term' => $term['prev_term']]) }}')">
+            @lang('lecture.term', ['year' => $term['year'], 'term' => $term['term']])
+            @if(!is_null($term['next_term']))
             <input type="button" value="@lang('pagination.next')"
-                {{-- onclick="location.assign('{{ $다음학기 }}')"--}}>
-            {{-- @endif --}}
+                onclick="location.assign('{{ route('professor.details.comments', ['stdId' => $student_info['id'], 'term' => $term['next_term']]) }}')">
+            @endif
         </div>
         {{-- 코멘트 영역 --}}
         {{--

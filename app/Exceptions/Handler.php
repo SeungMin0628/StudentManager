@@ -50,9 +50,17 @@ class Handler extends ExceptionHandler
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception) {
+        /* 자작 예외처리 : 메서드 내부에 정의된 조건에 의해 예외가 발생한 경우 => 메시지를 출력하고 뒷 페이지로 돌아감*/
         if ($exception instanceof NotAccessibleException) {
             flash()->error(is_null($exception->getMessage()) ? __('exception.catch_not_accessible_exception') : $exception->getMessage());
             return back();
+
+        /* 데이터 검색에 실패한 경우 => 메시지를 출력하고 뒷 페이지로 돌아감*/
+        } else if ($exception instanceof ModelNotFoundException) {
+            flash()->error('데이터 검색 실패')->important();
+            return back();
+
+        /* URL를 이용한 잘못된 접근 => 에러 페이지 출력 */
         } else if ($exception instanceof ErrorException) {
             return response(view('errors.notice', [
                 'title'         => 'Page Not Found',

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\DbInfoEnum;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -124,7 +125,28 @@ class Lecture extends Model {
         return $this->hasMany('App\TimeTable', 'lecture_id', 'id');
     }
 
-    public function getLecturesInfo($argLectureId) {
-
+    /**
+     * 함수명:                         getSignUpStudentsList
+     * 함수 설명:                      해당 강의를 수강하는 학생의 학번과 이름 반환
+     * 만든날:                         2018년 4월 09일
+     *
+     * 매개변수 목록
+     * null
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getSignUpStudentsList() {
+        return $this->signUpLists()
+            ->join(DbInfoEnum::STUDENTS['t_name'],
+                DbInfoEnum::STUDENTS['t_name'].'.'.DbInfoEnum::STUDENTS['id'],
+                DbInfoEnum::SIGN_UP_LISTS['t_name'].'.'.DbInfoEnum::SIGN_UP_LISTS['s_id']
+            )->select([
+                DbInfoEnum::STUDENTS['t_name'].'.'.DbInfoEnum::STUDENTS['id'],
+                DbInfoEnum::STUDENTS['t_name'].'.'.DbInfoEnum::STUDENTS['name']
+            ])->get();
     }
 }

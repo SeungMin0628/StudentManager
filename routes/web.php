@@ -196,6 +196,7 @@ Route::name('professor.')->group(function() {
 
            // 수강반 관리
 
+           // 출결 관리
            // 출석체크
            Route::get('/lecture/check_attendance', [
                'as'     => 'lecture.attendance.check',
@@ -213,6 +214,22 @@ Route::name('professor.')->group(function() {
            Route::get('/details/comment/{stdId}/{term?}', [
                'as'     => 'details.comments',
                'uses'   => 'ProfessorController@commentsOfStudent'
+           ]);
+
+           // 성적 관리
+           Route::get('/scores/store', [
+                'as'    => 'scores.store.main',
+                'uses'  => function() {
+                    return view('professor_score_store', [
+                        'title' => __('page_title.professor_score_store_main'),
+                    ]);
+                }
+           ]);
+
+           // 엑셀 양식 다운로드
+           Route::post('/scores/store/excel/export', [
+                'as'    => 'scores.store.excel.export',
+                'uses'  => 'ProfessorController@exportScoresExcelForm'
            ]);
 
            // 교과목교수 상담관리 페이지

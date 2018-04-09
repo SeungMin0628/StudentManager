@@ -189,11 +189,16 @@ class ProfessorController extends Controller {
         $student    = Student::find($argStdId);
 
         $data = [
+            // 제목
             'title'             => __('page_title.professor_my_student_details', ['name' => $student->name]),
+            // 학생 정보
             'student_info'      => ['id'            => $student->id,
                                     'name'          => $student->name,
                                     'face_photo'    => $student->face_photo],
+            // 교수 이름
             'professor_name'    => $professor->name,
+            // 학기 정보
+            'term'              => $this->getTermValue($argTerm)
         ];
 
         return view('professor_details_comments', $data);
@@ -224,6 +229,53 @@ class ProfessorController extends Controller {
         ];
 
         return view('professor_check_attendance', $data);
+    }
+
+    // 성적 관리
+
+    // 성적 등록을 위한 엑셀 양식을 반환
+    public function exportScoresExcelForm(Request $request) {
+        // 01. 입력값 검증
+        $this->validate($request, [
+            'file_name'         => 'required',
+            'score_type'        => 'required',
+            'content'           => 'required',
+            'perfect_score'     => 'required|digits_between:1,3',
+            'file_type'         => 'required',
+        ]);
+
+        // 02. 변수 설정
+        $professor      = Professor::findOrFail(session()->get('user')['info']->id);
+        $lecture        = $professor->lecture()->get()[0];
+        $fileName       = $request->post('file_name');
+        $scoreType      = $request->post('score_type');
+        $content        = $request->post('content');
+        $perfectScore   = $request->post('perfect_score');
+        $fileType       = $request->post('file_type');
+
+        $studentList    = $lecture->getSignUpStudentsList()->toArray();
+
+        // 03. 엑셀로 변환할 배열 설정
+        $data = [
+            [__('lecture.lecture_id'), $lecture->id],
+            [__('lecture.type'), $scoreType],
+            [__('lecture.gettable_score'), $perfectScore],
+            [__('lecture.score_content'), $content],
+            [__('account.std_id'), __('account.name'), __('lecture.gained_score')],
+        ];
+        $data = array_merge_recursive($data, $studentList);
+
+        return app('App\Http\Controllers\ExcelController')->export($fileName, $fileType, $data);
+    }
+
+    // 엑셀 양식을 받아 성적을 등록
+    public function storeScoreAtExcel() {
+
+    }
+
+    // 성적을 직접 등록하는 페이지를 출력
+    public function getScoresForm() {
+
     }
 
     // 03-01-03. 상담 관리

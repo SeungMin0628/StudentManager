@@ -7,9 +7,13 @@
  */
 return [
     /* 01. 공통 인터페이스*/
+    // 파일 관련
+    'file_name'         => '파일 이름',
+
     // 버튼 인터페이스
     "details"           => '상세정보',
     "submit"            => "등록",
+    "close"             => '닫기',
 
     // 기간 설정
     'date'              => '날짜',
@@ -34,6 +38,7 @@ return [
     // 로그인/회원가입 보조 메시지
     "check_password"    => "비밀번호 한 번 더 입력",
     "phone"             => "'-'없이 입력: 01012345678",
+    'dummy_name'        => '홍길동',
 
     // 언어설정
     "language"          => "언어(Language)",
@@ -58,5 +63,7 @@ return [
     // 버튼 인터페이스
     'score'                 => '성적',
     'comment'               => '코멘트',
-
+    'form_download'         => '양식 다운로드',
+    'score_upload'          => '성적 업로드',
+    'file_type'             => '확장자',
 ];

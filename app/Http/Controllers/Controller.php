@@ -214,6 +214,8 @@ class Controller extends BaseController {
         return [
             'prev_term'     => $prevTerm,
             'this_term'     => $thisTerm,
+            'year'          => $year,
+            'term'          => __('lecture.'.ConstantEnum::TERM[$term]),
             'next_term'     => $nextTerm
         ];
     }

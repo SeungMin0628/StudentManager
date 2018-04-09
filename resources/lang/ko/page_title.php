@@ -38,5 +38,7 @@ return [
     'professor_my_student_details'  => '교과목교수: :name 학생 상세정보',
     'professor_check_attendance'    => '교과목교수: 출석체크',
 
+    'professor_score_store_main'    => '교과목교수: 성적등록',
+
     'professor_counsel'             => '교과목교수: 상담관리',
 ];

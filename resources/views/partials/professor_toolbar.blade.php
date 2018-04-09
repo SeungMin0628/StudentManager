@@ -34,7 +34,7 @@
             <!-- 출석 내역 확인 -->
         <td><a href="">@lang('attendance.select_records')</a></td>
             <!-- 성적 등록 -->
-        <td><a href="">@lang('lecture.store')</a></td>
+        <td><a href="{{ route('professor.scores.store.main') }}">@lang('lecture.store')</a></td>
             <!-- 성적 조회 -->
         <td><a href="">@lang('lecture.select')</a></td>
             <!-- 성적 반영비 수정 -->
