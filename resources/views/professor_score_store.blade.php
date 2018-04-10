@@ -106,10 +106,13 @@
             <!-- 닫기 버튼 -->
             <button type="button">@lang('interface.close')</button>
             <!-- 전송 form -->
-            <form action="" method="post">
+            <form  enctype="multipart/form-data" action="{{ route('professor.scores.store.excel.import') }}" method="post">
+                {!! csrf_field() !!}
+
                 <!-- 파일 입력창 -->
                 <div>
-                    <input type="file" id="upload_file">
+                    <input type="file" name="upload_file" id="upload_file" required
+                        accept=".xlsx, .xls, .csv">
                 </div>
                 <!-- 전송 -->
                 <div>

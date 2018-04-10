@@ -22,29 +22,29 @@
     <tr>
         {{-- 계정관리 기능별 링크 --}}
             <!-- 내 정보 열람 -->
-        <td><a href="">@lang('account.myinfo')</a></td>
+        <td>@lang('account.myinfo')</td>
             <!-- 계정 정보 수정 -->
-        <td><a href="">@lang('account.myinfo_update')</a></td>
+        <td>@lang('account.myinfo_update')</td>
             <!-- 간편계정 관리 -->
-        <td><a href="">@lang('account.account_sync_manage')</a></td>
+        <td>@lang('account.account_sync_manage')</td>
 
         {{-- 수강반 관리 --}}
             <!-- 출석 체크 -->
         <td><a href="{{ route('professor.lecture.attendance.check') }}">@lang('attendance.check')</a></td>
             <!-- 출석 내역 확인 -->
-        <td><a href="">@lang('attendance.select_records')</a></td>
+        <td>@lang('attendance.select_records')</td>
             <!-- 성적 등록 -->
         <td><a href="{{ route('professor.scores.store.main') }}">@lang('lecture.store')</a></td>
             <!-- 성적 조회 -->
-        <td><a href="">@lang('lecture.select')</a></td>
+        <td>@lang('lecture.select')</td>
             <!-- 성적 반영비 수정 -->
-        <td><a href="">@lang('lecture.update_reflection')</a></td>
+        <td>@lang('lecture.update_reflection')</td>
 
         {{-- 상담 관리 --}}
             <!-- 받은 상담요청 확인 -->
-        <td><a href="">@lang('counsel.show_reception')</a></td>
+        <td>@lang('counsel.show_reception')</td>
             <!-- 상담 요청하기 -->
-        <td><a href="">@lang('counsel.ask')</a></td>
+        <td>@lang('counsel.ask')</td>
     </tr>
     </tbody>
 </table>

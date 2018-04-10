@@ -141,7 +141,7 @@ Route::name('tutor.')->group(function() {
             // 지도반 관련
 
             // 내 지도반 관리
-            Route::get('/myclass/manage', [
+            Route::get('/myclass/manage/{order?}/{term?}', [
                 'as'    => 'myclass.manage',
                 'uses'  => 'TutorController@manageMyClass'
             ]);
@@ -150,18 +150,6 @@ Route::name('tutor.')->group(function() {
             Route::get('/myclass/create', [
                 'as'    => 'myclass.create',
                 'uses'  => 'TutorController@createMyClass'
-            ]);
-
-            // 상담관리
-            Route::get('/counsel', [
-                'as'    => 'counsel',
-                'uses'  => 'TutorController@counsel'
-            ]);
-
-            // 관리 & 설정
-            Route::get('/config', [
-                'as'    => 'config',
-                'uses'  => 'TutorController@config'
             ]);
         });
     });
@@ -230,6 +218,11 @@ Route::name('professor.')->group(function() {
            Route::post('/scores/store/excel/export', [
                 'as'    => 'scores.store.excel.export',
                 'uses'  => 'ProfessorController@exportScoresExcelForm'
+           ]);
+
+           Route::post('/scores/store/excel/import', [
+               'as'     => 'scores.store.excel.import',
+               'uses'   => 'ProfessorController@storeScoreAtExcel'
            ]);
 
            // 교과목교수 상담관리 페이지

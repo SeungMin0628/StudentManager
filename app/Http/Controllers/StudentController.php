@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\NotAccessibleException;
+use App\Http\Controllers\ConstantEnum;
 use App\Http\DbInfoEnum;
 use App\Student;
 use App\Subject;
@@ -235,8 +236,17 @@ class StudentController extends Controller {
         $attendanceData =
             app('App\Http\Controllers\AttendanceController')->getAttendanceRecords($std_id, $argPeriod, $argDate);
 
-        // 해당 기간동안 출석 데이터가
-        if(is_null($attendanceData)) {
+        // 해당 기간동안 출석 데이터가 없을 경우
+        $periodData = null;
+        switch($argPeriod) {
+            case ConstantEnum::PERIOD['weekly']:
+                $periodData = today()->format('Y-m-').today()->weekOfMonth;
+                break;
+            case ConstantEnum::PERIOD['monthly']:
+                $periodData = today()->format('Y-m');
+                break;
+        }
+        if(is_null($attendanceData) && (!is_null($argDate) || $argDate =! $periodData)) {
             throw new NotAccessibleException(__('exception.ada_records_not_exists'));
         }
 

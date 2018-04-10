@@ -6,6 +6,22 @@
  * 만든날:            2018년 4월 5일
  */
 return [
-    // 공통 데이터
+    // 제목 데이터
     'title'             => '지도반',
+
+    // 지도반 관리
+    // 출결 관리
+    'check_attendance'          => '등/하교 출결',
+    'today_positions'           => '일일 위치정보',
+    'manage_attendance_time'    => '출결시간설정',
+    'config_need_care'          => '알림 설정',
+
+    //학생 관리
+    'manage_student'    => '학생관리',
+    'store_student'     => '학생정보등록',
+
+    // 과목 관리
+    'store_timetable'   => '시간표 등록',
+    'store_professor'   => '교수 계정생성',
+    'manage_professor'  => '교수 게정관리',
 ];

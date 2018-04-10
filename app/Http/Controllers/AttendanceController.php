@@ -68,6 +68,17 @@ class AttendanceController extends Controller {
         $formatDay      = "Y-m-d";
         $formatMonth    = "Y-m";
         // 설정 조회기간에 따른 날짜 데이터 획득
+        if(is_null($argDate)) {
+            switch($argPeriod) {
+                case ConstantEnum::PERIOD['weekly']:
+                    $argDate = today()->format('Y-m-').today()->weekOfMonth;
+                    break;
+                case ConstantEnum::PERIOD['monthly']:
+                    $argDate = today()->format('Y-m');
+                    break;
+            }
+        }
+
         if($argPeriod === ConstantEnum::PERIOD['weekly']) {
             $date = $this->getWeeklyValue($argDate);
         } else if($argPeriod === ConstantEnum::PERIOD['monthly']) {

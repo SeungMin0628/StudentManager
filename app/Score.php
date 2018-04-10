@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Http\DbInfoEnum;
+use App\GainedScore;
+use App\SignUpList;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -17,6 +19,8 @@ class Score extends Model {
 
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
+
+    // 테이블 간의 연결관계 정의
     /**
      * 함수명:                         lecture
      * 함수 설명:                      교과목 테이블과 점수 테이블의 연결 관계를 정의
@@ -68,9 +72,11 @@ class Score extends Model {
      * 반환값
      * @return                          mixed
      */
-    public function selectGainedScoreForStudent($lectureId, $stdId) {
+
+    // SELECT 구문
+    public static function selectGainedScoreForStudent($lectureId, $stdId) {
         return Score::where(DbInfoEnum::SCORES['lecture'], $lectureId)
-            ->join(DbInfoEnum::GAINED_SCORES['t_name'], function($join) use ($stdId) {
+            ->leftJoin(DbInfoEnum::GAINED_SCORES['t_name'], function($join) use ($stdId) {
                  $join->on(DbInfoEnum::GAINED_SCORES['t_name'].'.'.DbInfoEnum::GAINED_SCORES['type'], DbInfoEnum::SCORES['t_name'].'.'.DbInfoEnum::SCORES['id'])
                      ->where(DbInfoEnum::GAINED_SCORES['t_name'].'.'.DbInfoEnum::GAINED_SCORES['std_id'], $stdId);
             })
@@ -83,5 +89,33 @@ class Score extends Model {
              ")
             ->groupBy(DbInfoEnum::SCORES['t_name'].".".DbInfoEnum::SCORES['type'])
             ->get()->all();
+    }
+
+    // INSERT 구문
+
+    public function insertScoreList(Score $score, array $argStdList) {
+        // 해당 성적 데이터가 저장되었으면 => 각 학생의 성적 등록
+        if($score->save()) {
+            // 각 학생의 성적 등록
+            foreach ($argStdList as $stdId => $scoreValue) {
+                $gainedScore = new GainedScore();
+
+                $gainedScore->score_type = $score->id;
+                $gainedScore->std_id = $stdId;
+                $gainedScore->score = $scoreValue;
+
+                $gainedScore->save();
+
+                // 학업 성취도 갱신
+                $signUpList = SignUpList::where([
+                    [DbInfoEnum::SIGN_UP_LISTS['lec'], $score->lecture_id],
+                    [DbInfoEnum::SIGN_UP_LISTS['s_id'], $stdId]
+                ])->updateAchievement();
+            }
+
+            return true;
+        } else {
+            return false;
+        }
     }
 }

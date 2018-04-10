@@ -22,12 +22,10 @@ return [
     'student_counsel'           => "학생: 상담관리",
 
     // 03. 지도교수 컨트롤러에서 제공하는 페이지
-    'tutor_index'           => "지도교수: 홈페이지",
-    'tutor_info'            => '지도교수: 계정관리',
-    'tutor_myclass_create'  => '지도교수: 내 지도반 만들기',
-    'tutor_myclass_manage'  => '지도교수: 지도반 관리',
-    'tutor_counsel'         => '지도교수: 상담 관리',
-    'tutor_config'          => '지도교수: 관리&설정',
+    'tutor_index'               => "지도교수: 홈페이지",
+
+    'tutor_myclass_create'      => '지도교수: 내 지도반 만들기',
+    'tutor_myclass_manage'      => '지도교수: 내 지도학생 관리',
 
     // 04. 교과목교수 컨트롤러에서 제공하는 페이지
     'professor_index'               => '교과목교수: 홈페이지',

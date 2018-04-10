@@ -183,6 +183,24 @@ class ProfessorController extends Controller {
         return view('professor_details_scores', $data);
     }
 
+    /**
+     * 함수명:                         commentsOfStudent
+     * 함수 설명:                      조회한 학생에 대한 코멘트 목록을 열람
+     * 만든날:                         2018년 4월 06일
+     *
+     * 매개변수 목록
+     * @param $argStdId :              조회 학생의 학번
+     * @param $argTerm :               조회 학기
+     *
+     * 지역변수 목록
+     * null
+     *
+     * 반환값
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *
+     * 예외
+     * @throws NotAccessibleException
+     */
     public function commentsOfStudent($argStdId, $argTerm = null) {
         // 01. 변수 설정
         $professor  = Professor::find(session()->get('user')['info']->id);
@@ -233,16 +251,38 @@ class ProfessorController extends Controller {
 
     // 성적 관리
 
-    // 성적 등록을 위한 엑셀 양식을 반환
+    /**
+     * 함수명:                         exportScoresExcelForm
+     * 함수 설명:                      성적 등록을 위한 엑셀 양식을 다운로드
+     * 만든날:                         2018년 4월 06일
+     *
+     * 매개변수 목록
+     * @param $request:                요청 객체
+     *
+     * 지역변수 목록
+     * $professor:                     성적을 등록하는 교수의 아이디
+     * $lecture:                       성적이 등록되는 과목 정보
+     * $fileName:                      파일 이름
+     * $scoreType:                     성적 유형
+     * $content:                       이 성적에 대한 설명
+     * $perfectScore:                  만점
+     * $fileType:                      파일 확장자
+     * $studentList:                   학생 목록
+     * $data:                          엑셀 파일에 등록할 데이터
+     *
+     * 반환값
+     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function exportScoresExcelForm(Request $request) {
         // 01. 입력값 검증
         $this->validate($request, [
-            'file_name'         => 'required',
-            'score_type'        => 'required',
-            'content'           => 'required',
-            'perfect_score'     => 'required|digits_between:1,3',
-            'file_type'         => 'required',
+            'file_name'         => 'required|string',
+            'score_type'        => 'required|in:1,2,3,4',
+            'content'           => 'required|string|min:2',
+            'perfect_score'     => 'required|between:1,999',
+            'file_type'         => 'required|string|in:xlsx,xls,csv',
         ]);
+
 
         // 02. 변수 설정
         $professor      = Professor::findOrFail(session()->get('user')['info']->id);
@@ -265,12 +305,20 @@ class ProfessorController extends Controller {
         ];
         $data = array_merge_recursive($data, $studentList);
 
-        return app('App\Http\Controllers\ExcelController')->export($fileName, $fileType, $data);
+        return app('App\Http\Controllers\ExcelController')->exportScoreForm($fileName, $fileType, $data);
     }
 
     // 엑셀 양식을 받아 성적을 등록
-    public function storeScoreAtExcel() {
+    public function storeScoreAtExcel(Request $request) {
+        // 01. 전송 데이터 유효성 검사
+        $this->validate($request, [
+            'upload_file'       => 'required|file|mimes:xlsx,xls,csv'
+        ]);
 
+        // 02. 변수 설정
+        $file = $request->file('upload_file');
+
+        return app('App\Http\Controllers\ExcelController')->importScoreForm($file->path());
     }
 
     // 성적을 직접 등록하는 페이지를 출력

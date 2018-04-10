@@ -14,6 +14,7 @@ return [
     "details"           => '상세정보',
     "submit"            => "등록",
     "close"             => '닫기',
+    'order_by'          => '조회기준',
 
     // 기간 설정
     'date'              => '날짜',

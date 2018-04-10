@@ -149,4 +149,17 @@ class Lecture extends Model {
                 DbInfoEnum::STUDENTS['t_name'].'.'.DbInfoEnum::STUDENTS['name']
             ])->get();
     }
+
+    public function getIdOfStudents() {
+        $signUpList = $this->signUpLists()
+            ->select(DbInfoEnum::SIGN_UP_LISTS['s_id'])
+            ->get()->all();
+
+        $data = array();
+        foreach($signUpList as $value) {
+            array_push($data, $value->{DbInfoEnum::SIGN_UP_LISTS['s_id']});
+        }
+
+        return $data;
+    }
 }

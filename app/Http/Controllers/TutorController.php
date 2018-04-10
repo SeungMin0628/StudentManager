@@ -187,7 +187,7 @@ class TutorController extends Controller {
      * 만든날:                         2018년 4월 02일
      *
      * 매개변수 목록
-     * null
+     * @param $request:                요청 메시지
      *
      * 지역변수 목록
      * null
@@ -235,11 +235,12 @@ class TutorController extends Controller {
 
     /**
      * 함수명:                         manageMyClass
-     * 함수 설명:                      사용자의 지도반 학생들을 관리하는 페이지를 출력
-     * 만든날:                         2018년 4월 01일
+     * 함수 설명:                      사용자의 지도반 학생들 목록을 출력
+     * 만든날:                         2018년 4월 10일
      *
      * 매개변수 목록
-     * null
+     * @param $argOrder:               정렬 방식
+     * @param $argTerm:                조회 기준 학기
      *
      * 지역변수 목록
      * null
@@ -247,9 +248,9 @@ class TutorController extends Controller {
      * 반환값
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function manageMyClass() {
-        $data  = [
-            'title'         => __('page_title.tutor_myclass_manage'),
+    public function manageMyClass($argOrder = 'id', $argTerm = NULL) {
+        $data = [
+            'title'         => __('page_title.tutor_myclass_manage')
         ];
 
         return view('tutor_myclass_manage', $data);
@@ -258,35 +259,6 @@ class TutorController extends Controller {
 
     // 03-03. 상담 관리
 
-    /**
-     * 함수명:                         counsel
-     * 함수 설명:                      사용자의 상담 관련 정보를 관리하는 페이지
-     * 만든날:                         2018년 4월 05일
-     *
-     * 매개변수 목록
-     * null
-     *
-     * 지역변수 목록
-     * null
-     *
-     * 반환값
-     * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function counsel() {
-        $data = [
-            'title'         => __('page_title.tutor_counsel'),
-        ];
-
-        return view('tutor_counsel', $data);
-    }
 
     // 03-04. 관리 & 설정
-
-    public function config() {
-        $data = [
-            'title'         => __('page_title.tutor_config'),
-        ];
-
-        return view('tutor_config', $data);
-    }
 }

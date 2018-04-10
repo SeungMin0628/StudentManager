@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\NotAccessibleException;
 use App\Lecture;
+use App\SignUpList;
 use Illuminate\Http\Request;
 use App\Student;
 use App\Score;
@@ -61,7 +62,6 @@ class StudyController extends Controller {
     }
 
     public function getStudyAchievement($lectureId, $stdId) {
-        $scoreModel     = new Score();
         $lecture        = Lecture::find($lectureId);
 
         // 존재하지 않는 강의에 접근하려는 경우 -> 예외 발생
@@ -70,17 +70,16 @@ class StudyController extends Controller {
         }
 
         $subject        = $lecture->subject()->get()[0];
-        $scoreInfo      = $scoreModel->selectGainedScoreForStudent($lectureId, $stdId);
+        $scoreInfo      = Score::selectGainedScoreForStudent($lectureId, $stdId);
 
         // 조회한 과목이 해당 학생이 수강하는 과목이 아닌 경우
-        if(sizeof($scoreInfo) <= 0) {
-            throw new NotAccessibleException(__('exception.not_sign_upped_lecture'));
+        if(!($signUp = SignUpList::selectSignUpFlag($lectureId, $stdId))) {
+            //throw new NotAccessibleException(__('exception.not_sign_upped_lecture'));
         }
 
         $scoreList          = array();      // 각 과목별 점수 데이터를 저장하기 위한 배열
-        $achievementList    = array();      // 각 과목별 학업성취율 계산을 위한 배열
         foreach($scoreInfo as $value) {
-            $reflection = 0;
+            $reflection = null;
             switch($value['type']) {
                 case ConstantEnum::SCORE['midterm']:
                     $reflection = $lecture->{DbInfoEnum::LECTURES['mid_ref']};
@@ -96,10 +95,6 @@ class StudyController extends Controller {
                     break;
             }
 
-            // 성적별 점수 도출
-            $achievement = ($value['gained_score'] / $value['perfect_score']) * $reflection;
-            array_push($achievementList, $achievement);
-
             $scoreList[$value['type']] = [
                 'type'              => __('lecture.'.ConstantEnum::SCORE[$value['type']]),
                 'count'             => $value['count'],
@@ -114,7 +109,7 @@ class StudyController extends Controller {
         return [
             'title'          => $subject->{DbInfoEnum::SUBJECTS['name']},
             'score'          => $scoreList,
-            'achievement'    => number_format(array_sum($achievementList) * 100, 2),
+            'achievement'    => number_format($signUp->achievement * 100, 2),
             'gained_score'   => Student::find($stdId)->getDetailsOfLecture($lectureId)->get()->all(),
             'prof_info'      => $lecture->professor()
                                 ->select(DbInfoEnum::PROFESSORS['name'], DbInfoEnum::PROFESSORS['f_p'])
