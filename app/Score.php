@@ -110,7 +110,7 @@ class Score extends Model {
                 $signUpList = SignUpList::where([
                     [DbInfoEnum::SIGN_UP_LISTS['lec'], $score->lecture_id],
                     [DbInfoEnum::SIGN_UP_LISTS['s_id'], $stdId]
-                ])->updateAchievement();
+                ])->get()->all()[0]->updateAchievement();
             }
 
             return true;

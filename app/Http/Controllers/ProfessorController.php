@@ -355,6 +355,7 @@ class ProfessorController extends Controller {
 
         // 02. 조회된 교수 계정의 유효성 검증
 
+
         // 로그인 조건 만족
         if(password_verify($argPw, $professor->password)) {
 
