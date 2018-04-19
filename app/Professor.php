@@ -261,6 +261,7 @@ class Professor extends Model {
         ) > 0;
     }
 
+    // 내 담당 과목을 수강하는 학생 목록
     public function getStudentsListOfMyLecture() {
         return $this->lecture()->get()[0]->signUpLists()
             ->join(DbInfoEnum::STUDENTS['t_name'],
@@ -272,4 +273,26 @@ class Professor extends Model {
             )
             ->get();
     }
+
+    // 내 지도 학생 목록을 출력
+    public function selectStudentsOfMyClass($argOrderStyle) {
+        return $this->group()->get()[0]->students()
+            ->join('sign_up_lists', 'students.id', 'sign_up_lists.std_id')
+            ->selectRaw('students.id, students.name, students.face_photo, '.
+                'round((avg(sign_up_lists.achievement) * 100), 0) as "achievement"')
+            ->groupBy('students.id')->orderBy("students.{$argOrderStyle}");
+
+        // 참고 문헌 :
+        // https://stackoverflow.com/questions/45302893/laravel-group-by-error-on-query-that-works-on-phpmyadmin-with-results
+    }
+
+    // 내 지도학생 중 해당 학번을 가진 학생에 대한 정보를 조회
+    public function selectMyStudentInfo($argStdId) {
+        return $this->group()->get()[0]->students()
+            ->where('id', $argStdId)
+            ->select('id', 'name', 'face_photo')
+            ->get()->all()[0];
+    }
+
+
 }

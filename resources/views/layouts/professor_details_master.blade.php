@@ -18,7 +18,7 @@
             <div>@lang('interface.student_info')</div>
             <div>
             @if(strlen($student_info['face_photo']) > 0)
-                {{ Html::image('source/prof_face/'.$student_info['face_photo'], 'student', ['width' => 100, 'height' => 100]) }}
+                {{ Html::image('source/std_face/'.$student_info['face_photo'], 'student', ['width' => 100, 'height' => 100]) }}
             @else
                 {{ Html::image('source/std_face/dummy.jpg', 'default', ['width' => 100, 'height' => 100]) }}
             @endif

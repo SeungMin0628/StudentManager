@@ -13,6 +13,7 @@ return [
     // 버튼 인터페이스
     "details"           => '상세정보',
     "submit"            => "등록",
+    'select'            => '조회',
     "close"             => '닫기',
     'order_by'          => '조회기준',
 

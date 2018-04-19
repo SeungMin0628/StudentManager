@@ -6,6 +6,7 @@ use App\Exceptions\NotAccessibleException;
 use App\Exports\UploadScoresFormExport;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Psy\Exception\ErrorException;
 use App\Score;
 use App\Professor;
@@ -27,6 +28,7 @@ class ExcelController extends Controller {
     // 01. 멤버 변수
 
     // 02. 멤버 메서드
+    // 교과목 교수: 엑셀 양식 출력
     public function exportScoreForm($argFileName, $argFileType, Array $argData) {
         // 엑셀 파일 생성
         $fileType = null;
@@ -47,11 +49,15 @@ class ExcelController extends Controller {
             $argFileName.'.'.$argFileType, $fileType);
     }
 
-    public function importScoreForm($argFilePath) {
+
+    // 교과목교수: 엑셀을 이용한 성적 등록
+    public function importScoreForm($argFilePath, $argFileType) {
         // 01. 전송받은 파일 해석
-        $spreadsheet = IOFactory::load($argFilePath);
-        $sheetData = $spreadsheet->getActiveSheet()
-            ->toArray(null, true, true, true);
+        $reader = IOFactory::createReader($this->getType($argFileType));
+        $reader->setReadDataOnly(true);
+        $sheetData = $reader->load($argFilePath)->getActiveSheet()->toArray(
+            null, true, true, true
+        );
 
         // 02. 유효성 검증 & 데이터 추출
         // 현재 로그인한 교수의 담당과목
@@ -149,6 +155,91 @@ class ExcelController extends Controller {
             return redirect(route('professor.scores.store.main'));
         } else {
             throw new NotAccessibleException('데이터 등록에 실패하였습니다.');
+        }
+    }
+
+    // 지도교수: 엑셀을 이용한 내 지도반 등록
+    public function importStudentsList($argStdType, $argFilePath, $argFileType) {
+        // 01. 엑셀 파일 읽기
+        $reader = IOFactory::createReader($this->getType($argFileType));
+        $reader->setReadDataOnly(true);
+        $sheetData = $reader->load($argFilePath);
+
+        // 02. 각 시트별 데이터 획득
+        $studentList = [];
+        if($argStdType == 'freshman') {
+            // 신입생 데이터
+            $freshmanList = $sheetData->getActiveSheet()->toArray(
+                null, true, true, true
+            );
+
+            $filteredList = array_filter($freshmanList, function($value) {
+                return preg_match('#^J[1-9]+$#', strtoupper($value['E']));
+            });
+            
+            foreach($filteredList as $rowKey => $rowValue) {
+                $studentList[$rowValue['E']][] = [
+                    'id'        => $rowValue['C'],
+                    'name'      => $rowValue['B'],
+                    'class'     => $rowValue['E'],
+                    'type'      => '신입생'
+                ];
+            }
+        } else if($argStdType == 'enrolled') {
+            // 재학생 시트
+            $enrolledStudent = $sheetData->getSheet(0)->toArray(
+                null, null, true, true
+            );
+
+            $filteredList = array_filter($enrolledStudent, function($value) {
+                return  strtoupper($value['E']) == 'WD-J';
+            });
+
+            foreach($filteredList as $rowKey => $rowValue) {
+                $studentList['재학생'][] =[
+                    'id'        => $rowValue['C'],
+                    'name'      => $rowValue['D'],
+                    'class'     => $rowValue['E'],
+                    'type'      => '재학생'
+                ];
+            }
+
+            // 복학생 시트
+            $returningStudent = $sheetData->getSheet(1)->toArray(
+                null, null, true, true
+            );
+
+            $filteredList = array_filter($returningStudent, function($value) {
+                return  strtoupper($value['D']) == 'WD-J';
+            });
+
+            foreach($filteredList as $rowKey => $rowValue) {
+                $studentList['복학생'][] = [
+                    'id'        => $rowValue['B'],
+                    'name'      => $rowValue['C'],
+                    'class'     => $rowValue['D'],
+                    'type'      => '복학생'
+                ];
+            }
+        }
+
+        return $studentList;
+    }
+
+    // 자료형 반환
+    public function getType($argType) {
+        switch(strtolower($argType)) {
+            case 'xlsx':
+                return \Maatwebsite\Excel\Excel::XLSX;
+                break;
+            case 'xls':
+                return \Maatwebsite\Excel\Excel::XLS;
+                break;
+            case 'csv':
+                return \Maatwebsite\Excel\Excel::CSV;
+                break;
+            default:
+                return \Maatwebsite\Excel\Excel::XLSX;
         }
     }
 }

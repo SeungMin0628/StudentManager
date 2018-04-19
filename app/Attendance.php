@@ -14,10 +14,18 @@ use App\Http\Controllers\ConstantEnum;
  */
 class Attendance extends Model {
     // 01. 멤버 변수 설정
+    public  $incrementing   = false;
     public  $timestamps     = false;
+
+    protected $primaryKey   = ['reg_date', 'std_id'];
+    protected $fillable     = [
+        'come_school', 'leave_school'
+    ];
 
     // 02. 생성자 정의
     // 03. 멤버 메서드 정의
+
+    // 테이블 관계도 정의
     /**
      * 함수명:                         student
      * 함수 설명:                      학생 테이블과 출석 테이블의 연결 관계를 정의
@@ -74,7 +82,7 @@ class Attendance extends Model {
 
     /**
      * 함수명:                         selectAttendanceRecords
-     * 함수 설명:                      하교 테이블과 출석 테이블의 연결 관계를 정의
+     * 함수 설명:                      출석 데이터 조회
      * 만든날:                         2018년 4월 3일
      *
      * 매개변수 목록
@@ -88,36 +96,22 @@ class Attendance extends Model {
      * 반환값
      * @return                         array
      */
+
+    // 멤버 메서드
     // 고쳐야 됨
-    public function selectAttendanceRecords($argStdId, $startDate, $endDate) {
+    public static function selectAttendanceRecords($argStdId, $startDate, $endDate) {
         // 01. 지역 변수 선언
         $dbInfoSelf     = DbInfoEnum::ATTENDANCES;
         $dbInfoCome     = DbInfoEnum::COME_SCHOOLS;
         $dbInfoLeave    = DbInfoEnum::LEAVE_SCHOOLS;
         $constList      = ConstantEnum::ATTENDANCE;
 
-        return Attendance::
-            where([
-                [DbInfoEnum::ATTENDANCES['std_id'], $argStdId],
-                [DbInfoEnum::ATTENDANCES['reg_date'], '>=', $startDate],
-                [DbInfoEnum::ATTENDANCES['reg_date'], '<=', $endDate]
-            ])
-            // where([['std_id', $std_id], ['reg_date', '>=', $start_date], ['reg_date', '<=', $end_date]])
-            ->join(
-                DbInfoEnum::COME_SCHOOLS['t_name'],
-                DbInfoEnum::ATTENDANCES['t_name'].'.'.DbInfoEnum::ATTENDANCES['come'],
-                DbInfoEnum::COME_SCHOOLS['t_name'].'.'.DbInfoEnum::COME_SCHOOLS['id']
-            )
-            // join('come_schools', 'attendances.come_school', 'come_schools.id')
-            ->join(
-                DbInfoEnum::LEAVE_SCHOOLS['t_name'],
-                DbInfoEnum::ATTENDANCES['t_name'].'.'.DbInfoEnum::ATTENDANCES['leave'],
-                DbInfoEnum::LEAVE_SCHOOLS['t_name'].'.'.DbInfoEnum::LEAVE_SCHOOLS['id']
-            )
-            // join('leave_schools', 'attendances.leave_school', 'leave_schools.id')
+        return Attendance::where([
+            ['std_id', $argStdId], ['reg_date', '>=', "{$startDate}"], ['reg_date', '<=', "{$endDate}"]
+            ])->join('come_schools', 'attendances.come_school', 'come_schools.id')
+            ->join('leave_schools', 'attendances.leave_school', 'leave_schools.id')
             ->selectRaw("
-                (COUNT(CASE {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} WHEN NOT NULL THEN FALSE ELSE TRUE END)
-                 - COUNT(CASE {$dbInfoCome['t_name']}.{$dbInfoCome['late']} WHEN TRUE THEN TRUE END)) AS '{$constList['ada']}', 
+                (COUNT('attendances.id') - COUNT(CASE come_schools.lateness_flag WHEN TRUE THEN TRUE END) - COUNT(CASE attendances.absence_flag WHEN TRUE THEN TRUE END)) AS '{$constList['ada']}', 
                 DATE_FORMAT(MAX(CASE WHEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} IS NULL THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_ada']}', 
                 COUNT(CASE {$dbInfoCome['t_name']}.{$dbInfoCome['late']} WHEN TRUE THEN TRUE END) AS '{$constList['late']}', 
                 DATE_FORMAT(MAX(CASE WHEN {$dbInfoCome['t_name']}.{$dbInfoCome['late']} IS TRUE THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_late']}', 
@@ -125,7 +119,7 @@ class Attendance extends Model {
                 DATE_FORMAT(MAX(CASE WHEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['absence']} IS NOT NULL THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_absence']}', 
                 COUNT(CASE {$dbInfoLeave['t_name']}.{$dbInfoLeave['early']} WHEN TRUE THEN TRUE END) AS '{$constList['early']}', 
                 DATE_FORMAT(MAX(CASE WHEN {$dbInfoLeave['t_name']}.{$dbInfoLeave['early']} IS TRUE THEN {$dbInfoSelf['t_name']}.{$dbInfoSelf['reg_date']} END), '%Y-%m-%d') AS '{$constList['n_early']}'
-            ")
+            ");
             /* selectRaw("
 	            COUNT(CASE attendances.absence_flag WHEN NOT NULL THEN FALSE ELSE TRUE END) AS 'attendance',
                 MAX(CASE WHEN attendances.absence_flag IS NOT NULL THEN FALSE ELSE attendances.reg_date END) AS 'nearest_attendance',
@@ -136,6 +130,59 @@ class Attendance extends Model {
                 COUNT(CASE leave_schools.early_flag WHEN TRUE THEN TRUE END) AS 'early',
                 MAX(CASE WHEN leave_schools.early_flag IS TRUE THEN attendances.reg_date END) AS 'nearest_early'
             ")*/
-            ->get()->all()[0];
+    }
+
+    // 클래스 메서드
+    public static function selectRecentlyAttendanceRecords($argStdId) {
+        // 01. 학생 조회
+        $student = Student::findOrFail($argStdId);
+
+        $data = self::where('std_id', $student->id);
+
+        if(sizeof($data->get()->all()) <= 0) {
+            return null;
+        } else {
+            return $data->orderBy('reg_date', 'desc')->limit(1)->get()->all()[0];
+        }
+
+    }
+
+    // 출석 데이터 생성
+    public static function insertAttendance($argStdId) {
+        // 학생 데이터 조회
+        $student    = Student::findOrFail($argStdId);
+        $comeSchool = ComeSchool::insertComeSchool($student->id);
+
+        // 데이터 생성
+        $attendance = new self();
+
+        $attendance->reg_date = today()->format('Y-m-d');
+        $attendance->std_id = $student->id;
+        $attendance->come_school = $comeSchool;
+
+        if($attendance->save()) {
+            return $attendance->id;
+        } else {
+            return false;
+        }
+    }
+
+    // 하교 시 출석 데이터 업데이트
+    public static function updateAttendanceAtLeaveSchool($argStdId) {
+        // 학생 데이터 조회
+        $student = Student::findOrFail($argStdId);
+        $leaveSchool = LeaveSchool::insertLeaveSchool($student->id);
+
+        // 데이터 검색
+        $attendance = self::where([['std_id', $student->id], ['leave_school', NULL]])
+            ->orderBy('reg_date', 'desc')->limit(1);
+
+        //$attendance->leave_school = $leaveSchool;
+
+        if($attendance->update(['leave_school' => $leaveSchool])) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

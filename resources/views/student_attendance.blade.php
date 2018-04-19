@@ -32,19 +32,20 @@
                    @if($period == 'monthly') disabled @endif>
         </div>
     </div>
+    @if(!is_null($attendance_data))
     <div>
         <!-- 출석률 표시 -->
         <div>
             <span>@lang('attendance.attendance_rate')</span>
-            <span>{{ $attendance_rate }}%</span>
+           {{-- <span>{{ $attendance_rate }}%</span>--}}
         </div>
 
         <!-- 간략한 출석 기록 표시 -->
         <div>
-            <span>@lang('attendance.attendance'): {{ $attendance }}</span>
-            <span>@lang('attendance.late'): {{ $late }}</span>
-            <span>@lang('attendance.absence'): {{ $absence }}</span>
-            <span>@lang('attendance.early'): {{ $early }}</span>
+            <span>@lang('attendance.attendance'): {{ $attendance_data['attendance'] }}</span>
+            <span>@lang('attendance.late'): {{ $attendance_data['late'] }}</span>
+            <span>@lang('attendance.absence'): {{ $attendance_data['absence'] }}</span>
+            <span>@lang('attendance.early'): {{ $attendance_data['early'] }}</span>
         </div>
     </div>
     <div>
@@ -52,19 +53,22 @@
         <table border="1">
             <th colspan="8">@lang('interface.details')</th>
             <tr>
-                <td>@lang('attendance.attendance')</td><td>{{ $attendance }}</td>
-                <td>@lang('attendance.late')</td><td>{{ $late }}</td>
-                <td>@lang('attendance.absence')</td><td>{{ $absence }}</td>
-                <td>@lang('attendance.early')</td><td>{{ $early }}</td>
+                <td>@lang('attendance.attendance')</td><td>{{ $attendance_data['attendance'] }}</td>
+                <td>@lang('attendance.late')</td><td>{{ $attendance_data['late'] }}</td>
+                <td>@lang('attendance.absence')</td><td>{{ $attendance_data['absence'] }}</td>
+                <td>@lang('attendance.early')</td><td>{{ $attendance_data['early'] }}</td>
             </tr>
             <tr>
-                <td>@lang('attendance.nearest_attendance')</td><td>{{ $nearest_attendance }}</td>
-                <td>@lang('attendance.nearest_late')</td><td>{{ $nearest_late }}</td>
-                <td>@lang('attendance.nearest_absence')</td><td>{{ $nearest_absence }}</td>
-                <td>@lang('attendance.nearest_early')</td><td>{{ $nearest_early }}</td>
+                <td>@lang('attendance.nearest_attendance')</td><td>{{ $attendance_data['nearest_attendance']  }}</td>
+                <td>@lang('attendance.nearest_late')</td><td>{{ $attendance_data['nearest_late']  }}</td>
+                <td>@lang('attendance.nearest_absence')</td><td>{{ $attendance_data['nearest_absence']  }}</td>
+                <td>@lang('attendance.nearest_early')</td><td>{{ $attendance_data['nearest_early']  }}</td>
             </tr>
         </table>
     </div>
+    @else
+        <div>현재 존재하는 데이터가 없습니다.</div>
+    @endif
 @endsection
 @section('script')
     <script language="JavaScript">

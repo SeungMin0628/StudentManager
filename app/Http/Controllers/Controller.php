@@ -49,9 +49,10 @@ class Controller extends BaseController {
 
             // 이번주
             $thisWeek = Carbon::createFromDate($data[0], $data[1], 1);
-            while($thisWeek->weekOfMonth != $data[2]) {
+            while($thisWeek->weekOfMonth <= $data[2]) {
                 $thisWeek->addWeek();
             }
+            $thisWeek->startOfWeek();
         } else {
             throw new ErrorException('aaa');
         }
@@ -114,7 +115,7 @@ class Controller extends BaseController {
         // 지난달
         $prevMonth = $thisMonth->copy()->subMonth();
 
-        // 기준 시간대가 이번주보다 과거인 경우 다음주 생성
+        // 기준 시간대가 이번달보다 과거인 경우 다음달 생성
         if(today()->startOfMonth()->gt($thisMonth->copy()->startOfMonth())) {
             // 다음달
             $nextMonth = $thisMonth->copy()->addMonth();
@@ -217,6 +218,38 @@ class Controller extends BaseController {
             'year'          => $year,
             'term'          => __('lecture.'.ConstantEnum::TERM[$term]),
             'next_term'     => $nextTerm
+        ];
+    }
+
+    // 연도에 대한 페이지네이션 값을 반환
+    public function getYearValue($argThisYear = null) {
+        // 01. 변수 설정
+        $prevYear = null;
+        $thisYear = null;
+        $nextYear = null;
+
+        // 이번 연도 설정
+        if(is_null($argThisYear)) {
+            $thisYear = today();
+        } else if(preg_match("#^(19|20)\d{2}$#", $argThisYear)) {
+            $thisYear = Carbon::createFromDate($argThisYear, 1, 1);
+        } else {
+            throw new ErrorException();
+        }
+
+        // 지난 연도 설정
+        $prevYear = $thisYear->copy()->subYear();
+
+        // 설정한 이번 연도가 현재보다 과거인 경우 => 다음 연도 설정
+        if(today()->year > $thisYear->year) {
+            $nextYear = $thisYear->copy()->addYear();
+        }
+
+        // 반환
+        return [
+            'prev_year' => $prevYear,
+            'this_year' => $thisYear,
+            'next_year' => $nextYear
         ];
     }
 }

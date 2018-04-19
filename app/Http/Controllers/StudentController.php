@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\NotAccessibleException;
 use App\Http\Controllers\ConstantEnum;
+use App\Http\Controllers\ResponseObject;
 use App\Http\DbInfoEnum;
 use App\Student;
 use App\Subject;
@@ -155,16 +156,34 @@ class StudentController extends Controller {
      * 반환값
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function login($argId, $argPw) {
+    public function login($argId, $argPw, $argDevice) {
         // 01. 입력된 아이디를 조회
         $student = Student::find($argId);
+
+        if(is_null($student)) {
+            switch($argDevice) {
+                case 'android':
+                    return response()->json(new ResponseObject(
+                            "FALSE", "존재하지 않는 아이디입니다."
+                        ), 200
+                    );
+            }
+        }
 
         // 02. 조회된 학생 계정의 유효성 검증
 
         // 등록되지 않은 학생
         if($student->password == "") {
-            flash()->warning(__('message.login_not_registered_std_id'))->important();
-            return back();
+            switch($argDevice) {
+                case 'android':
+                    return response()->json(
+                        new ResponseObject('FALSE', __('message.login_not_registered_std_id')),
+                        200
+                    );
+                default:
+                    flash()->warning(__('message.login_not_registered_std_id'))->important();
+                    return back();
+            }
 
         // 로그인 조건 만족
         } else if(password_verify($argPw, $student->password)) {
@@ -176,13 +195,29 @@ class StudentController extends Controller {
                 ]
             ]);
 
-            flash()->success(__('message.login_success', ['Name' => $student->name]));
-            return redirect(route('student.index'));
+            switch($argDevice) {
+                case 'android':
+                    return response()->json(
+                        new ResponseObject('TRUE', __('message.login_success', ['Name' => $student->name])),
+                        200
+                    );
+                default:
+                    flash()->success(__('message.login_success', ['Name' => $student->name]));
+                    return redirect(route('student.index'));
+            }
 
         // 잘못된 입력
         } else {
-            flash()->warning(__('message.login_wrong_id_or_password'))->important();
-            return back();
+            switch($argDevice) {
+                case 'android':
+                    return response()->json(
+                        new ResponseObject("FALSE", __('message.login_wrong_id_or_password')),
+                        200
+                    );
+                default:
+                    flash()->warning(__('message.login_wrong_id_or_password'))->important();
+                    return back();
+            }
         }
     }
 
@@ -230,50 +265,118 @@ class StudentController extends Controller {
      * 예외
      * @throws                          NotAccessibleException
      */
-    public function getAttendanceRecords($argPeriod = ConstantEnum::PERIOD['weekly'], $argDate = null) {
+    public function getAttendanceRecords($argPeriod = 'weekly', $argDate = null) {
         // 01. 데이터 획득
         $std_id = session()->get('user')['info']->id;
         $attendanceData =
             app('App\Http\Controllers\AttendanceController')->getAttendanceRecords($std_id, $argPeriod, $argDate);
 
         // 해당 기간동안 출석 데이터가 없을 경우
-        $periodData = null;
+        $periodData = [];
         switch($argPeriod) {
-            case ConstantEnum::PERIOD['weekly']:
-                $periodData = today()->format('Y-m-').today()->weekOfMonth;
+            case 'weekly':
+                $period = $this->getWeeklyValue($argDate);
+                $periodData = [
+                    'this'      => $period['this_week']->format('Y-m-').$period['this_week']->weekOfMonth,
+                    'prev'      => $period['prev_week']->format('Y-m-').$period['prev_week']->weekOfMonth,
+                    'next'      => !is_null($period['next_week']) ?
+                            $period['next_week']->format('Y-m-').$period['next_week']->weekOfMonth : null
+                ];
                 break;
-            case ConstantEnum::PERIOD['monthly']:
-                $periodData = today()->format('Y-m');
+            case 'monthly':
+                $period = $this->getMonthlyValue($argDate);
+                $periodData = [
+                    'this'      => $period['this_month']->format('Y-m'),
+                    'prev'      => $period['prev_month']->format('Y-m'),
+                    'next'      => !is_null($period['next_month']) ?
+                        $period['next_month']->format('Y-m') : null
+                ];
                 break;
         }
-        if(is_null($attendanceData) && (!is_null($argDate) || $argDate =! $periodData)) {
-            throw new NotAccessibleException(__('exception.ada_records_not_exists'));
-        }
+
+
 
         // 02. 매개 데이터 삽입
         $data = [
             'title'                 => __('page_title.student_attendance'),
             'period'                => $argPeriod,
 
-            'date'                  => $attendanceData['now_date'],
-            'prev_date'             => $attendanceData['prev_date'],
-            'next_date'             => $attendanceData['next_date'],
+            'date'                  => $periodData['this'],
+            'prev_date'             => $periodData['prev'],
+            'next_date'             => $periodData['next'],
 
-            'attendance_rate'       => number_format($attendanceData['rate'], 2),
-            'attendance'            => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['ada']},
-            'nearest_attendance'    => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['n_ada']},
-
-            'late'                  => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['late']},
-            'nearest_late'          => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['n_late']},
-
-            'absence'               => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['absence']},
-            'nearest_absence'       => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['n_absence']},
-
-            'early'                 => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['early']},
-            'nearest_early'         => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['n_early']},
+            // 출석 데이터가 있으면 => 데이터 반환, 없으면 NULL 반환
+            'attendance_data'       => $attendanceData
         ];
 
         return view('student_attendance', $data);
+    }
+
+    // 모바일 : 출석율 그래프 그리기
+    public function getAttendanceGraph(Request $request) {
+        $stdId = $request->post('id');
+        $period = 'weekly';
+        $date = null;
+
+        $attendanceData =
+            app('App\Http\Controllers\AttendanceController')->getAttendanceRecords($stdId, $period, $date);
+
+        $data = [
+            'attendance'    => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['ada']},
+            'late'          => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['late']},
+            'absence'       => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['absence']},
+            'early'         => $attendanceData['query_result']->{ConstantEnum::ATTENDANCE['early']}
+        ];
+
+        return view('student_attendance_graph', $data);
+    }
+
+    // 모바일 : 출석체크
+    public function comeSchool() {
+        $id = session()->get('user')['info']->id;
+
+        return response()->json(
+            app('App\Http\Controllers\AttendanceController')->comeSchool($id),
+            200
+        );
+    }
+
+    // 하드웨어: 출석체크
+    public function comeSchoolHardWare(Request $request) {
+        $this->validate($request, [
+            'stdId'    => 'required|JSON'
+        ]);
+
+        $reqData    = json_decode($request->post('stdId'));
+
+        return response()->json(
+            app('App\Http\Controllers\AttendanceController')->comeSchool($reqData),
+            200
+        );
+    }
+
+    // 모바일 : 하교하기
+    public function leaveSchool() {
+        $id = session()->get('user')['info']->id;
+
+        return response()->json(
+            app('App\Http\Controllers\AttendanceController')->leaveSchool($id),
+            200
+        );
+    }
+
+    // 하드웨어: 하교하기
+    public function leaveSchoolHardWare(Request $request) {
+        $this->validate($request, [
+            'stdId'    => 'required|JSON'
+        ]);
+
+        $reqData    = json_decode($request->post('stdId'));
+
+        return response()->json(
+            app('App\Http\Controllers\AttendanceController')->leaveSchool($reqData),
+            200
+        );
     }
 
     // 03-03. 학업 관리
@@ -371,3 +474,4 @@ class StudentController extends Controller {
         return view('student_counsel', $data);
     }
 }
+

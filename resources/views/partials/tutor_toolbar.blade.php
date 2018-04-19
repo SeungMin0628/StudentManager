@@ -27,7 +27,7 @@
             <!-- 내 지도반 관리 -->
             <td colspan="2">@lang('attendance.title')</td><!-- 출결 관리 -->
             <td rowspan="2"><a href="{{ route('tutor.myclass.manage') }}">@lang('myclass.manage_student')</a></td><!-- 학생 관리 -->
-            <td rowspan="2">@lang('myclass.config_need_care')</td><!-- 알림 설정 -->
+            <td rowspan="2"><a href="{{ route('tutor.myclass.needcare') }}">@lang('myclass.config_need_care')</a></td><!-- 알림 설정 -->
 
             <!-- 상담 관리 -->
             <td rowspan="2">@lang('counsel.show_reception')</td> <!-- 받은 요청 -->
@@ -41,11 +41,11 @@
         <!-- 최하위 분류 : 각 기능의 세부 분류 2-->
         <tr>
             <!-- 내 지도반 관리 => 출결관리 -->
-            <td>@lang('myclass.check_attendance')</td><!-- 오늘 등하교 출결 보기 -->
+            <td><a href="{{ route('tutor.myclass.attendance') }}">@lang('myclass.check_attendance')</a></td><!-- 오늘 등하교 출결 보기 -->
             <td>@lang('myclass.today_positions')</td><!-- 일일 위치확인 -->
 
             <!-- 설정&관리 => 정보 등록 -->
-            <td>@lang('myclass.store_student')</td><!-- 학생 등록 -->
+            <td><a href="{{ route('tutor.config.store.student') }}">@lang('myclass.store_student')</a></td><!-- 학생 등록 -->
             <td>@lang('myclass.store_timetable')</td><!-- 시간표 등록 -->
 
             <!-- 설정&관리 => 교과목교수 -->

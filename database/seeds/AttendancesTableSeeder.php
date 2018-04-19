@@ -23,7 +23,7 @@ class AttendancesTableSeeder extends Seeder
             DbInfoEnum::ATTENDANCES['reg_date'], '>=', today()->startOfMonth()->format('m')
             )->max('reg_date'));
 
-        for($iCount = $recent_attendance->day; $iCount <= $today->day; $iCount++) {
+        for($iCount = $recent_attendance; $iCount <= $today->day; $iCount++) {
             foreach($students as $student) {
                 $nowDate = Carbon::createFromDate($today->year, $today->month, $iCount);
                 if(sizeof(Attendance::where([

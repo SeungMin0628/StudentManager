@@ -59,7 +59,6 @@ class Handler extends ExceptionHandler
         } else if ($exception instanceof ModelNotFoundException) {
             flash()->error('데이터 검색 실패')->important();
             return back();
-
         /* URL를 이용한 잘못된 접근 => 에러 페이지 출력 */
         } else if ($exception instanceof ErrorException) {
             return response(view('errors.notice', [

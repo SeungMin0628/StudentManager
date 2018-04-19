@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\NotAccessibleException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ConstantEnum;
+use Illuminate\Support\Facades\Validator;
 use function Symfony\Component\HttpKernel\Tests\Controller\controller_function;
 use function Symfony\Component\HttpKernel\Tests\controller_func;
 use Whoops\Exception\ErrorException;
@@ -55,6 +57,7 @@ class HomeController extends Controller {
             'title'         => __('page_title.home_index'),
             'user_type'     => ConstantEnum::USER_TYPE
         ];
+
 
         return view('login', $data);
     }
@@ -140,35 +143,53 @@ class HomeController extends Controller {
      *      $type(string):             현재 회원가입 유형을 알림
      */
     public function login(Request $request) {
+        // 데이터 유효성 검증
+        if(!$request->exists('device')) {
+            $typeValue_student = ConstantEnum::USER_TYPE['student'];
+            $typeValue_professor = ConstantEnum::USER_TYPE['professor'];
+            $this->validate($request, [
+                'type' => "required|in:{$typeValue_student},{$typeValue_professor}",
+                'password' => "required",
+                'device' => 'in:android'
+            ]);
+        }
+
         // 01. 로그인 관련 데이터 추출
         $type   = $request->post('type');
         $id     = $request->post('id');
         $pw     = $request->post('password');
+        $device = $request->exists('device') ? $request->post('device') : null;
 
-        // 02. 로그인 유형에 따른 입력 데이터 검증
-        $typeValue_student      = ConstantEnum::USER_TYPE['student'];
-        $typeValue_professor    = ConstantEnum::USER_TYPE['professor'];
-        $rules = [
-            'type'      => "required|in:{$typeValue_student},{$typeValue_professor}",
-            'password'  => "required"
-        ];
-        switch($type) {
-            case ConstantEnum::USER_TYPE['student']:
-                $rules['id'] = 'required|digits:7|exists:students,id';
-                break;
-            case ConstantEnum::USER_TYPE['professor']:
-                $rules['id'] = 'required|exists:professors,id';
-                break;
+        if(!$request->exists('device')) {
+            switch ($type) {
+                case ConstantEnum::USER_TYPE['student']:
+                    $rules['id'] = 'required|digits:7|exists:students,id';
+                    break;
+                case ConstantEnum::USER_TYPE['professor']:
+                    $rules['id'] = 'required|exists:professors,id';
+                    break;
+            }
+            $this->validate($request, $rules);
         }
-        $this->validate($request, $rules);
+
 
 
         // 03. 로그인 유형에 따른 컨트롤러 라우팅
         if ($type == 'student') {
-            return app('App\Http\Controllers\StudentController')->login($id, $pw);
+            return app('App\Http\Controllers\StudentController')->login($id, $pw, $device);
         } else if ($type == 'professor') {
-            return app('App\Http\Controllers\ProfessorController')->login($id, $pw);
+            return app('App\Http\Controllers\ProfessorController')->login($id, $pw, $device);
+        } else {
+            switch($device) {
+                case 'android':
+                    return response()->json(new ResponseObject(
+                        "FALSE", "잘못된 회원 유형입니다."
+                    ), 200);
+                default:
+                    throw new NotAccessibleException("잘못된 회원 유형입니다.");
+            }
         }
+
     }
 
     /**

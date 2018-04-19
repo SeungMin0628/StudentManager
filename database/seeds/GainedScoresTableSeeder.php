@@ -44,5 +44,12 @@ class GainedScoresTableSeeder extends Seeder {
                 }
             }
         });
+
+        // 학생별 학업 성취도 갱신
+        Student::all()->each(function ($student) {
+           $student->signUpLists()->each(function ($signUpList) {
+               $signUpList->updateAchievement();
+           });
+        });
     }
 }

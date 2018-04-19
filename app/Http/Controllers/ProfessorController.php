@@ -6,8 +6,8 @@ use App\Exceptions\NotAccessibleException;
 use App\Http\DbInfoEnum;
 use App\Professor;
 use App\Student;
-use App\Http\Controllers\TutorController;
 use App\Http\Controllers\ConstantEnum;
+use Validator;
 use Illuminate\Http\Request;
 
 /**
@@ -249,6 +249,31 @@ class ProfessorController extends Controller {
         return view('professor_check_attendance', $data);
     }
 
+    // 모바일 :: 학생 리스트 출력
+    public function getMyStudentsList(Request $request) {
+        /*
+        $this->validate($request, [
+            'id'    => 'required|exists:professors,id'
+        ]);*/
+
+        // 유효성 검사
+        $validator = Validator::make($request->all(), [
+            'id'    => 'required|exists:professors,id'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json(new ResponseObject(
+                false, "존재하지 않는 ID입니다."
+            ), 200);
+        }
+
+
+        $professor = Professor::find($request->post('id'));
+        $studentsList = $professor->getStudentsListOfMyLecture();
+
+        return response()->json($studentsList, 200);
+    }
+
     // 성적 관리
 
     /**
@@ -312,18 +337,27 @@ class ProfessorController extends Controller {
     public function storeScoreAtExcel(Request $request) {
         // 01. 전송 데이터 유효성 검사
         $this->validate($request, [
-            'upload_file'       => 'required|file|mimes:xlsx,xls,csv'
+            'upload_file'       => 'required|file|mimes:xlsx,xls,csv',
         ]);
 
         // 02. 변수 설정
         $file = $request->file('upload_file');
+        $fileType = ($array = explode('.', $file->getClientOriginalName()))[sizeof($array) - 1];
 
-        return app('App\Http\Controllers\ExcelController')->importScoreForm($file->path());
+        return app('App\Http\Controllers\ExcelController')->importScoreForm($file->path(), $fileType);
     }
 
     // 성적을 직접 등록하는 페이지를 출력
     public function getScoresForm() {
 
+    }
+
+    // 성적 확인 메인페이지 출력
+    public function getScoresMain() {
+        // View 단에 전송할 데이터 할당
+        $data = [
+            'title'     => ''
+        ];
     }
 
     // 03-01-03. 상담 관리
@@ -340,6 +374,7 @@ class ProfessorController extends Controller {
      * 매개변수 목록
      * @param $argId:                  사용자 ID
      * @param $argPw:                  사용자 패스워드
+     * @param $argDevice:              사용자 접속 기기
      *
      * 지역변수 목록
      * $regMsg(string):                View 단에 반환할 메시지
@@ -349,19 +384,30 @@ class ProfessorController extends Controller {
      * 반환값
      * @return                         \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function login($argId, $argPw) {
+    public function login($argId, $argPw, $argDevice = NULL) {
         // 01. 입력된 아이디를 조회
         $professor = Professor::find($argId);
 
-        // 02. 조회된 교수 계정의 유효성 검증
+        if(is_null($professor)) {
+            switch ($argDevice) {
+                case 'android':
+                    return response()->json(new ResponseObject(
+                        "FALSE", "존재하지 않는 아이디입니다."
+                    ), 200);
+                default:
+                    flash()->warning("존재하지 않는 아이디입니다.");
+                    return redirect(route('home.index'));
+            }
+        }
 
+        // 02. 조회된 교수 계정의 유효성 검증
 
         // 로그인 조건 만족
         if(password_verify($argPw, $professor->password)) {
 
             // 해당 사용자가 지도교수 계정인 경우
             if(is_null($professor->manager) && is_null($professor->expire_date)) {
-                return app('App\Http\Controllers\TutorController')->login($professor);
+                return app('App\Http\Controllers\TutorController')->login($professor, $argDevice);
             }
 
             // 해당 사용자가 교과목 교수 계정인 경우
@@ -374,13 +420,28 @@ class ProfessorController extends Controller {
                 ]
             ]);
 
-            flash()->success(__('message.login_success', ['Name' => $professor->name]));
-            return redirect(route('professor.index'));
+            switch($argDevice) {
+                case 'android':
+                    return response()->json(
+                        new ResponseObject("TRUE", __('message.login_success', ['Name' => $professor->name])),
+                        200);
+                    break;
+                default:
+                    flash()->success(__('message.login_success', ['Name' => $professor->name]));
+                    return redirect(route('professor.index'));
+            }
 
         // 잘못된 입력
         } else {
-            flash()->warning(__('message.login_wrong_id_or_password'))->important();
-            return back();
+            switch($argDevice){
+                case 'android':
+                    return response()->json(
+                        new ResponseObject("FALSE", __('message.login_wrong_id_or_password')),
+                        200);
+                default:
+                    flash()->warning(__('message.login_wrong_id_or_password'))->important();
+                    return back();
+            }
         }
     }
 }
